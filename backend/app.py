@@ -296,7 +296,13 @@ def get_statistical_area_map_by_name(area_name):
         force_detailed = request.args.get('detailed', 'false').lower() == 'true'
         exact_boundary = request.args.get('exact_boundary', 'false').lower() == 'true'
         zoom_level = int(request.args.get('zoom', '10'))
-        logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, force_detailed={force_detailed}, exact_boundary={exact_boundary}, zoom={zoom_level}")
+        # Get display parameters for PGs and HHAHs
+        display_pgs = request.args.get('display_pgs', 'false').lower() == 'true'
+        display_hhahs = request.args.get('display_hhahs', 'false').lower() == 'true'
+        
+        logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, "
+                    f"force_detailed={force_detailed}, exact_boundary={exact_boundary}, zoom={zoom_level}, "
+                    f"display_pgs={display_pgs}, display_hhahs={display_hhahs}")
         
         # Check for Fiona issues and log diagnostic information
         try:
@@ -323,7 +329,9 @@ def get_statistical_area_map_by_name(area_name):
             use_cached=False,
             zoom=zoom_level,
             exact_boundary=exact_boundary,
-            use_alternative_loading=use_alternative
+            use_alternative_loading=use_alternative,
+            display_pgs=display_pgs,
+            display_hhahs=display_hhahs
         )
         
         if not map_html:

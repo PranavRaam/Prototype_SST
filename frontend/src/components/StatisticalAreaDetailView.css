@@ -125,9 +125,10 @@
 
 .map-info-legend {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
   margin-top: 12px;
-  padding: 8px 12px;
+  padding: 12px 16px;
   background-color: #f9fafb;
   border-radius: 6px;
   border: 1px solid #e5e7eb;
@@ -137,6 +138,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 150px;
 }
 
 .legend-color {
@@ -146,9 +148,26 @@
   border-radius: 4px;
 }
 
+/* Special styling for circular markers in the legend */
+.legend-color.marker-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.legend-color.pg-marker-color {
+  background-color: #0000FF; /* Blue for PGs */
+}
+
+.legend-color.hhah-marker-color {
+  background-color: #008000; /* Green for HHAHs */
+}
+
 .legend-label {
   font-size: 0.8125rem;
   color: #1f2937;
+  font-weight: 500;
 }
 
 .stat-area-error {

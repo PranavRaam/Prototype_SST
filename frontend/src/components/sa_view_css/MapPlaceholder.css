@@ -53,6 +53,90 @@
     opacity: 0.8;
   }
   
+  /* Simulated boundary for the statistical area */
+  .simulated-boundary {
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border: 3px solid rgba(79, 70, 229, 0.8);
+    border-radius: 40% 60% 50% 45% / 45% 50% 55% 60%;
+    background-color: rgba(79, 70, 229, 0.1);
+    pointer-events: none;
+    animation: pulseBoundary 4s infinite alternate;
+    z-index: 10;
+  }
+  
+  @keyframes pulseBoundary {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1.02);
+      opacity: 0.9;
+    }
+  }
+  
+  /* Mock markers for PGs and HHAHs */
+  .mock-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+  }
+  
+  .mock-marker {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, -50%);
+    animation: markerPulse 2s infinite;
+  }
+  
+  .pg-marker .marker-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #0000FF; /* Blue for PGs */
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(0, 0, 255, 0.3);
+  }
+  
+  .hhah-marker .marker-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #008000; /* Green for HHAHs */
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(0, 128, 0, 0.3);
+  }
+  
+  .marker-label {
+    margin-top: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  @keyframes markerPulse {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
   /* Responsive Adjustments */
   @media screen and (max-width: 768px) {
     .map-wrapper {
@@ -67,5 +151,17 @@
   
     .map-title {
         font-size: 1.25rem;
+    }
+    
+    .simulated-boundary {
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
+    }
+    
+    .marker-label {
+      font-size: 8px;
+      padding: 1px 3px;
     }
   }

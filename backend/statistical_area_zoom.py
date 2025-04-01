@@ -599,43 +599,34 @@ def handle_special_cities(area_name):
     logger.info(f"No special case match found for {area_name}")
     return None
 
-def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, use_cached=True, exact_boundary=False, use_alternative_loading=False):
+def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, 
+                            use_cached=True, exact_boundary=False, use_alternative_loading=False,
+                            display_pgs=False, display_hhahs=False):
     """
-    Generate a map for a statistical area.
+    Generate an HTML map visualization for a statistical area.
+    If area_name is provided, the function will look up the coordinates and generate a map for that area.
+    If lat and lon are provided, a map will be generated centered on those coordinates.
     
-    Args:
-        area_name (str, optional): Name of the statistical area. Defaults to None.
-        lat (float, optional): Latitude coordinate. Defaults to None.
-        lon (float, optional): Longitude coordinate. Defaults to None.
-        zoom (int, optional): Zoom level for the map. Defaults to 10.
-        force_detailed (bool, optional): Whether to force detailed boundaries. Defaults to False.
-        use_cached (bool, optional): Whether to use cached maps. Defaults to True.
-        exact_boundary (bool, optional): Whether to prioritize exact MSA boundaries. Defaults to False.
-        use_alternative_loading (bool, optional): Whether to use alternative loading for shapefiles. Defaults to False.
-        
+    Parameters:
+    - area_name: The name of the statistical area (e.g. 'Boston, MA')
+    - lat: Latitude for map center (used if area_name is None)
+    - lon: Longitude for map center (used if area_name is None)
+    - zoom: Zoom level for the map (1-18, higher values zoom in more)
+    - force_detailed: Force detailed statistical area boundaries
+    - use_cached: Use cached map if available
+    - exact_boundary: Show exact boundary rather than approximate
+    - use_alternative_loading: Use alternative loading method for shapefile data
+    - display_pgs: Show Physician Groups on the map
+    - display_hhahs: Show Home Health At Home agencies on the map
+    
     Returns:
-        str: HTML content of the generated map.
+    - HTML string containing the map visualization
     """
-    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
-    # Always force detailed map generation in production
-    force_detailed = True
-    
-    # Force detailed boundary for specific city names
-    force_special_handling = False
-    special_cities = ['fairbanks', 'flagstaff', 'sedona', 'prescott', 'gainesville']
-    
-    # Special handling for Lake Havasu City-Kingman, AZ
-    if area_name and ("havasu" in area_name.lower() and "kingman" in area_name.lower()):
-        logger.info(f"Special handling for Lake Havasu City-Kingman, AZ detected")
-        force_special_handling = True
-        exact_boundary = True
-        
-    if area_name and any(city in area_name.lower() for city in special_cities):
-        logger.info(f"Forcing special handling for {area_name} as it's in the special cities list")
-        force_special_handling = True
-        use_cached = False  # Don't use cached for special cities
+    # Create cache directory if it doesn't exist
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
     
     # If coordinates are provided and area_name is not, generate map by coordinates
     if area_name is None and lat is not None and lon is not None:
@@ -892,7 +883,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 except Exception as e:
                     logger.error(f"Error adding state boundaries: {str(e)}")
                 
-                # Add MSA boundary with error handling
+                # Add boundaries, markers, and additional functionality with error handling
                 try:
                     # Add more visible and distinct boundary
                     folium.GeoJson(
@@ -933,11 +924,19 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 
                 # Add PGs and HHAHs to the map with error handling
                 try:
-                    add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+                    # Only add PGs and HHAHs if display parameters are true
+                    if display_pgs or display_hhahs:
+                        logger.info(f"Adding PGs and HHAHs to map: display_pgs={display_pgs}, display_hhahs={display_hhahs}")
+                        add_pgs_hhahs_to_map(m, 
+                                            pgs_data if display_pgs else [], 
+                                            hhahs_data if display_hhahs else [])
+                    else:
+                        logger.info("Skipping PGs and HHAHs display as both display flags are false")
                 except Exception as e:
                     logger.error(f"Error adding PGs and HHAHs: {str(e)}")
+                    logger.error(traceback.format_exc())
                 
-                # Add essential controls with error handling
+                # Add controls with error handling
                 try:
                     folium.plugins.Fullscreen().add_to(m)
                     folium.plugins.MousePosition().add_to(m)
@@ -983,6 +982,20 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 
                 # Add title with error handling
                 try:
+                    # Create title content based on whether PGs and HHAHs are displayed
+                    if display_pgs and display_hhahs:
+                        pg_count = len(pgs_data)
+                        hhah_count = len(hhahs_data)
+                        subtitle = f"Showing {pg_count} PGs and {hhah_count} HHAHs in this area."
+                    elif display_pgs:
+                        pg_count = len(pgs_data)
+                        subtitle = f"Showing {pg_count} Physician Groups in this area."
+                    elif display_hhahs:
+                        hhah_count = len(hhahs_data)
+                        subtitle = f"Showing {hhah_count} Home Health At Home agencies in this area."
+                    else:
+                        subtitle = "Detailed boundary view of this statistical area."
+                    
                     title_html = f'''
                         <div style="position: fixed; 
                                     top: 10px; left: 50px; width: 300px; height: auto;
@@ -991,7 +1004,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                                     font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
                             <h4 style="margin-top: 0; color: #1F2937;">Map View of {target_area['NAME']}</h4>
                             <p style="font-size: 12px; margin-bottom: 0;">
-                                Showing {len(pgs_data)} PGs and {len(hhahs_data)} HHAHs in this area.
+                                {subtitle}
                             </p>
                         </div>
                     '''
