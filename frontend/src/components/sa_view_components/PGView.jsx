@@ -1387,9 +1387,15 @@ const PGView = () => {
   const renderHeader = () => (
     <div className="pg-header">
       <div className="pg-title">
+        <button 
+          className="back-button" 
+          onClick={() => window.history.back()}
+        >
+          <span className="back-arrow">←</span> Back
+        </button>
         <h2>Physician Group Overview</h2>
         <p className="pg-subtitle">Manage and monitor physician group performance</p>
-              </div>
+      </div>
       <div className="pg-actions">
         <button className="action-button primary">
           <span className="icon">📊</span> Export Data
@@ -1397,7 +1403,7 @@ const PGView = () => {
         <button className="action-button">
           <span className="icon">⚙️</span> Settings
         </button>
-            </div>
+      </div>
     </div>
   );
 
@@ -1451,7 +1457,7 @@ const PGView = () => {
       >
         Rapport
       </button>
-              </div>
+    </div>
   );
 
   const renderOverviewSection = () => (

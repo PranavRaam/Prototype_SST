@@ -11,12 +11,38 @@
 .pg-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-start;
   padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.pg-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pg-title .back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.pg-title .back-button:hover {
+  color: #333;
+}
+
+.pg-title .back-arrow {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .pg-title h2 {
