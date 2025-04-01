@@ -72,54 +72,262 @@ def download_and_unzip(url, extract_to=None, cache=True):
     print(f"Data extracted to {output_dir}")
     return output_dir
 
-def get_county_data():
+def get_county_data(use_alternative_loading=False):
+    """Get county data from Census TIGER/Line shapefiles"""
     url = "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip"
     data_dir = download_and_unzip(url)
     
     county_file = os.path.join(data_dir, "tl_2023_us_county.shp")
-    county_data = gpd.read_file(county_file)
     
+    try:
+        if use_alternative_loading:
+            # Alternative loading method without relying on fiona.path
+            import json
+            import shapely.geometry
+            from shapefile import Reader
+            
+            # Read the shapefile using pyshp instead of fiona
+            reader = Reader(county_file)
+            county_records = []
+            
+            # Extract records and shapes
+            for sr in reader.shapeRecords():
+                attrs = sr.record.as_dict()
+                
+                # Create a shapely geometry from the shape points
+                if sr.shape.shapeType == 5:  # Polygon
+                    pts = sr.shape.points
+                    if len(pts) < 3:  # Need at least 3 points for a polygon
+                        continue
+                    geom = shapely.geometry.Polygon(pts)
+                else:
+                    # Skip non-polygon shapes
+                    continue
+                
+                # Add essential attributes and geometry
+                record = {
+                    'STATEFP': attrs.get('STATEFP', ''),
+                    'COUNTYFP': attrs.get('COUNTYFP', ''),
+                    'NAME': attrs.get('NAME', ''),
+                    'geometry': geom
+                }
+                county_records.append(record)
+            
+            # Create a GeoDataFrame from the records
+            import pandas as pd
+            import geopandas as gpd
+            county_data = gpd.GeoDataFrame(county_records, crs="EPSG:4326")
+        else:
+            # Standard loading with geopandas/fiona
+            county_data = gpd.read_file(county_file)
+    except Exception as e:
+        print(f"Error loading county data: {str(e)}")
+        print("Falling back to alternative loading method")
+        # If standard method fails, try alternative anyway
+        import json
+        import shapely.geometry
+        from shapefile import Reader
+        
+        # Read the shapefile using pyshp instead of fiona
+        reader = Reader(county_file)
+        county_records = []
+        
+        # Extract records and shapes
+        for sr in reader.shapeRecords():
+            attrs = sr.record.as_dict()
+            
+            # Create a shapely geometry from the shape points
+            if sr.shape.shapeType == 5:  # Polygon
+                pts = sr.shape.points
+                if len(pts) < 3:  # Need at least 3 points for a polygon
+                    continue
+                geom = shapely.geometry.Polygon(pts)
+            else:
+                # Skip non-polygon shapes
+                continue
+            
+            # Add essential attributes and geometry
+            record = {
+                'STATEFP': attrs.get('STATEFP', ''),
+                'COUNTYFP': attrs.get('COUNTYFP', ''),
+                'NAME': attrs.get('NAME', ''),
+                'geometry': geom
+            }
+            county_records.append(record)
+        
+        # Create a GeoDataFrame from the records
+        import pandas as pd
+        import geopandas as gpd
+        county_data = gpd.GeoDataFrame(county_records, crs="EPSG:4326")
+    
+    # Filter US states only
     county_data = county_data[county_data['STATEFP'].isin([
         '01', '02', '04', '05', '06', '08', '09', '10', '11', '12', '13', '15', '16', '17', '18', '19',
         '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35',
         '36', '37', '38', '39', '40', '41', '42', '44', '45', '46', '47', '48', '49', '50', '51', '53', '54', '55', '56'
     ])]
     
+    # Simplify geometries
     county_data['geometry'] = county_data.geometry.simplify(0.01)
     
     return county_data
 
-def get_states_data():
+def get_states_data(use_alternative_loading=False):
+    """Get state data from Census TIGER/Line shapefiles"""
     url = "https://www2.census.gov/geo/tiger/TIGER2023/STATE/tl_2023_us_state.zip"
     data_dir = download_and_unzip(url)
     
     states_file = os.path.join(data_dir, "tl_2023_us_state.shp")
-    states_data = gpd.read_file(states_file)
     
+    try:
+        if use_alternative_loading:
+            # Alternative loading method without relying on fiona.path
+            import json
+            import shapely.geometry
+            from shapefile import Reader
+            
+            # Read the shapefile using pyshp instead of fiona
+            reader = Reader(states_file)
+            state_records = []
+            
+            # Extract records and shapes
+            for sr in reader.shapeRecords():
+                attrs = sr.record.as_dict()
+                
+                # Create a shapely geometry from the shape points
+                if sr.shape.shapeType == 5:  # Polygon
+                    pts = sr.shape.points
+                    if len(pts) < 3:  # Need at least 3 points for a polygon
+                        continue
+                    geom = shapely.geometry.Polygon(pts)
+                else:
+                    # Skip non-polygon shapes
+                    continue
+                
+                # Add essential attributes and geometry
+                record = {
+                    'STATEFP': attrs.get('STATEFP', ''),
+                    'STUSPS': attrs.get('STUSPS', ''),
+                    'NAME': attrs.get('NAME', ''),
+                    'geometry': geom
+                }
+                state_records.append(record)
+            
+            # Create a GeoDataFrame from the records
+            import pandas as pd
+            import geopandas as gpd
+            states_data = gpd.GeoDataFrame(state_records, crs="EPSG:4326")
+        else:
+            # Standard loading with geopandas/fiona
+            states_data = gpd.read_file(states_file)
+    except Exception as e:
+        print(f"Error loading states data: {str(e)}")
+        print("Falling back to alternative loading method")
+        # If standard method fails, try alternative anyway
+        import json
+        import shapely.geometry
+        from shapefile import Reader
+        
+        # Read the shapefile using pyshp instead of fiona
+        reader = Reader(states_file)
+        state_records = []
+        
+        # Extract records and shapes
+        for sr in reader.shapeRecords():
+            attrs = sr.record.as_dict()
+            
+            # Create a shapely geometry from the shape points
+            if sr.shape.shapeType == 5:  # Polygon
+                pts = sr.shape.points
+                if len(pts) < 3:  # Need at least 3 points for a polygon
+                    continue
+                geom = shapely.geometry.Polygon(pts)
+            else:
+                # Skip non-polygon shapes
+                continue
+            
+            # Add essential attributes and geometry
+            record = {
+                'STATEFP': attrs.get('STATEFP', ''),
+                'STUSPS': attrs.get('STUSPS', ''),
+                'NAME': attrs.get('NAME', ''),
+                'geometry': geom
+            }
+            state_records.append(record)
+        
+        # Create a GeoDataFrame from the records
+        import pandas as pd
+        import geopandas as gpd
+        states_data = gpd.GeoDataFrame(state_records, crs="EPSG:4326")
+    
+    # Filter out territories
     states_data = states_data[~states_data['STUSPS'].isin(['AS', 'GU', 'MP', 'PR', 'VI'])]
     states_data['geometry'] = states_data.geometry.simplify(0.01)
     
     return states_data
 
-def get_msa_data():
+def get_msa_data(use_alternative_loading=False):
     """Get Metropolitan Statistical Area data from Census TIGER/Line shapefiles"""
     try:
         url = "https://www2.census.gov/geo/tiger/TIGER2023/CBSA/tl_2023_us_cbsa.zip"
         data_dir = download_and_unzip(url)
         
         msa_file = os.path.join(data_dir, "tl_2023_us_cbsa.shp")
-        msa_data = gpd.read_file(msa_file)
+        
+        if use_alternative_loading:
+            print("Using alternative loading method for MSA data")
+            # Alternative loading method without relying on fiona.path
+            import json
+            import shapely.geometry
+            from shapefile import Reader
+            
+            # Read the shapefile using pyshp instead of fiona
+            reader = Reader(msa_file)
+            msa_records = []
+            
+            # Extract records and shapes
+            for sr in reader.shapeRecords():
+                attrs = sr.record.as_dict()
+                
+                # Create a shapely geometry from the shape points
+                if sr.shape.shapeType == 5:  # Polygon
+                    pts = sr.shape.points
+                    if len(pts) < 3:  # Need at least 3 points for a polygon
+                        continue
+                    geom = shapely.geometry.Polygon(pts)
+                else:
+                    # Skip non-polygon shapes
+                    continue
+                
+                # Add essential attributes and geometry
+                record = {
+                    'CBSAFP': attrs.get('CBSAFP', ''),
+                    'NAME': attrs.get('NAME', ''),
+                    'LSAD': attrs.get('LSAD', ''),
+                    'geometry': geom
+                }
+                msa_records.append(record)
+            
+            # Create a GeoDataFrame from the records
+            import pandas as pd
+            import geopandas as gpd
+            msa_data = gpd.GeoDataFrame(msa_records, crs="EPSG:4326")
+        else:
+            # Standard loading with geopandas/fiona
+            msa_data = gpd.read_file(msa_file)
         
         # Filter for Metropolitan Statistical Areas (both M1 and M2)
         # M1 = Metropolitan Statistical Area
         # M2 = Metropolitan Division
-        msa_data = msa_data[msa_data['LSAD'].isin(['M1', 'M2'])]
-        
-        if len(msa_data) == 0:
-            print("Warning: No MSA data found after filtering!")
-            print(f"Available LSAD values: {msa_data['LSAD'].unique()}")
-            # If no M1/M2, try getting all CBSAs
-            msa_data = gpd.read_file(msa_file)
+        if 'LSAD' in msa_data.columns:
+            filtered_msa_data = msa_data[msa_data['LSAD'].isin(['M1', 'M2'])]
+            if len(filtered_msa_data) > 0:
+                msa_data = filtered_msa_data
+            else:
+                print("Warning: No MSA data found after filtering!")
+                print(f"Available LSAD values: {msa_data['LSAD'].unique()}")
+        else:
+            print("Warning: LSAD column not found in MSA data")
         
         # Ensure we have the required columns
         required_columns = ['CBSAFP', 'NAME', 'geometry']
@@ -139,7 +347,67 @@ def get_msa_data():
         
     except Exception as e:
         print(f"Error loading MSA data: {str(e)}")
-        return None
+        print("Trying alternative loading method...")
+        
+        try:
+            # Fall back to alternative method even if not explicitly requested
+            url = "https://www2.census.gov/geo/tiger/TIGER2023/CBSA/tl_2023_us_cbsa.zip"
+            data_dir = download_and_unzip(url)
+            
+            msa_file = os.path.join(data_dir, "tl_2023_us_cbsa.shp")
+            
+            # Alternative loading method without relying on fiona.path
+            import json
+            import shapely.geometry
+            from shapefile import Reader
+            
+            # Read the shapefile using pyshp instead of fiona
+            reader = Reader(msa_file)
+            msa_records = []
+            
+            # Extract records and shapes
+            for sr in reader.shapeRecords():
+                attrs = sr.record.as_dict()
+                
+                # Create a shapely geometry from the shape points
+                if sr.shape.shapeType == 5:  # Polygon
+                    pts = sr.shape.points
+                    if len(pts) < 3:  # Need at least 3 points for a polygon
+                        continue
+                    geom = shapely.geometry.Polygon(pts)
+                else:
+                    # Skip non-polygon shapes
+                    continue
+                
+                # Add essential attributes and geometry
+                record = {
+                    'CBSAFP': attrs.get('CBSAFP', ''),
+                    'NAME': attrs.get('NAME', ''),
+                    'LSAD': attrs.get('LSAD', ''),
+                    'geometry': geom
+                }
+                msa_records.append(record)
+            
+            # Create a GeoDataFrame from the records
+            import pandas as pd
+            import geopandas as gpd
+            msa_data = gpd.GeoDataFrame(msa_records, crs="EPSG:4326")
+            
+            # Filter for Metropolitan Statistical Areas if LSAD column exists
+            if 'LSAD' in msa_data.columns:
+                filtered_msa_data = msa_data[msa_data['LSAD'].isin(['M1', 'M2'])]
+                if len(filtered_msa_data) > 0:
+                    msa_data = filtered_msa_data
+            
+            # Add placeholder for state count
+            msa_data['STATE_COUNT'] = 0
+            
+            print(f"Loaded {len(msa_data)} Metropolitan Statistical Areas using alternative method")
+            return msa_data
+            
+        except Exception as fallback_error:
+            print(f"Alternative loading method also failed: {str(fallback_error)}")
+            return None
 
 def get_county_msa_relationships():
     try:

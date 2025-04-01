@@ -52,10 +52,9 @@ class LegendControl(MacroElement):
             {% endmacro %}
         """)
 
-def create_fallback_map(area_name, output_path=None):
+def create_fallback_map(area_name, output_path=None, use_alternative_loading=False):
     """Create a fallback map for a specific area with boundary shapes when possible"""
     logger = logging.getLogger(__name__)
-    logger.info(f"Creating enhanced fallback map for {area_name}")
     
     # Initialize variables
     folium_map = None
@@ -66,7 +65,7 @@ def create_fallback_map(area_name, output_path=None):
     
     try:
         # Try to generate a more accurate representation with available data
-        logger.info(f"Creating fallback map for {area_name}")
+        logger.info(f"Creating fallback map for {area_name} (use_alternative_loading={use_alternative_loading})")
         
         # Attempt to get area coordinates from geocoding
         geocode_result = handle_special_cities(area_name)
@@ -95,9 +94,9 @@ def create_fallback_map(area_name, output_path=None):
         try:
             # Import here to avoid circular imports
             from main import get_county_data, get_msa_data, get_states_data
-            county_data = get_county_data()
-            msa_data = get_msa_data()
-            states_data = get_states_data()
+            county_data = get_county_data(use_alternative_loading=use_alternative_loading)
+            msa_data = get_msa_data(use_alternative_loading=use_alternative_loading)
+            states_data = get_states_data(use_alternative_loading=use_alternative_loading)
             
             # Try to find exact MSA match first
             if msa_data is not None:
@@ -392,13 +391,44 @@ def get_processed_data():
     logger = logging.getLogger(__name__)
     try:
         logger.info("Loading MSA, county, and state data...")
-        msa_data = main.get_msa_data()
+        
+        # Handle potential fiona errors
+        try:
+            import fiona
+            # Fix for "module 'fiona' has no attribute 'path'" error
+            if not hasattr(fiona, 'path'):
+                # Create a fallback implementation if needed
+                logger.warning("Fiona module missing 'path' attribute. Using alternative method.")
+                # For older versions of fiona/geopandas, use direct file access instead
+                from shapely.geometry import shape
+                import geopandas as gpd
+                
+                # Use geopandas without fiona.path dependency
+                msa_data = main.get_msa_data(use_alternative_loading=True)
+                county_data = main.get_county_data(use_alternative_loading=True)
+                states_data = main.get_states_data(use_alternative_loading=True)
+            else:
+                # Use standard data loading functions
+                msa_data = main.get_msa_data()
+                county_data = main.get_county_data()
+                states_data = main.get_states_data()
+                
+        except ImportError:
+            logger.warning("Fiona import error. Using direct loading methods.")
+            # Try to use alternative loading methods that don't rely on fiona directly
+            msa_data = main.get_msa_data(use_alternative_loading=True)
+            county_data = main.get_county_data(use_alternative_loading=True)
+            states_data = main.get_states_data(use_alternative_loading=True)
+            
+        # Get county to MSA relationships    
+        county_to_msa = main.get_county_msa_relationships()
+        
+        if msa_data is None or len(msa_data) == 0:
+            logger.error("Failed to load MSA data!")
+            return None, None, None, {}
+            
         logger.info(f"Loaded MSA data with {len(msa_data)} entries")
         logger.info(f"Sample MSA names: {', '.join(msa_data['NAME'].head().tolist())}")
-        
-        county_data = main.get_county_data()
-        states_data = main.get_states_data()
-        county_to_msa = main.get_county_msa_relationships()
         
         # Pre-process and simplify geometries
         logger.info("Pre-processing and simplifying geometries...")
@@ -669,7 +699,7 @@ def handle_special_cities(area_name):
     # No special case matched
     return None
 
-def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, use_cached=True, exact_boundary=False):
+def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, use_cached=True, exact_boundary=False, use_alternative_loading=False):
     """
     Generate a map for a statistical area.
     
@@ -681,6 +711,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
         force_detailed (bool, optional): Whether to force detailed boundaries. Defaults to False.
         use_cached (bool, optional): Whether to use cached maps. Defaults to True.
         exact_boundary (bool, optional): Whether to prioritize exact MSA boundaries. Defaults to False.
+        use_alternative_loading (bool, optional): Whether to use alternative loading for shapefiles. Defaults to False.
         
     Returns:
         str: HTML content of the generated map.
@@ -694,6 +725,13 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
     # Force detailed boundary for specific city names
     force_special_handling = False
     special_cities = ['fairbanks', 'flagstaff', 'sedona', 'prescott', 'gainesville']
+    
+    # Special handling for Lake Havasu City-Kingman, AZ
+    if area_name and ("havasu" in area_name.lower() and "kingman" in area_name.lower()):
+        logger.info(f"Special handling for Lake Havasu City-Kingman, AZ detected")
+        force_special_handling = True
+        exact_boundary = True
+        
     if area_name and any(city in area_name.lower() for city in special_cities):
         logger.info(f"Forcing special handling for {area_name} as it's in the special cities list")
         force_special_handling = True
@@ -739,7 +777,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
             logger.error(f"Error generating map by coordinates: {str(e)}")
             logger.error(traceback.format_exc())
             # Create a fallback map
-            return create_fallback_map("Custom Location", None)
+            return create_fallback_map("Custom Location", None, use_alternative_loading)
     
     # If area_name is provided, generate map by area name
     if area_name:
@@ -758,14 +796,15 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
         try:
             # Direct import to ensure we get the latest data
             from main import get_msa_data, get_county_data, get_states_data
-            msa_data = get_msa_data()
-            county_data = get_county_data()
-            states_data = get_states_data()
+            logger.info(f"Loading data (use_alternative_loading={use_alternative_loading})")
+            msa_data = get_msa_data(use_alternative_loading=use_alternative_loading)
+            county_data = get_county_data(use_alternative_loading=use_alternative_loading)
+            states_data = get_states_data(use_alternative_loading=use_alternative_loading)
             county_to_msa = None  # We'll derive this if needed
             
             if msa_data is None or len(msa_data) == 0:
                 logger.error("Failed to load MSA data directly")
-                return create_fallback_map(area_name, cache_file)
+                return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
             logger.info(f"Successfully loaded {len(msa_data)} MSAs directly")
         except Exception as e:
@@ -776,7 +815,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
             msa_data, county_data, states_data, county_to_msa = get_processed_data()
             if msa_data is None or len(msa_data) == 0:
                 logger.error("Failed to load MSA data from processed data")
-                return create_fallback_map(area_name, cache_file)
+                return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
         try:
             # Check if this is a special city that needs custom handling
@@ -878,12 +917,12 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 
                 if target_area is None:
                     logger.error(f"Could not find any matching MSA for: {area_name}")
-                    return create_fallback_map(area_name, cache_file)
+                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
                 # Verify geometry
                 if not hasattr(target_area, 'geometry') or target_area.geometry is None:
                     logger.error(f"No geometry data for MSA: {target_area['NAME']}")
-                    return create_fallback_map(area_name, cache_file)
+                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
                 # Validate and fix geometry if needed
                 logger.info("Validating geometry...")
@@ -893,10 +932,10 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                         target_area.geometry = target_area.geometry.buffer(0)
                         if not target_area.geometry.is_valid:
                             logger.error("Failed to fix invalid geometry")
-                            return create_fallback_map(area_name, cache_file)
+                            return create_fallback_map(area_name, cache_file, use_alternative_loading)
                     except Exception as e:
                         logger.error(f"Error fixing geometry: {str(e)}")
-                        return create_fallback_map(area_name, cache_file)
+                        return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
                 # Get centroid and bounds with error handling
                 try:
@@ -906,7 +945,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                     # Validate coordinates
                     if not (-180 <= center_lng <= 180 and -90 <= center_lat <= 90):
                         logger.error(f"Invalid coordinates: {center_lat}, {center_lng}")
-                        return create_fallback_map(area_name, cache_file)
+                        return create_fallback_map(area_name, cache_file, use_alternative_loading)
                     
                     # Generate mock PGs and HHAHs data for this statistical area
                     pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
@@ -915,7 +954,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                     logger.info(f"Bounds: {min_x}, {min_y}, {max_x}, {max_y}")
                 except Exception as e:
                     logger.error(f"Error calculating centroid or bounds: {str(e)}")
-                    return create_fallback_map(area_name, cache_file)
+                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
                 # Create base map with error handling
                 try:
@@ -928,7 +967,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                     )
                 except Exception as e:
                     logger.error(f"Error creating base map: {str(e)}")
-                    return create_fallback_map(area_name, cache_file)
+                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
                 # Add state boundaries with error handling
                 try:
@@ -1068,13 +1107,13 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                         return f.read()
                 except Exception as e:
                     logger.error(f"Error saving map: {str(e)}")
-                    return create_fallback_map(area_name, cache_file)
+                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
                 
         except Exception as e:
             logger.error(f"Error generating map: {e}")
             logger.error(traceback.format_exc())
-            return create_fallback_map(area_name, cache_file)
+            return create_fallback_map(area_name, cache_file, use_alternative_loading)
     
     # If neither area_name nor coordinates are provided, return a default map
     logger.error("No area name or coordinates provided")
-    return create_fallback_map("Unknown Location", None) 
+    return create_fallback_map("Unknown Location", None, use_alternative_loading) 

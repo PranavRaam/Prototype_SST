@@ -298,6 +298,19 @@ def get_statistical_area_map_by_name(area_name):
         zoom_level = int(request.args.get('zoom', '10'))
         logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, force_detailed={force_detailed}, exact_boundary={exact_boundary}, zoom={zoom_level}")
         
+        # Check for Fiona issues and log diagnostic information
+        try:
+            import fiona
+            if hasattr(fiona, 'path'):
+                logger.info("Fiona path attribute is available, using standard loading")
+                use_alternative = False
+            else:
+                logger.info("Fiona path attribute not available, will use alternative loading")
+                use_alternative = True
+        except ImportError:
+            logger.info("Fiona import error, will use alternative loading")
+            use_alternative = True
+            
         # Always force regeneration and detailed boundaries in production
         override_cached = True
         force_detailed = True
@@ -309,7 +322,8 @@ def get_statistical_area_map_by_name(area_name):
             force_detailed=True, 
             use_cached=False,
             zoom=zoom_level,
-            exact_boundary=exact_boundary
+            exact_boundary=exact_boundary,
+            use_alternative_loading=use_alternative
         )
         
         if not map_html:
