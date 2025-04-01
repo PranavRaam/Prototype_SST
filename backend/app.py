@@ -9,7 +9,15 @@ import logging
 from statistical_area_zoom import generate_statistical_area_map
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+# Update CORS configuration
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["https://sst-frontend-swart.vercel.app"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True
+    }
+})
 
 # Configure logging
 logging.basicConfig(
@@ -88,7 +96,11 @@ def get_map():
             "message": "Map not found"
         }), 404
     
-    return send_file(MAP_FILE, mimetype='text/html')
+    response = send_file(MAP_FILE, mimetype='text/html')
+    # Add headers to allow iframe embedding
+    response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-swart.vercel.app'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-swart.vercel.app"
+    return response
 
 @app.route('/api/regions', methods=['GET'])
 def get_regions():
@@ -116,8 +128,15 @@ def get_statistical_area_map():
         # Generate the map
         map_html = generate_statistical_area_map(lat, lon, zoom)
         
-        # Return the map HTML
-        return map_html
+        # Add headers to allow iframe embedding
+        response = app.response_class(
+            response=map_html,
+            status=200,
+            mimetype='text/html'
+        )
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-swart.vercel.app'
+        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-swart.vercel.app"
+        return response
     except Exception as e:
         logger.error(f"Error generating statistical area map: {str(e)}")
         return jsonify({

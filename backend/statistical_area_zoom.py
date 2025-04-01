@@ -14,6 +14,7 @@ from folium.plugins import MousePosition, Draw, Fullscreen, MiniMap, Search
 from branca.element import Figure, JavascriptLink, CssLink
 from shapely.geometry import shape, Point
 from functools import lru_cache
+from difflib import get_close_matches
 
 # Create a subclass of MacroElement to add legend to map
 class LegendControl(MacroElement):
@@ -523,6 +524,7 @@ def generate_statistical_area_map(area_name):
         
         # If no exact match, try matching main city name
         if target_area is None:
+            # Extract city name, handling various formats
             city_name = normalized_area_name.split(',')[0].split('-')[0].strip()
             logger.info(f"Trying to match city name: {city_name}")
             
@@ -532,18 +534,27 @@ def generate_statistical_area_map(area_name):
                 target_area = city_matches.iloc[0]
                 logger.info(f"Found exact city match: {target_area['NAME']}")
             else:
-                # Try fuzzy city match
-                city_matches = msa_data[msa_data['normalized_name'].str.contains(f"^{city_name}", regex=True, case=False, na=False)]
+                # Try fuzzy city match with word boundaries
+                city_matches = msa_data[msa_data['normalized_name'].str.contains(r'\b' + city_name + r'\b', regex=True, case=False, na=False)]
                 if not city_matches.empty:
                     target_area = city_matches.iloc[0]
                     logger.info(f"Found fuzzy city match: {target_area['NAME']}")
         
-        # If still no match, try partial match
+        # If still no match, try partial match with word boundaries
         if target_area is None:
-            partial_matches = msa_data[msa_data['normalized_name'].str.contains(normalized_area_name, case=False, na=False)]
+            partial_matches = msa_data[msa_data['normalized_name'].str.contains(r'\b' + normalized_area_name + r'\b', regex=True, case=False, na=False)]
             if not partial_matches.empty:
                 target_area = partial_matches.iloc[0]
                 logger.info(f"Found partial match: {target_area['NAME']}")
+        
+        # If still no match, try fuzzy matching with the entire name
+        if target_area is None:
+            from difflib import get_close_matches
+            available_names = msa_data['normalized_name'].tolist()
+            close_matches = get_close_matches(normalized_area_name, available_names, n=1, cutoff=0.6)
+            if close_matches:
+                target_area = msa_data[msa_data['normalized_name'] == close_matches[0]].iloc[0]
+                logger.info(f"Found fuzzy match: {target_area['NAME']}")
         
         if target_area is None:
             logger.error(f"Could not find any matching MSA for: {area_name}")
@@ -567,10 +578,15 @@ def generate_statistical_area_map(area_name):
                 logger.error(f"Error fixing geometry: {str(e)}")
                 return create_fallback_map(area_name, cache_file)
         
-        # Get centroid and bounds
+        # Get centroid and bounds with error handling
         try:
             center_lng, center_lat = target_area.geometry.centroid.x, target_area.geometry.centroid.y
             min_x, min_y, max_x, max_y = target_area.geometry.bounds
+            
+            # Validate coordinates
+            if not (-180 <= center_lng <= 180 and -90 <= center_lat <= 90):
+                logger.error(f"Invalid coordinates: {center_lat}, {center_lng}")
+                return create_fallback_map(area_name, cache_file)
             
             # Generate mock PGs and HHAHs data for this statistical area
             pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
@@ -581,77 +597,103 @@ def generate_statistical_area_map(area_name):
             logger.error(f"Error calculating centroid or bounds: {str(e)}")
             return create_fallback_map(area_name, cache_file)
         
-        # Create base map
-        m = folium.Map(
-            location=[center_lat, center_lng],
-            zoom_start=9,
-            tiles='cartodbpositron',
-            prefer_canvas=True
-        )
+        # Create base map with error handling
+        try:
+            m = folium.Map(
+                location=[center_lat, center_lng],
+                zoom_start=9,
+                tiles='cartodbpositron',
+                prefer_canvas=True
+            )
+        except Exception as e:
+            logger.error(f"Error creating base map: {str(e)}")
+            return create_fallback_map(area_name, cache_file)
         
-        # Add state boundaries
-        states_in_view = states_data[
-            (states_data.geometry.bounds.maxx >= min_x) & 
-            (states_data.geometry.bounds.minx <= max_x) & 
-            (states_data.geometry.bounds.maxy >= min_y) & 
-            (states_data.geometry.bounds.miny <= max_y)
-        ]
+        # Add state boundaries with error handling
+        try:
+            states_in_view = states_data[
+                (states_data.geometry.bounds.maxx >= min_x) & 
+                (states_data.geometry.bounds.minx <= max_x) & 
+                (states_data.geometry.bounds.maxy >= min_y) & 
+                (states_data.geometry.bounds.miny <= max_y)
+            ]
+            
+            if not states_in_view.empty:
+                folium.GeoJson(
+                    states_in_view.__geo_interface__,
+                    style_function=lambda x: {
+                        'fillColor': 'transparent',
+                        'color': '#6B7280',
+                        'weight': 1.5,
+                        'fillOpacity': 0
+                    },
+                    name='State Boundaries'
+                ).add_to(m)
+        except Exception as e:
+            logger.error(f"Error adding state boundaries: {str(e)}")
         
-        if not states_in_view.empty:
+        # Add MSA boundary with error handling
+        try:
             folium.GeoJson(
-                states_in_view.__geo_interface__,
+                target_area.geometry.__geo_interface__,
                 style_function=lambda x: {
-                    'fillColor': 'transparent',
-                    'color': '#6B7280',
-                    'weight': 1.5,
-                    'fillOpacity': 0
+                    'fillColor': '#4F46E5',
+                    'color': '#312E81',
+                    'weight': 3,
+                    'fillOpacity': 0.2,
+                    'dashArray': '5, 5'
                 },
-                name='State Boundaries'
+                name=f"{target_area['NAME']} Boundary"
             ).add_to(m)
+        except Exception as e:
+            logger.error(f"Error adding MSA boundary: {str(e)}")
         
-        # Add MSA boundary
-        folium.GeoJson(
-            target_area.geometry.__geo_interface__,
-            style_function=lambda x: {
-                'fillColor': '#4F46E5',
-                'color': '#312E81',
-                'weight': 3,
-                'fillOpacity': 0.2,
-                'dashArray': '5, 5'
-            },
-            name=f"{target_area['NAME']} Boundary"
-        ).add_to(m)
+        # Add PGs and HHAHs to the map with error handling
+        try:
+            add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+        except Exception as e:
+            logger.error(f"Error adding PGs and HHAHs: {str(e)}")
         
-        # Add PGs and HHAHs to the map
-        add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+        # Add essential controls with error handling
+        try:
+            folium.plugins.Fullscreen().add_to(m)
+            folium.plugins.MousePosition().add_to(m)
+            folium.LayerControl().add_to(m)
+        except Exception as e:
+            logger.error(f"Error adding controls: {str(e)}")
         
-        # Add essential controls
-        folium.plugins.Fullscreen().add_to(m)
-        folium.plugins.MousePosition().add_to(m)
-        folium.LayerControl().add_to(m)
+        # Set bounds with error handling
+        try:
+            m.fit_bounds([[min_y, min_x], [max_y, max_x]])
+        except Exception as e:
+            logger.error(f"Error setting bounds: {str(e)}")
         
-        # Set bounds
-        m.fit_bounds([[min_y, min_x], [max_y, max_x]])
+        # Add title with error handling
+        try:
+            title_html = f'''
+                <div style="position: fixed; 
+                            top: 10px; left: 50px; width: 300px; height: auto;
+                            background-color: white; border-radius: 8px;
+                            border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                            font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                    <h4 style="margin-top: 0; color: #1F2937;">Map View of {target_area['NAME']}</h4>
+                    <p style="font-size: 12px; margin-bottom: 0;">
+                        Showing {len(pgs_data)} PGs and {len(hhahs_data)} HHAHs in this area.
+                    </p>
+                </div>
+            '''
+            m.get_root().html.add_child(folium.Element(title_html))
+        except Exception as e:
+            logger.error(f"Error adding title: {str(e)}")
         
-        # Add title
-        title_html = f'''
-            <div style="position: fixed; 
-                        top: 10px; left: 50px; width: 300px; height: auto;
-                        background-color: white; border-radius: 8px;
-                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
-                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
-                <h4 style="margin-top: 0; color: #1F2937;">Map View of {target_area['NAME']}</h4>
-                <p style="font-size: 12px; margin-bottom: 0;">
-                    Showing {len(pgs_data)} PGs and {len(hhahs_data)} HHAHs in this area.
-                </p>
-            </div>
-        '''
-        m.get_root().html.add_child(folium.Element(title_html))
-        
-        # Save map
-        m.save(cache_file)
-        logger.info(f"Map saved to {cache_file}")
-        return cache_file
+        # Save map with error handling
+        try:
+            m.save(cache_file)
+            logger.info(f"Map saved to {cache_file}")
+            return cache_file
+        except Exception as e:
+            logger.error(f"Error saving map: {str(e)}")
+            return create_fallback_map(area_name, cache_file)
         
     except Exception as e:
         logger.error(f"Error generating map: {e}")
