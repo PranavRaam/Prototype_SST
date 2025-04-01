@@ -189,12 +189,18 @@ def get_statistical_area_map_by_name(area_name):
         cache_buster = request.args.get('t', '')
         logger.info(f"Cache buster: {cache_buster}")
         
+        # Special override for problematic cities like Flagstaff
+        override_cached = False
+        if 'flagstaff' in decoded_area_name.lower() or request.args.get('force_regen', 'false').lower() == 'true':
+            logger.info("Forcing regeneration for Flagstaff or other special case")
+            override_cached = True
+            
         # Set cached=False to force regeneration of the map instead of using cached version
         # This is useful when debugging or when the cached map is not working correctly
-        use_cached = request.args.get('use_cached', 'true').lower() == 'true'
+        use_cached = request.args.get('use_cached', 'true').lower() == 'true' and not override_cached
         logger.info(f"Use cached: {use_cached}")
         
-        # Generate the map content
+        # Generate the map content with special handling for known problem cases
         map_html = generate_statistical_area_map(decoded_area_name, force_detailed=True, use_cached=use_cached)
         
         if not map_html:

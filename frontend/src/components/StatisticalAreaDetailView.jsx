@@ -38,12 +38,24 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
+        // Special case for Flagstaff and some other cities that have issues
+        const needsSpecialHandling = 
+          statisticalArea.toLowerCase().includes('flagstaff') || 
+          statisticalArea.toLowerCase().includes('sedona') ||
+          statisticalArea.toLowerCase().includes('prescott');
+          
         // Get the full backend URL and log it for debugging
-        const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
+        let apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
+        if (needsSpecialHandling) {
+          apiUrl += `?force_regen=true&t=${Date.now()}`;
+          console.log('Using special handling for this location');
+        } else {
+          apiUrl += `?t=${Date.now()}`;
+        }
         console.log(`Full request URL: ${apiUrl}`);
         
         // Use the full backend URL with specific options - remove problematic headers
-        const response = await fetch(`${apiUrl}?t=${Date.now()}`, {
+        const response = await fetch(apiUrl, {
           method: 'GET',
           mode: 'cors', 
           credentials: 'omit',
@@ -62,8 +74,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         }
         
         // Map was successfully accessed
-        console.log(`Setting map URL to: ${apiUrl}?t=${Date.now()}`);
-        setMapUrl(`${apiUrl}?t=${Date.now()}`);
+        console.log(`Setting map URL to: ${apiUrl}`);
+        setMapUrl(apiUrl);
         setIsLoading(false);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
