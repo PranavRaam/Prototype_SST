@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { statisticalAreaStatistics } from '../utils/regionMapping';
+import { getApiUrl } from '../config'; // Import the API URL helper
 import './StatisticalAreaDetailView.css';
 // Import components from local sa_view_components
 import MapPlaceholder from './sa_view_components/MapPlaceholder';
@@ -37,7 +38,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        const response = await fetch(`/api/statistical-area-map/${encodedArea}`);
+        // Use the full backend URL instead of relative path
+        const response = await fetch(getApiUrl(`/api/statistical-area-map/${encodedArea}`));
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -45,8 +47,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
         }
         
-        // Map was successfully accessed
-        setMapUrl(`/api/statistical-area-map/${encodedArea}?t=${Date.now()}`); // Add timestamp to prevent caching
+        // Map was successfully accessed, use the full URL
+        setMapUrl(getApiUrl(`/api/statistical-area-map/${encodedArea}?t=${Date.now()}`)); // Add timestamp to prevent caching
         setIsLoading(false);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);

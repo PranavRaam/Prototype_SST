@@ -169,5 +169,29 @@ def get_statistical_area_map():
             "message": str(e)
         }), 500
 
+@app.route('/api/statistical-area-map/<area_name>', methods=['GET'])
+def get_statistical_area_map_by_name(area_name):
+    try:
+        logger.info(f"Received request for map of area: {area_name}")
+        # Generate the map by area name
+        decoded_area_name = urllib.parse.unquote(area_name)
+        map_html = generate_statistical_area_map(decoded_area_name)
+        
+        # Add headers to allow iframe embedding for both domains
+        response = app.response_class(
+            response=map_html,
+            status=200,
+            mimetype='text/html'
+        )
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
+        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
+        return response
+    except Exception as e:
+        logger.error(f"Error generating statistical area map for {area_name}: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
