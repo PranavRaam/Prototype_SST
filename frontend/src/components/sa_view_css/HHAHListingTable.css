@@ -35,6 +35,9 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border-radius: 8px;
     overflow: hidden;
+    background: white;
+    color: #1a1a1a;
+    table-layout: fixed;
 }
   
 .hhah-table tbody {
@@ -51,11 +54,10 @@
 }
   
 .hhah-table th, .hhah-table td {
-    padding: 16px;
+    padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #e0e6ed;
-    white-space: nowrap;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
 }
   
@@ -67,7 +69,10 @@
     top: 0;
     z-index: 2;
     letter-spacing: -0.3px;
-    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+    height: auto;
+    vertical-align: middle;
 }
   
 .hhah-table tbody tr {
@@ -91,6 +96,34 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+/* Set specific widths for each column */
+.hhah-table th:nth-child(1), 
+.hhah-table td:nth-child(1) {
+    width: 25%; /* HHAH Name */
+}
+
+.hhah-table th:nth-child(2), 
+.hhah-table td:nth-child(2) {
+    width: 25%; /* Total patients */
+}
+
+.hhah-table th:nth-child(3), 
+.hhah-table td:nth-child(3) {
+    width: 25%; /* Unbilled Episodes */
+}
+
+.hhah-table th:nth-child(4), 
+.hhah-table td:nth-child(4) {
+    width: 25%; /* Active/Reactive Outcomes */
+}
+
+/* Table cell content */
+.hhah-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Scrollbar styling */
 .hhah-table tbody::-webkit-scrollbar {
     width: 4px;
@@ -112,6 +145,12 @@
   
 .table-container {
     width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .table-title {
@@ -131,5 +170,37 @@
     background: linear-gradient(90deg, #8b5cf6, #a78bfa);
     margin: 8px auto 0;
     border-radius: 3px;
+}
+
+/* Scrollbar styling */
+.table-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #2c3e50;
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #34495e;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .table-container {
+        margin: 0 -1rem;
+        width: calc(100% + 2rem);
+    }
+    
+    .hhah-table {
+        min-width: 600px;
+    }
 }
   

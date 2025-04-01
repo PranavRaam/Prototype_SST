@@ -40,58 +40,56 @@ const initialHhahData = [
 
 // Initial PG funnel data
 const initialPgFunnelData = [
-  { name: "Total Potential Patients", value: 1000, fill: "#2980B9" },
-  { name: "Active Interest", value: 800, fill: "#45B7D1" },
-  { name: "Initial Contact", value: 600, fill: "#F39C12" },
-  { name: "In Assessment", value: 400, fill: "#E67E22" },
-  { name: "Ready for Service", value: 300, fill: "#E74C3C" },
-  { name: "Service Started", value: 200, fill: "#E57373" },
-  { name: "Active Treatment", value: 150, fill: "#4CAF50" },
-  { name: "Ready for Discharge", value: 100, fill: "#795548" },
-  { name: "Discharged", value: 50, fill: "#9C27B0" },
-  { name: "Post-Discharge", value: 25, fill: "#F48FB1" }
+  { name: "They exist but they haven't heard of us", value: 1000, fill: "#2980B9" },
+  { name: "They've now heard of us but that's it", value: 800, fill: "#45B7D1" },
+  { name: "Enough interest that they're interacting with our content", value: 600, fill: "#F39C12" },
+  { name: "Enough interest that they're now talking to us", value: 400, fill: "#E67E22" },
+  { name: "They've had a demo", value: 300, fill: "#E74C3C" },
+  { name: "In the buying process", value: 200, fill: "#E57373" },
+  { name: "Deal is so hot your hands will burn if you touch it", value: 150, fill: "#4CAF50" },
+  { name: "On the platform", value: 100, fill: "#795548" },
+  { name: "In the upselling zone", value: 50, fill: "#9C27B0" },
+  { name: "Upsold to CPOs/CCMs/RPMs/other services", value: 25, fill: "#F48FB1" }
 ];
 
 // Initial HHAH funnel data
 const initialHhahFunnelData = [
-  { name: "Total Patient Base", value: 800, fill: "#C0392B" },
-  { name: "Eligible Patients", value: 650, fill: "#E74C3C" },
-  { name: "Assessment Ready", value: 500, fill: "#9B59B6" },
-  { name: "Service Ready", value: 350, fill: "#F1C40F" },
-  { name: "In Treatment", value: 200, fill: "#2ECC71" },
-  { name: "Near Completion", value: 100, fill: "#16A085" },
-  { name: "Complete", value: 50, fill: "#3498DB" }
+  { name: "They exist but they haven't heard of us", value: 800, fill: "#C0392B" },
+  { name: "They've now heard of us but that's it", value: 650, fill: "#E74C3C" },
+  { name: "Enough interest that they're interacting with our content", value: 500, fill: "#9B59B6" },
+  { name: "Enough interest that they're now talking to us", value: 350, fill: "#F1C40F" },
+  { name: "99 cent model", value: 200, fill: "#2ECC71" },
+  { name: "Upsold (Fully subscribed)", value: 100, fill: "#16A085" }
 ];
 
 // Initial assignments
 const initialPgAssignments = {
-  "Total Potential Patients": ["PG Alpha", "PG Beta", "PG Gamma"],
-  "Active Interest": ["PG Delta", "PG Epsilon"],
-  "Initial Contact": ["PG Zeta", "PG Eta"],
-  "In Assessment": ["PG Theta", "PG Iota"],
-  "Ready for Service": ["PG Kappa"],
-  "Service Started": ["PG Lambda"],
-  "Active Treatment": ["PG Mu"],
-  "Ready for Discharge": ["PG Nu"],
-  "Discharged": ["PG Xi"],
-  "Post-Discharge": ["PG Omicron"]
+  "They exist but they haven't heard of us": ["PG Alpha", "PG Beta", "PG Gamma"],
+  "They've now heard of us but that's it": ["PG Delta", "PG Epsilon"],
+  "Enough interest that they're interacting with our content": ["PG Zeta", "PG Eta"],
+  "Enough interest that they're now talking to us": ["PG Theta", "PG Iota"],
+  "They've had a demo": ["PG Kappa"],
+  "In the buying process": ["PG Lambda"],
+  "Deal is so hot your hands will burn if you touch it": ["PG Mu"],
+  "On the platform": ["PG Nu"],
+  "In the upselling zone": ["PG Xi"],
+  "Upsold to CPOs/CCMs/RPMs/other services": ["PG Omicron"]
 };
 
 const initialHhahAssignments = {
-  "Total Patient Base": ["HHAH Alpha", "HHAH Beta", "HHAH Gamma"],
-  "Eligible Patients": ["HHAH Delta", "HHAH Epsilon"],
-  "Assessment Ready": ["HHAH Zeta", "HHAH Eta"],
-  "Service Ready": ["HHAH Theta", "HHAH Iota"],
-  "In Treatment": ["HHAH Kappa", "HHAH Lambda"],
-  "Near Completion": ["HHAH Mu", "HHAH Nu"],
-  "Complete": ["HHAH Xi", "HHAH Omicron"]
+  "They exist but they haven't heard of us": ["HHAH Alpha", "HHAH Beta", "HHAH Gamma"],
+  "They've now heard of us but that's it": ["HHAH Delta", "HHAH Epsilon"],
+  "Enough interest that they're interacting with our content": ["HHAH Zeta", "HHAH Eta"],
+  "Enough interest that they're now talking to us": ["HHAH Theta", "HHAH Iota"],
+  "99 cent model": ["HHAH Kappa", "HHAH Lambda"],
+  "Upsold (Fully subscribed)": ["HHAH Mu", "HHAH Nu", "HHAH Xi", "HHAH Omicron"]
 };
 
 // Create the context
-export const FunnelDataContext = createContext();
+const FunnelDataContext = createContext();
 
 // Create the provider component
-export const FunnelDataProvider = ({ children }) => {
+const FunnelDataProvider = ({ children }) => {
   const [pgData, setPgData] = useState(initialPgData);
   const [hhahData, setHhahData] = useState(initialHhahData);
   const [pgFunnelData, setPgFunnelData] = useState(initialPgFunnelData);
@@ -243,5 +241,4 @@ export const FunnelDataProvider = ({ children }) => {
   );
 };
 
-// Export the FunnelDataProvider as default
-export default FunnelDataProvider; 
+export { FunnelDataContext, FunnelDataProvider }; 

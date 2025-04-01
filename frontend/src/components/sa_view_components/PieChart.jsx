@@ -8,10 +8,17 @@ const data = [
 ];
 
 const CustomPieChart = () => {
-  const CustomTooltip = ({ active, payload }) => {
+  const CustomTooltip = ({ active, payload, coordinate }) => {
     if (active && payload && payload.length) {
+      const { x, y } = coordinate || {};
+      const style = {
+        left: x,
+        top: y - 60, // Offset above the cursor
+        transform: 'translateX(-50%)', // Center horizontally
+      };
+
       return (
-        <div className="custom-tooltip">
+        <div className="custom-tooltip" style={style}>
           <p>{payload[0].name}</p>
           <p className="tooltip-value">{payload[0].value}%</p>
         </div>
@@ -42,7 +49,11 @@ const CustomPieChart = () => {
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip 
+          content={<CustomTooltip />}
+          position={{ x: 0, y: 0 }}
+          cursor={false}
+        />
         <Legend 
           verticalAlign="bottom" 
           height={36}

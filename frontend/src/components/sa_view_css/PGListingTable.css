@@ -29,6 +29,16 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
   
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+  
 .pg-table {
     width: 100%;
     border-collapse: collapse;
@@ -38,7 +48,6 @@
     background: white;
     color: #1a1a1a;
     table-layout: fixed;
-    display: block;
 }
   
 .pg-table tbody {
@@ -55,12 +64,32 @@
 }
   
 .pg-table th, .pg-table td {
-    padding: 16px;
+    padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #e0e6ed;
-    white-space: nowrap;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
+}
+  
+/* Set specific widths for each column */
+.pg-table th:nth-child(1), 
+.pg-table td:nth-child(1) {
+    width: 25%; /* PG Name */
+}
+
+.pg-table th:nth-child(2), 
+.pg-table td:nth-child(2) {
+    width: 25%; /* Total patients */
+}
+
+.pg-table th:nth-child(3), 
+.pg-table td:nth-child(3) {
+    width: 25%; /* Patients rem (30 CPO) */
+}
+
+.pg-table th:nth-child(4), 
+.pg-table td:nth-child(4) {
+    width: 25%; /* Active/Reactive OC */
 }
   
 .pg-table th {
@@ -71,7 +100,10 @@
     top: 0;
     z-index: 2;
     letter-spacing: -0.3px;
-    text-align: center;
+    white-space: normal; /* Allow text wrapping in headers */
+    line-height: 1.2; /* Tighter line height for wrapped text */
+    height: auto; /* Allow height to adjust to content */
+    vertical-align: middle;
 }
   
 .pg-table tbody tr {
@@ -96,26 +128,35 @@
 }
 
 /* Scrollbar styling */
-.pg-table tbody::-webkit-scrollbar {
-    width: 4px;
+.table-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-.pg-table tbody::-webkit-scrollbar-track {
+.table-container::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
-.pg-table tbody::-webkit-scrollbar-thumb {
+.table-container::-webkit-scrollbar-thumb {
     background: #2c3e50;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
-.pg-table tbody::-webkit-scrollbar-thumb:hover {
+.table-container::-webkit-scrollbar-thumb:hover {
     background: #34495e;
 }
 
-.table-container {
-    width: 100%;
+/* Responsive styles */
+@media (max-width: 768px) {
+    .table-container {
+        margin: 0 -1rem;
+        width: calc(100% + 2rem);
+    }
+    
+    .pg-table {
+        min-width: 600px;
+    }
 }
 
 .table-title {
@@ -135,4 +176,11 @@
     background: linear-gradient(90deg, #3b82f6, #60a5fa);
     margin: 8px auto 0;
     border-radius: 3px;
+}
+
+/* Table cell content */
+.pg-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

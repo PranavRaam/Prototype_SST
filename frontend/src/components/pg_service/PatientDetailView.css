@@ -1839,6 +1839,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
@@ -1975,6 +1976,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
@@ -2584,6 +2586,7 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -2934,6 +2937,7 @@
   gap: 0.75rem;
   cursor: pointer;
   padding: 0.5rem 0;
+  -webkit-user-select: none;
   user-select: none;
 }
 

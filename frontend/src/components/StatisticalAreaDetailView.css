@@ -207,7 +207,7 @@
 
 /* Add a subtle header for the integration section */
 .sa-view-integration::before {
-  content: 'Healthcare Service Analysis';
+  content: 'Statistical Area Services & Analysis';
   display: block;
   padding: 1.25rem;
   background: linear-gradient(90deg, #4F46E5, #0EA5E9);
