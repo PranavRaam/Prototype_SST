@@ -14,9 +14,9 @@ CORS(app, resources={
     r"/*": {
         "origins": "*",  # Allow all origins for simplicity
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Accept", "Cache-Control", "X-Requested-With"],
+        "allow_headers": ["Content-Type", "Accept", "Cache-Control", "X-Requested-With", "Pragma", "Expires"],
         "supports_credentials": True,
-        "expose_headers": ["Content-Type", "X-Frame-Options", "Content-Security-Policy"]
+        "expose_headers": ["Content-Type", "X-Frame-Options", "Content-Security-Policy", "Access-Control-Allow-Origin"]
     }
 })
 
@@ -166,13 +166,28 @@ def get_statistical_area_map():
             "message": str(e)
         }), 500
 
-@app.route('/api/statistical-area-map/<area_name>', methods=['GET'])
+@app.route('/api/statistical-area-map/<area_name>', methods=['GET', 'OPTIONS'])
 def get_statistical_area_map_by_name(area_name):
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+
     try:
         logger.info(f"Received request for map of area: {area_name}")
         # Generate the map by area name
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Decoded area name: {decoded_area_name}")
+        
+        # Extract cache buster parameter
+        cache_buster = request.args.get('t', '')
+        logger.info(f"Cache buster: {cache_buster}")
         
         # Set cached=False to force regeneration of the map instead of using cached version
         # This is useful when debugging or when the cached map is not working correctly
@@ -206,10 +221,7 @@ def get_statistical_area_map_by_name(area_name):
         # Add CORS headers for good measure
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control'
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
         
         logger.info(f"Returning response for {area_name} with headers: {dict(response.headers)}")
         return response

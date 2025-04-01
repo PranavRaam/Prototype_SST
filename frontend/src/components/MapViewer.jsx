@@ -172,6 +172,10 @@ const MapViewer = () => {
         className="map-frame"
         onLoad={handleIframeLoad}
         allowFullScreen
+        loading="lazy"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        importance="high"
+        referrerpolicy="no-referrer-when-downgrade"
       />
     </div>
   );

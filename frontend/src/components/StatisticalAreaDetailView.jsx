@@ -42,17 +42,14 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Use the full backend URL with specific options
-        const response = await fetch(apiUrl, {
+        // Use the full backend URL with specific options - remove problematic headers
+        const response = await fetch(`${apiUrl}?t=${Date.now()}`, {
           method: 'GET',
           mode: 'cors', 
           credentials: 'omit',
           headers: {
-            'Accept': 'text/html',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
-          cache: 'no-store'
+            'Accept': 'text/html'
+          }
         });
         
         console.log(`Response status: ${response.status} ${response.statusText}`);
@@ -64,10 +61,9 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
         }
         
-        // Map was successfully accessed - add cache buster
-        const finalMapUrl = `${apiUrl}?t=${Date.now()}`;
-        console.log(`Setting map URL to: ${finalMapUrl}`);
-        setMapUrl(finalMapUrl);
+        // Map was successfully accessed
+        console.log(`Setting map URL to: ${apiUrl}?t=${Date.now()}`);
+        setMapUrl(`${apiUrl}?t=${Date.now()}`);
         setIsLoading(false);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
