@@ -185,26 +185,23 @@ def get_statistical_area_map_by_name(area_name):
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Decoded area name: {decoded_area_name}")
         
-        # Extract cache buster parameter
+        # Extract parameters
         cache_buster = request.args.get('t', '')
-        logger.info(f"Cache buster: {cache_buster}")
+        random_param = request.args.get('r', '')
+        force_detailed = request.args.get('detailed', 'false').lower() == 'true'
+        logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, force_detailed={force_detailed}")
         
-        # Special override for problematic cities like Flagstaff and Fairbanks
-        override_cached = False
-        problem_cities = ['flagstaff', 'fairbanks', 'sedona', 'prescott']
-        is_problem_city = any(city in decoded_area_name.lower() for city in problem_cities)
-
-        if is_problem_city or request.args.get('force_regen', 'false').lower() == 'true':
-            logger.info(f"Forcing regeneration for {decoded_area_name} (recognized as problematic city)")
-            override_cached = True
-            
-        # Set cached=False to force regeneration of the map instead of using cached version
-        # This is useful when debugging or when the cached map is not working correctly
-        use_cached = request.args.get('use_cached', 'true').lower() == 'true' and not override_cached
-        logger.info(f"Use cached: {use_cached}")
+        # Always force regeneration and detailed boundaries in production
+        override_cached = True
+        force_detailed = True
+        logger.info(f"Forcing regeneration with detailed boundaries for {decoded_area_name}")
         
         # Generate the map content with special handling for known problem cases
-        map_html = generate_statistical_area_map(decoded_area_name, force_detailed=True, use_cached=use_cached)
+        map_html = generate_statistical_area_map(
+            decoded_area_name, 
+            force_detailed=True, 
+            use_cached=False
+        )
         
         if not map_html:
             logger.error(f"Empty map HTML generated for {decoded_area_name}")
@@ -231,6 +228,11 @@ def get_statistical_area_map_by_name(area_name):
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        
+        # Add cache control headers
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
         
         logger.info(f"Returning response for {area_name} with headers: {dict(response.headers)}")
         return response

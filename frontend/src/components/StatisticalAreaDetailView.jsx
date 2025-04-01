@@ -38,31 +38,23 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Special case for Fairbanks and some other cities that have issues
-        const needsSpecialHandling = 
-          statisticalArea.toLowerCase().includes('fairbanks') || 
-          statisticalArea.toLowerCase().includes('flagstaff') || 
-          statisticalArea.toLowerCase().includes('sedona') ||
-          statisticalArea.toLowerCase().includes('prescott');
-          
+        // Always use force_regen and disable caching to ensure detailed boundaries
         // Get the full backend URL and log it for debugging
-        let apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
-        if (needsSpecialHandling) {
-          apiUrl += `?force_regen=true&use_cached=false&t=${Date.now()}`;
-          console.log('Using special handling for this location');
-        } else {
-          apiUrl += `?t=${Date.now()}`;
-        }
+        const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
+          `?force_regen=true&use_cached=false&detailed=true&t=${Date.now()}&r=${Math.random()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Use the full backend URL with specific options - remove problematic headers
+        // Use the full backend URL with specific options
         const response = await fetch(apiUrl, {
           method: 'GET',
           mode: 'cors', 
           credentials: 'omit',
           headers: {
-            'Accept': 'text/html'
-          }
+            'Accept': 'text/html',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache'
+          },
+          cache: 'no-store'
         });
         
         console.log(`Response status: ${response.status} ${response.statusText}`);

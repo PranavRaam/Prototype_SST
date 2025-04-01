@@ -12,7 +12,7 @@ import traceback
 from folium import plugins
 from folium.plugins import MousePosition, Draw, Fullscreen, MiniMap, Search
 from branca.element import Figure, JavascriptLink, CssLink
-from shapely.geometry import shape, Point
+from shapely.geometry import shape, Point, Polygon
 from functools import lru_cache
 from difflib import get_close_matches
 from geopy.geocoders import Nominatim
@@ -53,9 +53,9 @@ class LegendControl(MacroElement):
         """)
 
 def create_fallback_map(area_name, output_path=None):
-    """Create a fallback map for a specific area"""
+    """Create a fallback map for a specific area with boundary shapes when possible"""
     logger = logging.getLogger(__name__)
-    logger.info(f"Creating fallback map for {area_name}")
+    logger.info(f"Creating enhanced fallback map for {area_name}")
     
     # First attempt to geocode the area to get coordinates
     geolocator = Nominatim(user_agent="stat_area_mapper")
@@ -87,13 +87,181 @@ def create_fallback_map(area_name, output_path=None):
         # Default to US center
         coords = [39.8283, -98.5795]  # Center of the USA
     
+    # Try to find the state/region for this area
+    state_abbr = None
+    try:
+        if ',' in area_name:
+            parts = area_name.split(',')
+            if len(parts) >= 2:
+                state_part = parts[1].strip()
+                # Check if it's a state abbreviation
+                if len(state_part) == 2:
+                    state_abbr = state_part
+                elif len(state_part) > 2:
+                    # Map common state names to abbreviations
+                    state_map = {
+                        'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+                        'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+                        'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+                        'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+                        'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+                        'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+                        'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+                        'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+                        'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+                        'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+                        'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+                        'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+                        'wisconsin': 'WI', 'wyoming': 'WY'
+                    }
+                    state_abbr = state_map.get(state_part.lower(), None)
+        
+        logger.info(f"Detected state abbreviation: {state_abbr}")
+    except Exception as e:
+        logger.error(f"Error detecting state: {str(e)}")
+    
     # Create the map
     folium_map = folium.Map(
         location=coords,
-        zoom_start=10,
+        zoom_start=9,
         tiles="CartoDB positron",
         prefer_canvas=True
     )
+    
+    # Try to get state and county boundaries
+    try:
+        # Attempt to load US states and counties data
+        logger.info("Attempting to load state and county boundaries")
+        
+        # Get state and county data from the main module
+        try:
+            from main import get_states_data, get_county_data
+            states_data = get_states_data()
+            county_data = get_county_data()
+            logger.info(f"Successfully loaded state and county data directly")
+        except Exception as e:
+            logger.error(f"Error loading state/county data directly: {str(e)}")
+            states_data = None
+            county_data = None
+        
+        # Create a geometric boundary - either from actual boundaries or a circle
+        boundary_geometry = None
+        state_geometry = None
+        counties_in_boundary = None
+        
+        # If we have state data and a state abbreviation, get the state boundary
+        if states_data is not None and state_abbr:
+            state_match = states_data[states_data['STUSPS'] == state_abbr]
+            if not state_match.empty:
+                state_geometry = state_match.iloc[0].geometry
+                logger.info(f"Found boundary for state {state_abbr}")
+                
+                # Add state boundary to the map
+                folium.GeoJson(
+                    state_geometry.__geo_interface__,
+                    style_function=lambda x: {
+                        'fillColor': 'transparent',
+                        'color': '#6B7280',
+                        'weight': 1.5,
+                        'fillOpacity': 0,
+                        'dashArray': '5, 5'
+                    },
+                    name=f"{state_abbr} State Boundary"
+                ).add_to(folium_map)
+        
+        # Try to create an approximate MSA boundary using counties
+        if county_data is not None:
+            # Create a buffer around the center point
+            center_point = Point(coords[1], coords[0])
+            buffer_distance = 0.2  # approximately 20km
+            
+            # First try to filter counties by state
+            filtered_counties = county_data
+            if state_abbr:
+                filtered_counties = county_data[county_data['STATEFP'] == state_abbr]
+                if filtered_counties.empty:
+                    logger.warning(f"No counties found for state {state_abbr}, using all counties")
+                    filtered_counties = county_data
+            
+            # Get counties whose centroids are within the buffer
+            # Convert to the same CRS first
+            central_buffer = center_point.buffer(buffer_distance)
+            counties_in_boundary = []
+            
+            for idx, county in filtered_counties.iterrows():
+                try:
+                    county_centroid = county.geometry.centroid
+                    if central_buffer.contains(county_centroid):
+                        counties_in_boundary.append(county)
+                except Exception as e:
+                    pass  # Skip problematic counties
+            
+            # If we found counties, create a boundary from them
+            if counties_in_boundary:
+                logger.info(f"Found {len(counties_in_boundary)} counties for MSA boundary")
+                
+                # Create a GeoDataFrame from the counties
+                boundary_gdf = gpd.GeoDataFrame(counties_in_boundary)
+                
+                # Combine the counties into a single geometry
+                boundary_geometry = boundary_gdf.geometry.unary_union
+                
+                # Add the MSA boundary to the map
+                folium.GeoJson(
+                    boundary_geometry.__geo_interface__,
+                    style_function=lambda x: {
+                        'fillColor': '#4F46E5',
+                        'color': '#312E81',
+                        'weight': 5,
+                        'fillOpacity': 0.35,
+                        'dashArray': '5, 5'
+                    },
+                    highlight_function=lambda x: {
+                        'weight': 6,
+                        'fillColor': '#6366F1',
+                        'color': '#1E1B4B',
+                        'fillOpacity': 0.6,
+                        'dashArray': ''
+                    },
+                    tooltip=folium.Tooltip(f"{area_name} Boundary"),
+                    name=f"{area_name} Boundary"
+                ).add_to(folium_map)
+                
+                # Fit the map to the boundary
+                folium_map.fit_bounds(boundary_gdf.geometry.total_bounds)
+            else:
+                logger.warning("No counties found within buffer, using circular boundary")
+        
+        # If we couldn't create a boundary from counties, use a circle
+        if boundary_geometry is None:
+            # Add a circle to represent the general metro area
+            logger.info("Using circular boundary as fallback")
+            
+            circle = folium.Circle(
+                location=coords,
+                radius=20000,  # 20km radius
+                color='#4F46E5',
+                fill=True,
+                fill_color='#4F46E5',
+                fill_opacity=0.2,
+                weight=3,
+                dash_array='5, 5'
+            ).add_to(folium_map)
+    except Exception as e:
+        logger.error(f"Error creating enhanced boundary: {str(e)}")
+        logger.error(traceback.format_exc())
+        
+        # Add a circle to represent the general metro area as a last resort
+        circle = folium.Circle(
+            location=coords,
+            radius=20000,  # 20km radius
+            color='#4F46E5',
+            fill=True,
+            fill_color='#4F46E5',
+            fill_opacity=0.2,
+            weight=3,
+            dash_array='5, 5'
+        ).add_to(folium_map)
     
     # Add a larger title with distinctive box
     title_html = f'''
@@ -105,7 +273,7 @@ def create_fallback_map(area_name, output_path=None):
                 font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
         <h4 style="margin: 0; color: #1F2937; text-align: center;">Map View of {area_name}</h4>
         <p style="font-size: 12px; margin: 5px 0 0 0; text-align: center;">
-            Showing estimated location with sample data.
+            Showing area boundaries and sample data points.
         </p>
     </div>
     '''
@@ -114,18 +282,6 @@ def create_fallback_map(area_name, output_path=None):
     # Add mouse position and fullscreen control
     folium.plugins.MousePosition().add_to(folium_map)
     folium.plugins.Fullscreen().add_to(folium_map)
-    
-    # Add a circle to represent the general metro area
-    circle = folium.Circle(
-        location=coords,
-        radius=20000,  # 20km radius
-        color='#4F46E5',
-        fill=True,
-        fill_color='#4F46E5',
-        fill_opacity=0.2,
-        weight=3,
-        dash_array='5, 5'
-    ).add_to(folium_map)
     
     # Create mock PGs and HHAHs within the circle
     # For fallback map, we'll create a fixed number of PGs and HHAHs
@@ -514,9 +670,12 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
+    # Always force detailed map generation in production
+    force_detailed = True
+    
     # Force detailed boundary for specific city names
     force_special_handling = False
-    special_cities = ['fairbanks', 'flagstaff', 'sedona', 'prescott']
+    special_cities = ['fairbanks', 'flagstaff', 'sedona', 'prescott', 'gainesville']
     if area_name and any(city in area_name.lower() for city in special_cities):
         logger.info(f"Forcing special handling for {area_name} as it's in the special cities list")
         force_special_handling = True
@@ -568,41 +727,39 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
     if area_name:
         logger.info(f"Generating map for statistical area: {area_name}")
         
-        # Generate cache filename
+        # Always generate a new cache file in production with a timestamp to avoid caching issues
         sanitized_name = area_name.replace(' ', '_').replace(',', '').replace('-', '_')
-        cache_file = os.path.join(CACHE_DIR, f"statistical_area_{sanitized_name}.html")
+        cache_file = os.path.join(CACHE_DIR, f"statistical_area_{sanitized_name}_{int(time.time())}.html")
+        logger.info(f"Using dynamic cache file: {cache_file}")
         
-        # For special cities, use a different cache file to avoid conflicts
-        if force_special_handling:
-            cache_file = os.path.join(CACHE_DIR, f"special_area_{sanitized_name}_{int(time.time())}.html")
-            logger.info(f"Using special cache file: {cache_file}")
+        # Skip cache check - always generate a fresh map
+        use_cached = False
         
-        # Check cache first if use_cached is True
-        if use_cached and os.path.exists(cache_file):
-            logger.info(f"Using cached map from {cache_file}")
-            with open(cache_file, 'r') as f:
-                return f.read()
-            
         # If we made it here, we need to generate a new map
         # Get pre-processed data
-        msa_data, county_data, states_data, county_to_msa = get_processed_data()
-        if msa_data is None or len(msa_data) == 0:
-            logger.error("Failed to load MSA data or MSA data is empty")
-            if force_detailed:
-                # Try harder to get the MSA data
-                logger.info("Forcing detailed map - trying to fetch MSA data directly")
-                try:
-                    from main import get_msa_data as get_msa_data_main
-                    msa_data = get_msa_data_main()
-                    if msa_data is None or len(msa_data) == 0:
-                        logger.error("Still failed to load MSA data after direct fetch")
-                        return create_fallback_map(area_name, cache_file)
-                except Exception as e:
-                    logger.error(f"Error fetching MSA data directly: {str(e)}")
-                    return create_fallback_map(area_name, cache_file)
-            else:
+        try:
+            # Direct import to ensure we get the latest data
+            from main import get_msa_data, get_county_data, get_states_data
+            msa_data = get_msa_data()
+            county_data = get_county_data()
+            states_data = get_states_data()
+            county_to_msa = None  # We'll derive this if needed
+            
+            if msa_data is None or len(msa_data) == 0:
+                logger.error("Failed to load MSA data directly")
                 return create_fallback_map(area_name, cache_file)
-        
+                
+            logger.info(f"Successfully loaded {len(msa_data)} MSAs directly")
+        except Exception as e:
+            logger.error(f"Error loading MSA data directly: {str(e)}")
+            logger.error(traceback.format_exc())
+            
+            # Fallback to the pre-processed data method
+            msa_data, county_data, states_data, county_to_msa = get_processed_data()
+            if msa_data is None or len(msa_data) == 0:
+                logger.error("Failed to load MSA data from processed data")
+                return create_fallback_map(area_name, cache_file)
+                
         try:
             # Check if this is a special city that needs custom handling
             special_city_area = handle_special_cities(area_name)
@@ -610,7 +767,6 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 logger.info(f"Using special city handler for {area_name}")
                 target_area = special_city_area
             else:
-                # Normal area matching logic
                 # Normalize the area name for comparison
                 normalized_area_name = area_name.lower().strip()
                 logger.info(f"Normalized area name: {normalized_area_name}")
