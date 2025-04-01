@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { initializeMap } from '../utils/mapInteraction';
+import { getApiUrl } from '../config';
 import './MapViewer.css';
 
 const MapViewer = () => {
@@ -11,7 +12,7 @@ const MapViewer = () => {
     // Check if the map is accessible
     const checkMap = async () => {
       try {
-        const response = await fetch('/api/map');
+        const response = await fetch(getApiUrl('/api/map'));
         if (!response.ok) {
           throw new Error('Map could not be loaded');
         }
@@ -75,7 +76,7 @@ const MapViewer = () => {
       )}
       <iframe
         ref={iframeRef}
-        src="/api/map"
+        src={getApiUrl('/api/map')}
         title="US 20-Region Classification Map"
         className="map-frame"
         onLoad={handleIframeLoad}

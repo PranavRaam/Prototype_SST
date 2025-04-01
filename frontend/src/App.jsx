@@ -9,6 +9,7 @@ import PgServiceView from './components/PgServiceView'
 import HHAHServiceView from './components/HHAHServiceView'
 import PGView from './components/sa_view_components/PGView'
 import { divisionalGroupToRegions, divisionalGroupToStatisticalAreas } from './utils/regionMapping'
+import { getApiUrl } from './config'
 import './App.css'
 
 // Navigation component that conditionally renders based on route
@@ -88,78 +89,59 @@ function App() {
 
   const checkMapStatus = async () => {
     try {
-      const response = await fetch('/api/map-status');
+      const response = await fetch(getApiUrl('/api/map-status'));
+      if (!response.ok) {
+        throw new Error('Failed to check map status');
+      }
       const data = await response.json();
-      
       setMapStatus({
         isLoading: false,
-        isGenerated: data.exists,
+        isGenerated: data.mapExists,
         generationInProgress: data.generationInProgress,
         error: null
       });
-      
-      // If the map exists but we're still showing generation in progress, try to load it
-      if (data.exists && !data.generationInProgress && mapStatus.generationInProgress) {
-        setMapStatus(prev => ({
-          ...prev,
-          isGenerated: true,
-          generationInProgress: false
-        }));
-      }
-    } catch (error) {
+    } catch (err) {
       setMapStatus({
         isLoading: false,
         isGenerated: false,
         generationInProgress: false,
-        error: 'Failed to check map status'
+        error: err.message
       });
     }
   };
 
   const generateMap = async () => {
-    setMapStatus({
-      ...mapStatus,
-      isLoading: true,
-      generationInProgress: true
-    });
-
     try {
-      const response = await fetch('/api/generate-map');
+      setMapStatus(prev => ({ ...prev, generationInProgress: true }));
+      const response = await fetch(getApiUrl('/api/generate-map'));
+      if (!response.ok) {
+        throw new Error('Failed to generate map');
+      }
       const data = await response.json();
       
       if (data.success) {
-        if (!data.generationInProgress) {
-          // Map already exists, load it immediately
-          setMapStatus({
-            isLoading: false,
-            isGenerated: true,
-            generationInProgress: false,
-            error: null
-          });
-        } else {
-          // Map generation started in background
-          setMapStatus({
-            isLoading: false,
-            isGenerated: false,
-            generationInProgress: true,
-            error: null
-          });
-        }
-      } else {
-        setMapStatus({
-          isLoading: false,
-          isGenerated: false,
-          generationInProgress: false,
-          error: data.message || 'Failed to generate map'
-        });
+        // Start polling for map status
+        const pollInterval = setInterval(async () => {
+          const statusResponse = await fetch(getApiUrl('/api/map-status'));
+          const statusData = await statusResponse.json();
+          
+          if (statusData.mapExists) {
+            clearInterval(pollInterval);
+            setMapStatus({
+              isLoading: false,
+              isGenerated: true,
+              generationInProgress: false,
+              error: null
+            });
+          }
+        }, 5000); // Poll every 5 seconds
       }
-    } catch (error) {
-      setMapStatus({
-        isLoading: false,
-        isGenerated: false,
+    } catch (err) {
+      setMapStatus(prev => ({
+        ...prev,
         generationInProgress: false,
-        error: 'An error occurred while generating the map'
-      });
+        error: err.message
+      }));
     }
   };
 
