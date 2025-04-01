@@ -9,13 +9,17 @@ import logging
 from statistical_area_zoom import generate_statistical_area_map
 
 app = Flask(__name__)
-# Update CORS configuration
+# Update CORS configuration to allow both domains
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["https://sst-frontend-swart.vercel.app"],
+        "origins": [
+            "https://sst-frontend-swart.vercel.app",
+            "https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app"
+        ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type"],
-        "supports_credentials": True
+        "supports_credentials": True,
+        "expose_headers": ["Content-Type", "X-Frame-Options", "Content-Security-Policy"]
     }
 })
 
@@ -82,40 +86,61 @@ def generate_map():
 
 @app.route('/api/map-status', methods=['GET'])
 def map_status():
-    return jsonify({
-        "success": True,
-        "mapExists": os.path.exists(MAP_FILE),
-        "generationInProgress": map_generation_in_progress
-    })
+    try:
+        return jsonify({
+            "success": True,
+            "mapExists": os.path.exists(MAP_FILE),
+            "generationInProgress": map_generation_in_progress
+        })
+    except Exception as e:
+        logger.error(f"Error checking map status: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
 
 @app.route('/api/map', methods=['GET'])
 def get_map():
-    if not os.path.exists(MAP_FILE):
+    try:
+        if not os.path.exists(MAP_FILE):
+            return jsonify({
+                "success": False,
+                "message": "Map not found"
+            }), 404
+        
+        response = send_file(MAP_FILE, mimetype='text/html')
+        # Add headers to allow iframe embedding for both domains
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
+        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
+        return response
+    except Exception as e:
+        logger.error(f"Error serving map: {str(e)}")
         return jsonify({
             "success": False,
-            "message": "Map not found"
-        }), 404
-    
-    response = send_file(MAP_FILE, mimetype='text/html')
-    # Add headers to allow iframe embedding
-    response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-swart.vercel.app'
-    response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-swart.vercel.app"
-    return response
+            "message": str(e)
+        }), 500
 
 @app.route('/api/regions', methods=['GET'])
 def get_regions():
-    # Fetch region data
-    _, _, _, regions = main.define_regions()
-    
-    # Convert region data to a format suitable for frontend
-    region_data = {
-        region: {
-            "states": data["states"],
-            "color": data["color"]
-        } for region, data in regions.items()
-    }
-    
-    return jsonify(region_data)
+    try:
+        # Fetch region data
+        _, _, _, regions = main.define_regions()
+        
+        # Convert region data to a format suitable for frontend
+        region_data = {
+            region: {
+                "states": data["states"],
+                "color": data["color"]
+            } for region, data in regions.items()
+        }
+        
+        return jsonify(region_data)
+    except Exception as e:
+        logger.error(f"Error fetching regions: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
 
 @app.route('/api/statistical-area-map', methods=['GET'])
 def get_statistical_area_map():
@@ -128,14 +153,14 @@ def get_statistical_area_map():
         # Generate the map
         map_html = generate_statistical_area_map(lat, lon, zoom)
         
-        # Add headers to allow iframe embedding
+        # Add headers to allow iframe embedding for both domains
         response = app.response_class(
             response=map_html,
             status=200,
             mimetype='text/html'
         )
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-swart.vercel.app'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-swart.vercel.app"
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
+        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
         return response
     except Exception as e:
         logger.error(f"Error generating statistical area map: {str(e)}")
