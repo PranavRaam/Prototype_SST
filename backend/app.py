@@ -38,18 +38,32 @@ if not os.path.exists(CACHE_DIR):
     os.makedirs(CACHE_DIR)
     logger.info(f"Created cache directory: {CACHE_DIR}")
 
-@app.route('/api/generate-map', methods=['GET'])
+@app.route('/api/generate-map', methods=['GET', 'OPTIONS'])
 def generate_map():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+        
     global map_generation_in_progress
     
     # Check if map already exists
     if os.path.exists(MAP_FILE):
         logger.info(f"Map already exists at {MAP_FILE}")
-        return jsonify({
+        response = jsonify({
             "success": True,
             "mapPath": "/api/map",
             "message": "Map already exists"
         })
+        # Add CORS headers
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     
     # Start map generation in background thread if not already in progress
     if not map_generation_in_progress:
@@ -71,54 +85,116 @@ def generate_map():
         thread = threading.Thread(target=generate_map_task)
         thread.start()
         
-        return jsonify({
+        response = jsonify({
             "success": True,
             "message": "Map generation started"
         })
+        # Add CORS headers
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     
-    return jsonify({
+    response = jsonify({
         "success": False,
         "message": "Map generation already in progress"
     })
+    # Add CORS headers
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
-@app.route('/api/map-status', methods=['GET'])
+@app.route('/api/map-status', methods=['GET', 'OPTIONS'])
 def map_status():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+        
     try:
-        return jsonify({
+        response = jsonify({
             "success": True,
             "mapExists": os.path.exists(MAP_FILE),
             "generationInProgress": map_generation_in_progress
         })
+        
+        # Add explicit CORS headers
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        
+        return response
     except Exception as e:
         logger.error(f"Error checking map status: {str(e)}")
-        return jsonify({
+        error_response = jsonify({
             "success": False,
             "message": str(e)
-        }), 500
+        })
+        
+        # Add CORS headers to error response as well
+        error_response.headers['Access-Control-Allow-Origin'] = '*'
+        error_response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        error_response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        
+        return error_response, 500
 
-@app.route('/api/map', methods=['GET'])
+@app.route('/api/map', methods=['GET', 'OPTIONS'])
 def get_map():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+        
     try:
         if not os.path.exists(MAP_FILE):
-            return jsonify({
+            error_response = jsonify({
                 "success": False,
                 "message": "Map not found"
-            }), 404
+            })
+            # Add CORS headers to error response
+            error_response.headers['Access-Control-Allow-Origin'] = '*'
+            return error_response, 404
         
         response = send_file(MAP_FILE, mimetype='text/html')
-        # Add headers to allow iframe embedding for both domains
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
+        # Add headers to allow iframe embedding and CORS
+        response.headers['X-Frame-Options'] = 'ALLOWALL'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
         return response
     except Exception as e:
         logger.error(f"Error serving map: {str(e)}")
-        return jsonify({
+        error_response = jsonify({
             "success": False,
             "message": str(e)
-        }), 500
+        })
+        # Add CORS headers to error response
+        error_response.headers['Access-Control-Allow-Origin'] = '*'
+        return error_response, 500
 
-@app.route('/api/regions', methods=['GET'])
+@app.route('/api/regions', methods=['GET', 'OPTIONS'])
 def get_regions():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+        
     try:
         # Fetch region data
         _, _, _, regions = main.define_regions()
@@ -131,16 +207,37 @@ def get_regions():
             } for region, data in regions.items()
         }
         
-        return jsonify(region_data)
+        response = jsonify(region_data)
+        # Add CORS headers
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
     except Exception as e:
         logger.error(f"Error fetching regions: {str(e)}")
-        return jsonify({
+        error_response = jsonify({
             "success": False,
             "message": str(e)
-        }), 500
+        })
+        # Add CORS headers to error response
+        error_response.headers['Access-Control-Allow-Origin'] = '*'
+        error_response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        error_response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return error_response, 500
 
-@app.route('/api/statistical-area-map', methods=['GET'])
+@app.route('/api/statistical-area-map', methods=['GET', 'OPTIONS'])
 def get_statistical_area_map():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = app.response_class(
+            response='',
+            status=200
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return response
+        
     try:
         # Get parameters from query string
         lat = float(request.args.get('lat', 0))
@@ -156,15 +253,23 @@ def get_statistical_area_map():
             status=200,
             mimetype='text/html'
         )
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
+        response.headers['X-Frame-Options'] = 'ALLOWALL'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
         return response
     except Exception as e:
         logger.error(f"Error generating statistical area map: {str(e)}")
-        return jsonify({
+        error_response = jsonify({
             "success": False,
             "message": str(e)
-        }), 500
+        })
+        # Add CORS headers
+        error_response.headers['Access-Control-Allow-Origin'] = '*'
+        error_response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        error_response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control, X-Requested-With, Pragma, Expires'
+        return error_response, 500
 
 @app.route('/api/statistical-area-map/<area_name>', methods=['GET', 'OPTIONS'])
 def get_statistical_area_map_by_name(area_name):

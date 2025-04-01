@@ -44,9 +44,18 @@ const MapViewer = () => {
   const loadMap = useCallback(async () => {
     try {
       // First check if map exists
-      const status = await checkMapStatus();
-      if (!status) {
-        throw new Error('Failed to check map status');
+      let status;
+      try {
+        status = await checkMapStatus();
+        if (!status) {
+          throw new Error('Failed to check map status');
+        }
+      } catch (err) {
+        console.error('Error checking map status:', err);
+        // CORS error fallback - assume map exists and try to load it directly
+        console.log('Attempting to load map directly due to possible CORS issue');
+        setIsLoading(false);
+        return true;
       }
 
       if (status.mapExists) {
@@ -61,9 +70,17 @@ const MapViewer = () => {
 
       // Map doesn't exist, generate it
       if (!status.generationInProgress) {
-        const generateResult = await generateMap();
-        if (!generateResult || !generateResult.success) {
-          throw new Error('Failed to start map generation');
+        try {
+          const generateResult = await generateMap();
+          if (!generateResult || !generateResult.success) {
+            throw new Error('Failed to start map generation');
+          }
+        } catch (err) {
+          console.error('Error generating map:', err);
+          // CORS error fallback - attempt to proceed anyway
+          console.log('Attempting to continue despite map generation error');
+          setIsLoading(false);
+          return true;
         }
       }
 
@@ -73,8 +90,15 @@ const MapViewer = () => {
       }
 
       mapStatusCheckRef.current = setInterval(async () => {
-        const newStatus = await checkMapStatus();
-        if (newStatus && newStatus.mapExists) {
+        try {
+          const newStatus = await checkMapStatus();
+          if (newStatus && newStatus.mapExists) {
+            clearInterval(mapStatusCheckRef.current);
+            setIsLoading(false);
+          }
+        } catch (err) {
+          console.error('Error checking map status during polling:', err);
+          // If we can't check status, just stop polling and show the map anyway
           clearInterval(mapStatusCheckRef.current);
           setIsLoading(false);
         }
