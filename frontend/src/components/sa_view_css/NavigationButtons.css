@@ -1,0 +1,96 @@
+.nav-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  width: 100%;
+}
+
+.nav-button {
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+  text-align: center;
+  flex: 1;
+  max-width: 350px;
+}
+
+.nav-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.nav-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav-button:first-child {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+.nav-button:first-child:hover {
+  background-color: #dbeafe;
+}
+
+.nav-button:last-child {
+  background-color: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.nav-button:last-child:hover {
+  background-color: #fde68a;
+}
+
+/* Add gradient line effect on button hover */
+.nav-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  transition: width 0.3s ease;
+}
+
+.nav-button:first-child::after {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+
+.nav-button:last-child::after {
+  background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+
+.nav-button:hover::after {
+  width: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 640px) {
+  .nav-buttons-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+  

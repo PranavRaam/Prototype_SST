@@ -1,0 +1,347 @@
+:root {
+  --primary-color: #4F46E5;
+  --primary-light: #6366F1;
+  --primary-dark: #4338CA;
+  --text-color: #1F2937;
+  --background-color: #F3F4F6;
+  --card-background: #FFFFFF;
+  --border-color: #E5E7EB;
+  --hover-color: #F9FAFB;
+  --error-color: #EF4444;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --animation-duration: 0.3s;
+}
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Main Content */
+.dashboard-content {
+  flex: 1;
+  padding: 20px;
+  position: relative;
+  background-color: var(--background-color);
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  background-color: var(--card-background);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  width: 100%;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  background-color: #FAFBFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.card-content {
+  padding: 0;
+  position: relative;
+}
+
+/* Map specific */
+.map-card {
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-card .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-container-wrapper {
+  position: relative;
+  height: 100%;
+  flex: 1;
+}
+
+.map-not-generated-inner {
+  padding: 40px 20px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(249, 250, 252, 0.7);
+  gap: 16px;
+}
+
+.map-not-generated-inner h3 {
+  margin-bottom: 0;
+  color: var(--primary-dark);
+}
+
+/* Data card specific */
+.data-card {
+  min-height: auto;
+}
+
+/* Map Dashboard */
+.map-dashboard {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 20px);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.map-processing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.content-card {
+  background-color: var(--card-background);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  max-width: 400px;
+  width: 100%;
+}
+
+.content-card h2 {
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+.content-card p {
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-top: 16px;
+}
+
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background-color: var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-sm);
+  width: 0%;
+  animation: progress 2s infinite;
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+.primary-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.primary-button:hover {
+  background-color: var(--primary-light);
+}
+
+.primary-button:active {
+  background-color: var(--primary-dark);
+}
+
+.error-message {
+  color: var(--error-color);
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.dashboard-footer {
+  background-color: var(--card-background);
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.dashboard-footer p {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .map-card {
+    height: 350px;
+  }
+  
+  .dashboard-content {
+    padding: 12px;
+  }
+}
+
+.dashboard-detail-view {
+  background-color: var(--card-background);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin: 0 auto;
+  max-width: 1440px;
+  width: 100%;
+  min-height: calc(100vh - 120px);
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-detail-view {
+    min-height: calc(100vh - 90px);
+  }
+}
+
+/* Navigation Styles */
+.main-nav {
+  background-color: var(--card-background);
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--animation-duration) ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link:hover {
+  background-color: var(--hover-color);
+  color: var(--primary-color);
+}
+
+.nav-link.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.back-link {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.back-arrow {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+/* Add a full-width class for sections that should take up more horizontal space */
+.full-width {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}

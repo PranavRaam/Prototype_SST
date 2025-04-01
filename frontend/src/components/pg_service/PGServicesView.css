@@ -1,0 +1,272 @@
+:root {
+  --pg-services-primary: #6366f1;
+  --pg-services-primary-dark: #4f49c9;
+  --pg-services-primary-darker: #443ab6;
+  --pg-services-text-primary: #111827;
+  --pg-services-text-secondary: #4b5563;
+  --pg-services-bg-primary: #f8fafc;
+  --pg-services-bg-secondary: #ffffff;
+  --pg-services-border: #e2e8f0;
+  --pg-services-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --pg-services-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --pg-services-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pg-services-view {
+  width: 100%;
+  height: 100vh;
+  background-color: var(--pg-services-bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  color: var(--pg-services-text-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.pg-services-header {
+  width: 85%;
+  height: 100px;
+  display: flex;
+  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2.5rem;
+  background: var(--pg-services-bg-secondary);
+  border: px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
+  border-radius: 0.75rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.pg-services-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pg-services-back-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pg-services-text-secondary);
+  transition: var(--pg-services-transition);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.pg-services-back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--pg-services-primary);
+  transform: translateX(-2px);
+}
+
+.pg-services-back-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pg-services-page-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 4rem;
+  color: #333;
+  text-align: center;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #606064, #606064);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  font-size: 25px;
+  font-weight: 600;
+  color: var(--pg-services-text-secondary);
+  margin: 10px 0;
+}
+
+.pg-services-header-right {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.pg-services-action-button {
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--pg-services-primary), var(--pg-services-primary-dark));
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: var(--pg-services-transition);
+  box-shadow: var(--pg-services-shadow);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pg-services-action-button:hover {
+  background: linear-gradient(135deg, var(--pg-services-primary-dark), var(--pg-services-primary-darker));
+  transform: translateY(-1px);
+  box-shadow: var(--pg-services-shadow-lg);
+}
+
+.pg-services-action-button:active {
+  transform: translateY(0);
+}
+
+.pg-services-main-content {
+  width: 90%;
+  max-width: 100%;
+  padding: 1rem;
+  overflow: hidden;
+  height: calc(100vh - 140px);
+  position: relative;
+}
+
+.pg-services-content-card {
+  background: var(--pg-services-bg-secondary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--pg-services-border);
+  box-shadow: var(--pg-services-shadow-lg);
+  height: 100%;
+  overflow: hidden;
+  padding: 1.5rem;
+  width: 100%;
+  transition: var(--pg-services-transition);
+  position: relative;
+}
+
+.pg-services-content-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 768px) {
+  .pg-services-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .pg-services-header-right {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+
+  .pg-services-main-content {
+    width: 95%;
+    padding: 1rem;
+  }
+}
+
+.pg-services-filter-group {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: var(--pg-services-bg-primary);
+  border-radius: 0.5rem;
+}
+
+.pg-services-filter-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: var(--pg-services-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--pg-services-transition);
+}
+
+.pg-services-filter-button:hover {
+  color: var(--pg-services-text-primary);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.pg-services-filter-button.pg-services-active {
+  color: white;
+  background: var(--pg-services-primary);
+}
+
+.pg-services-filter-button.pg-services-active:hover {
+  background: var(--pg-services-primary-dark);
+}
+
+.pg-services-sort-circles-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.pg-services-sort-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: var(--pg-services-bg-secondary);
+  border: 2px solid var(--pg-services-border);
+  transition: var(--pg-services-transition);
+  position: relative;
+}
+
+.pg-services-sort-circle:hover {
+  background-color: #f1f5f9;
+}
+
+.pg-services-sort-circle.pg-services-active {
+  background-color: var(--pg-services-primary);
+  border-color: var(--pg-services-primary);
+  color: white;
+}
+
+.pg-services-sort-circle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pg-services-sort-circle .pg-services-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--pg-services-text-primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pg-services-sort-circle:hover .pg-services-tooltip {
+  opacity: 1;
+  visibility: visible;
+  margin-top: 8px;
+}

@@ -1,0 +1,137 @@
+.data-table-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 70, 229, 0.2) transparent;
+}
+
+.data-table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.data-table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(79, 70, 229, 0.2);
+  border-radius: 10px;
+}
+
+.data-table-container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  text-align: left;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.data-table thead th {
+  background-color: #F9FAFB;
+  color: #4B5563;
+  font-weight: 600;
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.data-table thead th:first-child {
+  border-top-left-radius: 6px;
+}
+
+.data-table thead th:last-child {
+  border-top-right-radius: 6px;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #F9FAFB;
+}
+
+.data-table tbody tr:hover {
+  background-color: #EEF2FF;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 6px;
+}
+
+.data-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 6px;
+}
+
+.data-table .group-column {
+  font-weight: 600;
+  color: #4F46E5;
+}
+
+.data-table tfoot {
+  background-color: #f9fafc;
+  font-size: 13px;
+}
+
+.data-table tfoot td {
+  border-top: 2px solid #ddd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-table-container {
+    padding: 12px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .data-table thead th {
+    font-size: 12px;
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+  background-color: #EEF2FF !important;
+}
+
+.clickable-row:active {
+  background-color: #E0E7FF !important;
+}
+
+.view-details-icon {
+  display: inline-flex;
+  margin-left: 8px;
+  color: var(--primary-color);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateX(-5px);
+  vertical-align: middle;
+}
+
+.clickable-row:hover .view-details-icon {
+  opacity: 1;
+  transform: translateX(0);
+} 

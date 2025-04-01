@@ -1,0 +1,125 @@
+.control-panel {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 14px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 230px;
+  z-index: 1000;
+  font-size: 13px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  border: 1px solid #E5E7EB;
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+.control-panel:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.control-section {
+  margin-bottom: 16px;
+}
+
+.control-section h3 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4F46E5;
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.control-section h3::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background-color: #4F46E5;
+  border-radius: 2px;
+}
+
+.radio-options, .checkbox-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-option, .checkbox-option {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 4px 0;
+}
+
+.radio-option:hover, .checkbox-option:hover {
+  color: #4F46E5;
+}
+
+.radio-option input, .checkbox-option input {
+  margin-right: 8px;
+  cursor: pointer;
+  accent-color: #4F46E5;
+}
+
+.legend-panel {
+  border-top: 1px solid #E5E7EB;
+  padding-top: 14px;
+  margin-top: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.legend-line {
+  width: 30px;
+  height: 2px;
+  background-color: #4F46E5;
+  margin-right: 8px;
+  border-style: dashed;
+}
+
+.legend-area {
+  width: 18px;
+  height: 12px;
+  background-color: rgba(79, 70, 229, 0.1);
+  border: 1px solid #4F46E5;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .control-panel {
+    width: 100%;
+    position: relative;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 0;
+    border-top: 1px solid #E5E7EB;
+    max-height: none;
+    padding: 16px;
+  }
+  
+  .control-section {
+    margin-bottom: 20px;
+  }
+  
+  .radio-options, .checkbox-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+} 

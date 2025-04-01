@@ -1,0 +1,398 @@
+:root {
+  --viv-hhah-primary: #6366f1;
+  --viv-hhah-primary-dark: #4f49c9;
+  --viv-hhah-primary-darker: #443ab6;
+  --viv-hhah-text-primary: #111827;
+  --viv-hhah-text-secondary: #4b5563;
+  --viv-hhah-bg-primary: #f8fafc;
+  --viv-hhah-bg-secondary: #ffffff;
+  --viv-hhah-border: #e2e8f0;
+  --viv-hhah-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --viv-hhah-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --viv-hhah-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.viv-hhah-services-view {
+  width: 100%;
+  height: 100vh;
+  background-color: var(--viv-hhah-bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; */
+  color: var(--viv-hhah-text-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.viv-hhah-view-header {
+  width: 85%;
+  height: 100px;
+  display: flex;
+  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2.5rem;
+  background: var(--viv-hhah-bg-secondary);
+  border: px solid rgba(255, 255, 255, 0.2); /* Changed from border-bottom to full border */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
+  border-radius: 0.75rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease; /* Optional: adds smooth hover effects */
+  position: relative;
+  z-index: 10;
+}
+
+.viv-hhah-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.viv-hhah-back-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--viv-hhah-text-secondary);
+  transition: var(--viv-hhah-transition);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.viv-hhah-back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--viv-hhah-primary);
+  transform: translateX(-2px);
+}
+
+.viv-hhah-back-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.viv-hhah-page-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 4rem;  /* Large and bold */
+  color: #333;  /* Dark gray */
+  text-align: center;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  
+  /* Gradient text effect */
+  background: linear-gradient(135deg, #606064, #606064);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Add some subtle shadow */
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* Animation effect */
+  transition: all 0.3s ease-in-out;
+  font-size: 25px;
+  font-weight: 600;
+  color: var(--viv-hhah-text-secondary);
+  margin: 10px 0;
+}
+
+.viv-hhah-header-right {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.viv-hhah-action-button {
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--viv-hhah-primary), var(--viv-hhah-primary-dark));
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: var(--viv-hhah-transition);
+  box-shadow: var(--viv-hhah-shadow);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viv-hhah-action-button:hover {
+  background: linear-gradient(135deg, var(--viv-hhah-primary-dark), var(--viv-hhah-primary-darker));
+  transform: translateY(-1px);
+  box-shadow: var(--viv-hhah-shadow-lg);
+}
+
+.viv-hhah-action-button:active {
+  transform: translateY(0);
+}
+
+.viv-hhah-main-content {
+  width: 90%;
+  max-width: 100%;
+  padding: 1rem;
+  overflow: hidden;
+  height: calc(100vh - 140px);
+  position: relative;
+}
+
+.viv-hhah-content-card {
+  background: var(--viv-hhah-bg-secondary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--viv-hhah-border);
+  box-shadow: var(--viv-hhah-shadow-lg);
+  height: 100%;
+  overflow: hidden;
+  padding: 1.5rem;
+  width: 100%;
+  transition: var(--viv-hhah-transition);
+  position: relative;
+}
+
+.viv-hhah-content-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 768px) {
+  .viv-hhah-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .viv-hhah-header-right {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+
+  .viv-hhah-main-content {
+    width: 95%;
+    padding: 1rem;
+  }
+}
+
+.viv-hhah-filter-group {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: var(--viv-hhah-bg-primary);
+  border-radius: 0.5rem;
+}
+
+.viv-hhah-filter-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: var(--viv-hhah-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--viv-hhah-transition);
+}
+
+.viv-hhah-filter-button:hover {
+  color: var(--viv-hhah-text-primary);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.viv-hhah-filter-button.viv-hhah-active {
+  color: white;
+  background: var(--viv-hhah-primary);
+}
+
+.viv-hhah-filter-button.viv-hhah-active:hover {
+  background: var(--viv-hhah-primary-dark);
+}
+
+.viv-hhah-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.viv-hhah-sort-filter-container {
+  position: sticky;
+}
+
+.viv-hhah-sort-filter-button {
+  position: relative;
+  padding: 8px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.viv-hhah-sort-filter-button:hover {
+  background-color: #f8f9fa;
+  border-color: #cbd5e1;
+}
+
+.viv-hhah-sort-filter-button.viv-hhah-active {
+  background-color: #f0f0ff;
+  border-color: #6366F1;
+}
+
+.viv-hhah-sort-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.viv-hhah-sort-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.viv-hhah-sort-menu::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
+}
+
+.viv-hhah-sort-menu.viv-hhah-show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.viv-hhah-sort-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.viv-hhah-sort-option:hover {
+  background-color: #f5f5f5;
+}
+
+.viv-hhah-sort-option.viv-hhah-active {
+  background-color: #f0f0ff;
+}
+
+.viv-hhah-sort-option input[type="checkbox"] {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  margin-right: 12px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viv-hhah-sort-option input[type="checkbox"]:checked {
+  background-color: #6366F1;
+  border-color: #6366F1;
+}
+
+.viv-hhah-sort-option input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.viv-hhah-sort-option span {
+  font-size: 14px;
+  color: #333;
+}
+
+.viv-hhah-sort-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #6366F1;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+/* Add to your existing CSS */
+.viv-hhah-sort-circles-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.viv-hhah-sort-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: var(--viv-hhah-bg-secondary);
+  border: 2px solid var(--viv-hhah-border);
+  transition: var(--viv-hhah-transition);
+  position: relative;
+}
+
+.viv-hhah-sort-circle:hover {
+  background-color: #f1f5f9;
+}
+
+.viv-hhah-sort-circle.viv-hhah-active {
+  background-color: var(--viv-hhah-primary);
+  border-color: var(--viv-hhah-primary);
+  color: white;
+}
+
+.viv-hhah-sort-circle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.viv-hhah-sort-circle .viv-hhah-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--viv-hhah-text-primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.viv-hhah-sort-circle:hover .viv-hhah-tooltip {
+  opacity: 1;
+  visibility: visible;
+  margin-top: 8px;
+}

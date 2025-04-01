@@ -1,0 +1,298 @@
+:root {
+  --il-bg-secondary: #ffffff;
+  --il-border: #e2e8f0;
+  --il-text-primary: #1f2937;
+  --il-text-secondary: #4b5563;
+  --il-primary: #574fed;
+  --il-primary-dark: #4338ca;
+  --il-primary-darker: #3730a3;
+  --il-transition: all 0.2s ease-in-out;
+  --il-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --il-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --il-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.il_interaction_log_container {
+  background-color: var(--il-bg-secondary);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: var(--il-shadow-xl);
+  width: 85%;
+  margin: 0 auto;
+}
+
+.il_main_heading {
+  color: var(--il-text-primary);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.il_search_container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.il_search_input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--il-border);
+  border-radius: 0.375rem;
+  font-size: 0.89rem;
+  transition: var(--il-transition);
+  background-color: #f9fafb;
+  color: var(--il-text-primary);
+}
+
+.il_search_input:focus {
+  outline: none;
+  border-color: var(--il-primary);
+  box-shadow: 0 0 0 2px rgba(87, 79, 237, 0.1);
+  background-color: #ffffff;
+}
+
+.il_add_button {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.89rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--il-primary), var(--il-primary-dark));
+  border: none;
+  border-radius: 0.375rem;
+  transition: var(--il-transition);
+  cursor: pointer;
+  box-shadow: var(--il-shadow);
+}
+
+.il_add_button:hover {
+  background: linear-gradient(135deg, var(--il-primary-dark), var(--il-primary-darker));
+  transform: translateY(-1px);
+  box-shadow: var(--il-shadow-lg);
+}
+
+.il_add_button:active {
+  transform: translateY(0);
+}
+
+.il_table_container {
+  height: 500px; /* Fixed height */
+  overflow: auto;
+  background: var(--il-bg-secondary);
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  border: 1px solid var(--il-border);
+  box-shadow: var(--il-shadow);
+}
+
+.il_table_container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.il_table_container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.il_table_container::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 3px;
+}
+
+.il_interaction_table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--il-bg-secondary);
+  border-radius: 0.75rem;
+}
+
+.il_interaction_table th,
+.il_interaction_table td {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--il-border);
+  transition: var(--il-transition);
+  white-space: nowrap;
+}
+
+.il_interaction_table th {
+  background: rgba(249, 250, 251, 0.8);
+  color: var(--il-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.89rem;
+  letter-spacing: 0.005em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.il_interaction_table tbody tr:hover {
+  background: rgba(239, 246, 255, 0.8);
+}
+
+.il_interaction_table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.il_interaction_table td {
+  color: var(--il-text-primary);
+  font-size: 0.89rem;
+}
+
+.il_interaction_table th:hover {
+  background: rgba(243, 244, 246, 0.8);
+}
+
+/* Modal styles */
+.il_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(249, 250, 251, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.il_modal_content {
+  background-color: var(--il-bg-secondary);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--il-shadow-xl);
+}
+
+.il_modal_heading {
+  margin-bottom: 1rem;
+  color: var(--il-text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.il_modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.il_form_group {
+  margin-bottom: 0.5rem;
+}
+
+.il_form_label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--il-text-secondary);
+  font-size: 0.89rem;
+}
+
+.il_form_input,
+.il_form_textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--il-border);
+  border-radius: 0.375rem;
+  font-size: 0.89rem;
+  transition: var(--il-transition);
+  background-color: #f9fafb;
+  color: var(--il-text-primary);
+}
+
+.il_form_input:focus,
+.il_form_textarea:focus {
+  outline: none;
+  border-color: var(--il-primary);
+  box-shadow: 0 0 0 2px rgba(87, 79, 237, 0.1);
+  background-color: #ffffff;
+}
+
+.il_form_textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.il_modal_buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.il_submit_button,
+.il_cancel_button {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.89rem;
+  border: none;
+  border-radius: 0.375rem;
+  transition: var(--il-transition);
+  cursor: pointer;
+  box-shadow: var(--il-shadow);
+}
+
+.il_submit_button {
+  background: linear-gradient(135deg, var(--il-primary), var(--il-primary-dark));
+  color: #ffffff;
+}
+
+.il_submit_button:hover {
+  background: linear-gradient(135deg, var(--il-primary-dark), var(--il-primary-darker));
+  transform: translateY(-1px);
+  box-shadow: var(--il-shadow-lg);
+}
+
+.il_cancel_button {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.il_cancel_button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--il-shadow-lg);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .il_table_container {
+    height: 450px;
+    padding: 0.5rem;
+  }
+
+  .il_interaction_table th,
+  .il_interaction_table td {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .il_table_container {
+    height: 400px;
+  }
+
+  .il_interaction_table th,
+  .il_interaction_table td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .il_search_container {
+    flex-direction: column;
+  }
+
+  .il_modal_content {
+    width: 95%;
+    padding: 1rem;
+  }
+} 

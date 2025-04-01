@@ -1,0 +1,286 @@
+.hhah-funnel-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+/* New wrapper for better funnel positioning */
+.hhah-funnel-container .funnel-chart-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.hhah-funnel-container:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Add a subtle gradient background */
+.hhah-funnel-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #C0392B, #E74C3C);
+    z-index: 1;
+}
+
+/* Funnel title */
+.hhah-funnel-container .funnel-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+    align-self: stretch;
+}
+
+.hhah-funnel-container .funnel-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #C0392B;
+    margin: 8px auto 0;
+    border-radius: 3px;
+}
+
+/* Expanded list styling */
+.hhah-funnel-container .expanded-list {
+    width: 100%;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    max-height: 450px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 #F1F5F9;
+}
+
+.hhah-funnel-container .expanded-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.hhah-funnel-container .expanded-list::-webkit-scrollbar-track {
+    background: #F1F5F9;
+    border-radius: 6px;
+}
+
+.hhah-funnel-container .expanded-list::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 6px;
+}
+
+/* Header for expanded view */
+.hhah-funnel-container .expanded-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.hhah-funnel-container .expanded-header h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    margin: 0;
+}
+
+.hhah-funnel-container .back-button {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.hhah-funnel-container .back-button:hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+/* HHAH entries styling */
+.hhah-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: white;
+    border-radius: 8px;
+    border-left: 4px solid #9B59B6;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.hhah-entry:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.hhah-entry button {
+    background-color: #f1f5f9;
+    border: none;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hhah-entry button:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+/* Move options styling */
+.hhah-funnel-container .move-options {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.hhah-funnel-container .move-options h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}
+
+.hhah-funnel-container .move-options button {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hhah-funnel-container .move-options button:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+/* Tooltip styling */
+.hhah-funnel-container .custom-tooltip {
+    background-color: rgba(44, 62, 80, 0.95);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: none;
+    max-width: 220px;
+}
+
+.hhah-funnel-container .tooltip-label {
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #e0e6ed;
+}
+
+.hhah-funnel-container .tooltip-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+/* Enhanced styling for HHAH trapezoid funnel */
+.hhah-funnel-container .recharts-funnel-trapezoid {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    stroke-width: 0 !important;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.hhah-funnel-container .recharts-funnel-trapezoid:hover {
+    transform: translateX(5px);
+    filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15)) brightness(1.05);
+}
+
+/* Style for trapezoid labels */
+.hhah-funnel-container .recharts-label-list text {
+    font-weight: bold !important;
+    font-size: 20px !important;
+    fill: white !important;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
+    dominant-baseline: middle !important;
+}
+
+/* Force funnel to display properly */
+.hhah-funnel-container .recharts-layer.recharts-funnel-trapezoids {
+    transform-origin: center !important;
+    transform: scaleX(1.02) !important;
+}
+
+/* Ensure funnel is centered */
+.hhah-funnel-container .recharts-wrapper {
+    margin: 0 auto;
+    text-align: center !important;
+}
+
+/* Styling for custom funnel blocks */
+.hhah-funnel-container .custom-funnel-block {
+    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.15));
+    transition: all 0.3s ease;
+}
+
+.hhah-funnel-container .custom-funnel-block:hover {
+    filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, 0.2)) brightness(1.1);
+    transform: translateY(-2px);
+}
+
+/* Make sure the custom funnel blocks are properly spaced */
+.hhah-funnel-container .recharts-funnel-item {
+    margin-bottom: 15px !important;
+}
+
+/* Make sure the funnel is properly aligned and sized */
+.hhah-funnel-container .funnel-chart-wrapper .recharts-wrapper {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.hhah-funnel-container .funnel-chart-wrapper .recharts-surface {
+    overflow: visible;
+}
+  

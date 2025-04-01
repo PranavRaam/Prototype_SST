@@ -1,0 +1,112 @@
+.barchart-wrapper {
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  color: #1f2937;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 330px;
+  padding-top: 10px;
+  padding-bottom: 40px;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.bar-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  flex: 1;
+  height: 100%;
+}
+
+.bar {
+  width: 45px;
+  transition: all 0.3s ease;
+  border-radius: 4px 4px 0 0;
+  position: absolute;
+  bottom: 40px;
+}
+
+.bar-container:hover .bar {
+  opacity: 0.8;
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+}
+
+.bar-tooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.bar-container:hover .bar-tooltip {
+  opacity: 1;
+}
+
+.bar-label {
+  position: absolute;
+  bottom: 0;
+  font-size: 0.75rem;
+  color: #4b5563;
+  text-align: center;
+  transform: rotate(-45deg);
+  transform-origin: top left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  left: 10px;
+}
+
+.bar-value {
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Add responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .bar-chart {
+    padding-bottom: 60px;
+  }
+  
+  .bar-label {
+    transform: rotate(-60deg);
+    left: 5px;
+  }
+} 
