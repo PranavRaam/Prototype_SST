@@ -1,3 +1,5 @@
+// RegionDetailView.jsx
+
 import React, { useState, useRef } from 'react';
 import { 
   regionStatistics, 
