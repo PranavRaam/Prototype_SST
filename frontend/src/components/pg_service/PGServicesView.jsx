@@ -211,11 +211,10 @@ const dummyData = [
 const PGServicesView = () => {
   const [data, setData] = useState(dummyData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [hhahFilter, setHhahFilter] = useState('all');
   const [activeSorts, setActiveSorts] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  const applyFiltersAndSorts = (dataToFilter, term, hhah, sorts) => {
+  const applyFiltersAndSorts = (dataToFilter, term, sorts) => {
     let filteredData = [...dataToFilter];
 
     // Apply search filter
@@ -231,13 +230,6 @@ const PGServicesView = () => {
             return String(val).toLowerCase().includes(searchLower);
           }
         )
-      );
-    }
-
-    // Apply HHAH filter
-    if (hhah !== 'all') {
-      filteredData = filteredData.filter(item =>
-        hhah === 'yes' ? item.hhah.toLowerCase() === 'yes' : item.hhah.toLowerCase() === 'no'
       );
     }
 
@@ -273,13 +265,7 @@ const PGServicesView = () => {
 
   const handleSearch = (term) => {
     setSearchTerm(term);
-    const filtered = applyFiltersAndSorts(dummyData, term, hhahFilter, activeSorts);
-    setData(filtered);
-  };
-
-  const handleHhahFilter = (status) => {
-    setHhahFilter(status);
-    const filtered = applyFiltersAndSorts(dummyData, searchTerm, status, activeSorts);
+    const filtered = applyFiltersAndSorts(dummyData, term, activeSorts);
     setData(filtered);
   };
 
@@ -289,7 +275,7 @@ const PGServicesView = () => {
       : [...activeSorts, sortId];
     
     setActiveSorts(newActiveSorts);
-    const filtered = applyFiltersAndSorts(dummyData, searchTerm, hhahFilter, newActiveSorts);
+    const filtered = applyFiltersAndSorts(dummyData, searchTerm, newActiveSorts);
     setData(filtered);
   };
 
@@ -350,27 +336,6 @@ const PGServicesView = () => {
           <h1 className="pg-services-page-title">PG Services View</h1>
         </div>
         <div className="pg-services-header-right">
-          <div className="pg-services-filter-group">
-            <button 
-              className={`pg-services-filter-button ${hhahFilter === 'all' ? 'pg-services-active' : ''}`}
-              onClick={() => handleHhahFilter('all')}
-            >
-              All
-            </button>
-            <button 
-              className={`pg-services-filter-button ${hhahFilter === 'yes' ? 'pg-services-active' : ''}`}
-              onClick={() => handleHhahFilter('yes')}
-            >
-              HHAH Yes
-            </button>
-            <button 
-              className={`pg-services-filter-button ${hhahFilter === 'no' ? 'pg-services-active' : ''}`}
-              onClick={() => handleHhahFilter('no')}
-            >
-              HHAH No
-            </button>
-          </div>
-          
           <SearchBar onSearch={handleSearch} />
           
           <div className="pg-services-sort-circles-container">

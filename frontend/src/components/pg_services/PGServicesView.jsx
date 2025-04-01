@@ -1,139 +1,278 @@
-import React, { useState, useEffect } from 'react';
-import './PGServicesView.css';
+import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
+import './PGServicesView.css';
 
-// Sample data for demonstration
 const dummyData = [
   {
-    ptName: 'John Smith',
-    dob: '12/15/1945',
-    pg: 'Internal Medicine Associates',
-    hhah: 'Yes',
+    ptName: "John Smith",
+    dob: "1965-03-15",
+    pg: "Group A",
+    hhah: "Yes",
     cpoMinsCaptured: 45,
-    remarks: 'Stable condition, monitoring required',
-    newDocs: 3,
-    newCPODocsCreated: 2
+    remarks: "Regular checkup needed",
+    newDocs: 10,
+    newCPODocsCreated: 15
   },
   {
-    ptName: 'Mary Johnson',
-    dob: '05/22/1938',
-    pg: 'Lakeside Primary Care',
-    hhah: 'No',
+    ptName: "Mary Johnson",
+    dob: "1978-08-22",
+    pg: "Group B",
+    hhah: "No",
     cpoMinsCaptured: 30,
-    remarks: 'Follow-up in 2 weeks',
-    newDocs: 1,
-    newCPODocsCreated: 1
+    remarks: "Pending assessment",
+    newDocs: 9,
+    newCPODocsCreated: 15
   },
   {
-    ptName: 'Robert Williams',
-    dob: '09/03/1942',
-    pg: 'Downtown Medical Group',
-    hhah: 'Yes',
+    ptName: "Robert Chen",
+    dob: "1952-11-05",
+    pg: "Group C",
+    hhah: "Yes",
     cpoMinsCaptured: 60,
-    remarks: 'Medication adjustment needed',
-    newDocs: 4,
-    newCPODocsCreated: 3
+    remarks: "Post-surgery recovery",
+    newDocs: 15,
+    newCPODocsCreated: 15
   },
   {
-    ptName: 'Patricia Brown',
-    dob: '11/18/1950',
-    pg: 'Westside Healthcare',
-    hhah: 'No',
-    cpoMinsCaptured: 15,
-    remarks: 'New patient assessment',
-    newDocs: 5,
-    newCPODocsCreated: 2
-  },
-  {
-    ptName: 'James Davis',
-    dob: '04/07/1940',
-    pg: 'Hillcrest Medical Partners',
-    hhah: 'Yes',
-    cpoMinsCaptured: 75,
-    remarks: 'Chronic condition management',
-    newDocs: 2,
-    newCPODocsCreated: 2
-  },
-  {
-    ptName: 'Jennifer Miller',
-    dob: '01/25/1948',
-    pg: 'Eastside Family Practice',
-    hhah: 'No',
-    cpoMinsCaptured: 20,
-    remarks: 'Lab results pending',
-    newDocs: 0,
-    newCPODocsCreated: 0
-  },
-  {
-    ptName: 'Charles Wilson',
-    dob: '07/14/1939',
-    pg: 'Valley Medical Associates',
-    hhah: 'Yes',
-    cpoMinsCaptured: 50,
-    remarks: 'Post-hospital follow-up',
-    newDocs: 6,
-    newCPODocsCreated: 4
-  },
-  {
-    ptName: 'Elizabeth Moore',
-    dob: '03/30/1946',
-    pg: 'Riverview Health Group',
-    hhah: 'No',
+    ptName: "Elizabeth Taylor",
+    dob: "1948-07-19",
+    pg: "Group A",
+    hhah: "No",
     cpoMinsCaptured: 25,
-    remarks: 'Routine checkup',
-    newDocs: 1,
-    newCPODocsCreated: 1
+    remarks: "Medication review pending",
+    newDocs: 8,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "James Wilson",
+    dob: "1972-09-30",
+    pg: "Group D",
+    hhah: "Yes",
+    cpoMinsCaptured: 40,
+    remarks: "Stable condition",
+    newDocs: 12,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Patricia Davis",
+    dob: "1961-12-08",
+    pg: "Group B",
+    hhah: "Yes",
+    cpoMinsCaptured: 55,
+    remarks: "Physical therapy required",
+    newDocs: 14,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Thomas Martinez",
+    dob: "1955-02-14",
+    pg: "Group C",
+    hhah: "No",
+    cpoMinsCaptured: 35,
+    remarks: "High priority - follow up",
+    newDocs: 11,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Jennifer Lopez",
+    dob: "1980-04-25",
+    pg: "Group A",
+    hhah: "Yes",
+    cpoMinsCaptured: 50,
+    remarks: "Annual wellness visit",
+    newDocs: 13,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "William Anderson",
+    dob: "1943-10-31",
+    pg: "Group D",
+    hhah: "No",
+    cpoMinsCaptured: 20,
+    remarks: "Memory care evaluation",
+    newDocs: 7,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Linda Thompson",
+    dob: "1968-06-17",
+    pg: "Group B",
+    hhah: "Yes",
+    cpoMinsCaptured: 65,
+    remarks: "Completed all documents",
+    newDocs: 16,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Charles Robinson",
+    dob: "1975-01-09",
+    pg: "Group C",
+    hhah: "No",
+    cpoMinsCaptured: 28,
+    remarks: "New patient intake",
+    newDocs: 6,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Margaret Scott",
+    dob: "1959-05-22",
+    pg: "Group A",
+    hhah: "Yes",
+    cpoMinsCaptured: 48,
+    remarks: "Chronic condition management",
+    newDocs: 17,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Joseph Nguyen",
+    dob: "1963-07-04",
+    pg: "Group D",
+    hhah: "No",
+    cpoMinsCaptured: 32,
+    remarks: "Lab results pending",
+    newDocs: 5,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Susan King",
+    dob: "1970-12-12",
+    pg: "Group B",
+    hhah: "Yes",
+    cpoMinsCaptured: 58,
+    remarks: "Preventive care completed",
+    newDocs: 18,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Daniel Wright",
+    dob: "1947-03-08",
+    pg: "Group C",
+    hhah: "Yes",
+    cpoMinsCaptured: 42,
+    remarks: "Home health services needed",
+    newDocs: 19,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Karen Evans",
+    dob: "1969-09-19",
+    pg: "Group A",
+    hhah: "No",
+    cpoMinsCaptured: 27,
+    remarks: "Urgent: medication adjustment",
+    newDocs: 4,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Paul Baker",
+    dob: "1954-11-27",
+    pg: "Group D",
+    hhah: "Yes",
+    cpoMinsCaptured: 52,
+    remarks: "Stable - routine monitoring",
+    newDocs: 20,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Nancy Rivera",
+    dob: "1973-02-14",
+    pg: "Group B",
+    hhah: "No",
+    cpoMinsCaptured: 38,
+    remarks: "Behavioral health referral",
+    newDocs: 3,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Mark Cooper",
+    dob: "1960-04-03",
+    pg: "Group C",
+    hhah: "Yes",
+    cpoMinsCaptured: 62,
+    remarks: "Cardiac rehab in progress",
+    newDocs: 21,
+    newCPODocsCreated: 15
+  },
+  {
+    ptName: "Lisa Morris",
+    dob: "1957-08-11",
+    pg: "Group A",
+    hhah: "No",
+    cpoMinsCaptured: 29,
+    remarks: "Critical: needs immediate review",
+    newDocs: 2,
+    newCPODocsCreated: 15
   }
 ];
 
 const PGServicesView = ({ onBack }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [data] = useState(dummyData);
   const [filterType, setFilterType] = useState('all');
-  const [filteredData, setFilteredData] = useState(dummyData);
-  
-  // Filter and search logic
-  useEffect(() => {
-    let results = [...dummyData];
-    
-    // Apply search
-    if (searchTerm) {
-      results = results.filter(item => 
-        item.ptName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.pg.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.remarks.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filter data based on current filters
+  const filteredData = data.filter(item => {
+    // Apply search filter
+    if (searchTerm && !Object.values(item).some(
+      val => String(val).toLowerCase().includes(searchTerm.toLowerCase())
+    )) {
+      return false;
     }
-    
-    setFilteredData(results);
-  }, [searchTerm, filterType]);
-  
+
+    // Apply HHAH filter
+    if (filterType === 'hhahYes' && item.hhah.toLowerCase() !== 'yes') {
+      return false;
+    }
+    if (filterType === 'hhahNo' && item.hhah.toLowerCase() !== 'no') {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Handle export to Excel
   const handleExport = () => {
-    // Create a worksheet from the filtered data
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const worksheet = XLSX.utils.json_to_sheet(
+      filteredData.map(item => ({
+        "PT.NAME": item.ptName,
+        "DOB": item.dob,
+        "PG": item.pg,
+        "HHAH": item.hhah,
+        "CPO MINS CAPTURED": item.cpoMinsCaptured,
+        "REMARKS": item.remarks,
+        "NEWDOCS": item.newDocs,
+        "NEW CPO DOCS CREATED": item.newCPODocsCreated
+      }))
+    );
     
-    // Create a workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "PG Services");
-    
-    // Generate Excel file and trigger download
-    XLSX.writeFile(workbook, "PG_Services_Report.xlsx");
+    XLSX.writeFile(workbook, "PG_Services_Data.xlsx");
   };
-  
+
   return (
     <div className="pg-services-container">
-      <div className="back-button" onClick={onBack}>
-        ← Back
-      </div>
-      
-      <h1 className="pg-services-title">PG Services</h1>
-      
-      <div className="pg-services-header">
+      <div className="pg-header">
+        <h2>PG Services View</h2>
+        
         <div className="filter-tabs">
           <button 
             className={`filter-tab ${filterType === 'all' ? 'active' : ''}`}
             onClick={() => setFilterType('all')}
           >
             All
+          </button>
+          <button 
+            className={`filter-tab ${filterType === 'hhahYes' ? 'active' : ''}`}
+            onClick={() => setFilterType('hhahYes')}
+          >
+            HHAH Yes
+          </button>
+          <button 
+            className={`filter-tab ${filterType === 'hhahNo' ? 'active' : ''}`}
+            onClick={() => setFilterType('hhahNo')}
+          >
+            HHAH No
           </button>
         </div>
         
