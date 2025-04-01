@@ -413,13 +413,17 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
     )
     m.add_child(legend)
 
-def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
+def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, use_cached=True):
     """
     Generate a map zoomed in on a specific statistical area (MSA) or coordinates
     
     Can be called with either:
     - area_name: Name of the statistical area (MSA)
     - lat, lon, zoom: Coordinates and zoom level
+    
+    Parameters:
+    - force_detailed: If True, will try harder to generate a detailed map with boundaries
+    - use_cached: If False, will regenerate the map even if cached
     """
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -471,19 +475,34 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
         logger.info(f"Generating map for statistical area: {area_name}")
         
         # Generate cache filename
-        cache_file = os.path.join(CACHE_DIR, f"statistical_area_{area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
+        sanitized_name = area_name.replace(' ', '_').replace(',', '').replace('-', '_')
+        cache_file = os.path.join(CACHE_DIR, f"statistical_area_{sanitized_name}.html")
         
-        # Check cache first
-        if os.path.exists(cache_file):
+        # Check cache first if use_cached is True
+        if use_cached and os.path.exists(cache_file):
             logger.info(f"Using cached map from {cache_file}")
             with open(cache_file, 'r') as f:
                 return f.read()
-        
+            
+        # If we made it here, we need to generate a new map
         # Get pre-processed data
         msa_data, county_data, states_data, county_to_msa = get_processed_data()
         if msa_data is None or len(msa_data) == 0:
             logger.error("Failed to load MSA data or MSA data is empty")
-            return create_fallback_map(area_name, cache_file)
+            if force_detailed:
+                # Try harder to get the MSA data
+                logger.info("Forcing detailed map - trying to fetch MSA data directly")
+                try:
+                    from main import get_msa_data as get_msa_data_main
+                    msa_data = get_msa_data_main()
+                    if msa_data is None or len(msa_data) == 0:
+                        logger.error("Still failed to load MSA data after direct fetch")
+                        return create_fallback_map(area_name, cache_file)
+                except Exception as e:
+                    logger.error(f"Error fetching MSA data directly: {str(e)}")
+                    return create_fallback_map(area_name, cache_file)
+            else:
+                return create_fallback_map(area_name, cache_file)
         
         try:
             # Normalize the area name for comparison
@@ -622,11 +641,18 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
                     style_function=lambda x: {
                         'fillColor': '#4F46E5',
                         'color': '#312E81',
-                        'weight': 3,
-                        'fillOpacity': 0.2,
-                        'dashArray': '5, 5'
+                        'weight': 4,
+                        'fillOpacity': 0.3,
+                        'dashArray': '3, 3'
                     },
-                    name=f"{target_area['NAME']} Boundary"
+                    name=f"{target_area['NAME']} Boundary",
+                    highlight_function=lambda x: {
+                        'weight': 5,
+                        'fillColor': '#6366F1',
+                        'color': '#1E1B4B',
+                        'fillOpacity': 0.5,
+                        'dashArray': ''
+                    }
                 ).add_to(m)
             except Exception as e:
                 logger.error(f"Error adding MSA boundary: {str(e)}")

@@ -48,14 +48,17 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           mode: 'cors', 
           credentials: 'omit',
           headers: {
-            'Accept': 'text/html'
-          }
+            'Accept': 'text/html',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          },
+          cache: 'no-store'
         });
         
         console.log(`Response status: ${response.status} ${response.statusText}`);
-        console.log(`Response headers:`, Object.fromEntries([...response.headers]));
         
         if (!response.ok) {
+          // Try to get the error message from the response
           const errorText = await response.text();
           console.error(`Map request failed: ${errorText}`);
           throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
@@ -236,10 +239,11 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               onLoad={handleIframeLoad}
               onError={handleIframeError}
               allowFullScreen
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
               loading="lazy"
               importance="high"
-              referrerpolicy="no-referrer"
+              referrerpolicy="no-referrer-when-downgrade"
+              style={{ width: '100%', height: '100%', border: 'none' }}
             />
           )}
         </div>

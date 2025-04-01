@@ -14,7 +14,7 @@ CORS(app, resources={
     r"/*": {
         "origins": "*",  # Allow all origins for simplicity
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"],
+        "allow_headers": ["Content-Type", "Accept", "Cache-Control", "X-Requested-With"],
         "supports_credentials": True,
         "expose_headers": ["Content-Type", "X-Frame-Options", "Content-Security-Policy"]
     }
@@ -174,8 +174,22 @@ def get_statistical_area_map_by_name(area_name):
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Decoded area name: {decoded_area_name}")
         
+        # Set cached=False to force regeneration of the map instead of using cached version
+        # This is useful when debugging or when the cached map is not working correctly
+        use_cached = request.args.get('use_cached', 'true').lower() == 'true'
+        logger.info(f"Use cached: {use_cached}")
+        
         # Generate the map content
-        map_html = generate_statistical_area_map(decoded_area_name)
+        map_html = generate_statistical_area_map(decoded_area_name, force_detailed=True, use_cached=use_cached)
+        
+        if not map_html:
+            logger.error(f"Empty map HTML generated for {decoded_area_name}")
+            return jsonify({
+                "success": False,
+                "message": "Failed to generate map content",
+                "area": decoded_area_name
+            }), 500
+            
         logger.info(f"Generated map HTML for {decoded_area_name} (length: {len(map_html) if map_html else 0})")
         
         # Create the response with appropriate headers
@@ -192,7 +206,10 @@ def get_statistical_area_map_by_name(area_name):
         # Add CORS headers for good measure
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Cache-Control'
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
         
         logger.info(f"Returning response for {area_name} with headers: {dict(response.headers)}")
         return response

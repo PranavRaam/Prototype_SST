@@ -83,6 +83,9 @@
   border: none;
   background-color: #f9fafb;
   min-height: 500px;
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
 .map-loading {
