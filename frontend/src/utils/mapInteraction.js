@@ -10,8 +10,9 @@ export const mapIframeScript = `
 (function() {
   // Listen for messages from the parent window
   window.addEventListener('message', function(event) {
-    // Security check - only accept messages from our own origin
-    if (event.origin !== window.location.origin) return;
+    // Security check - don't use origin check for cross-origin iframes
+    // Instead, we verify the message structure
+    if (!event.data || !event.data.type) return;
 
     // Process different message types
     switch(event.data.type) {
@@ -92,6 +93,7 @@ export const mapIframeScript = `
 export const sendMessageToMap = (message) => {
   const iframe = document.querySelector('.map-frame');
   if (iframe && iframe.contentWindow) {
+    // Send message to any origin (since the iframe is cross-origin)
     iframe.contentWindow.postMessage(message, '*');
   }
 };
@@ -101,13 +103,17 @@ export const sendMessageToMap = (message) => {
  * @param {HTMLIFrameElement} iframe - The map iframe element
  */
 export const initializeMap = (iframe) => {
-  // Inject script into iframe when it loads
   try {
-    if (iframe && iframe.contentWindow) {
-      const script = document.createElement('script');
-      script.textContent = mapIframeScript;
-      iframe.contentWindow.document.head.appendChild(script);
-    }
+    console.log('Initializing map interaction...');
+    
+    // For cross-origin iframes, we cannot inject scripts
+    // Instead, just setup the message passing
+    
+    // We'll send a ready message to the iframe to check if it's ready
+    setTimeout(() => {
+      sendMessageToMap({ type: 'checkReady' });
+      console.log('Sent initial ready check to map iframe');
+    }, 1000);
   } catch (err) {
     console.error('Error initializing map:', err);
   }

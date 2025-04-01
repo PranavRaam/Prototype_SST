@@ -9,13 +9,10 @@ import logging
 from statistical_area_zoom import generate_statistical_area_map
 
 app = Flask(__name__)
-# Update CORS configuration to allow both domains
+# Update CORS configuration to allow both domains and be more permissive
 CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "https://sst-frontend-swart.vercel.app",
-            "https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app"
-        ],
+    r"/*": {
+        "origins": "*",  # Allow all origins for simplicity
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type"],
         "supports_credentials": True,
@@ -175,22 +172,37 @@ def get_statistical_area_map_by_name(area_name):
         logger.info(f"Received request for map of area: {area_name}")
         # Generate the map by area name
         decoded_area_name = urllib.parse.unquote(area_name)
-        map_html = generate_statistical_area_map(decoded_area_name)
+        logger.info(f"Decoded area name: {decoded_area_name}")
         
-        # Add headers to allow iframe embedding for both domains
+        # Generate the map content
+        map_html = generate_statistical_area_map(decoded_area_name)
+        logger.info(f"Generated map HTML for {decoded_area_name} (length: {len(map_html) if map_html else 0})")
+        
+        # Create the response with appropriate headers
         response = app.response_class(
             response=map_html,
             status=200,
             mimetype='text/html'
         )
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://sst-frontend-hj8ff7u1a-pranavraams-projects.vercel.app https://sst-frontend-swart.vercel.app"
+        
+        # Add headers to allow iframe embedding
+        response.headers['X-Frame-Options'] = 'ALLOWALL'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        
+        # Add CORS headers for good measure
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        
+        logger.info(f"Returning response for {area_name} with headers: {dict(response.headers)}")
         return response
     except Exception as e:
         logger.error(f"Error generating statistical area map for {area_name}: {str(e)}")
+        logger.exception("Detailed error:")
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": str(e),
+            "area": area_name
         }), 500
 
 if __name__ == '__main__':

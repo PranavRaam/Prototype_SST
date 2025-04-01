@@ -38,8 +38,22 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Use the full backend URL instead of relative path
-        const response = await fetch(getApiUrl(`/api/statistical-area-map/${encodedArea}`));
+        // Get the full backend URL and log it for debugging
+        const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
+        console.log(`Full request URL: ${apiUrl}`);
+        
+        // Use the full backend URL with specific options
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          mode: 'cors', 
+          credentials: 'omit',
+          headers: {
+            'Accept': 'text/html'
+          }
+        });
+        
+        console.log(`Response status: ${response.status} ${response.statusText}`);
+        console.log(`Response headers:`, Object.fromEntries([...response.headers]));
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -47,8 +61,10 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
         }
         
-        // Map was successfully accessed, use the full URL
-        setMapUrl(getApiUrl(`/api/statistical-area-map/${encodedArea}?t=${Date.now()}`)); // Add timestamp to prevent caching
+        // Map was successfully accessed - add cache buster
+        const finalMapUrl = `${apiUrl}?t=${Date.now()}`;
+        console.log(`Setting map URL to: ${finalMapUrl}`);
+        setMapUrl(finalMapUrl);
         setIsLoading(false);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
@@ -220,6 +236,10 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               onLoad={handleIframeLoad}
               onError={handleIframeError}
               allowFullScreen
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              loading="lazy"
+              importance="high"
+              referrerpolicy="no-referrer"
             />
           )}
         </div>

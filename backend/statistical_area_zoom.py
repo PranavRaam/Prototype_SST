@@ -62,26 +62,30 @@ def create_fallback_map(area_name, output_path=None):
     title = "New York Metro Area"
     
     # Special handling for some known areas
-    if "New York" in area_name or "Newark" in area_name or "Jersey City" in area_name:
+    if area_name and "New York" in area_name or "Newark" in area_name or "Jersey City" in area_name:
         coords = [40.7128, -74.0060]  # NYC coordinates
         zoom_level = 10
         title = "New York Metro Area"
-    elif "Los Angeles" in area_name or "Anaheim" in area_name or "Long Beach" in area_name:
+    elif area_name and "Los Angeles" in area_name or "Anaheim" in area_name or "Long Beach" in area_name:
         coords = [34.0522, -118.2437]  # LA coordinates
         zoom_level = 9
         title = "Los Angeles Metro Area"
-    elif "Chicago" in area_name:
+    elif area_name and "Chicago" in area_name:
         coords = [41.8781, -87.6298]  # Chicago coordinates
         zoom_level = 9
         title = "Chicago Metro Area"
-    elif "San Francisco" in area_name or "Oakland" in area_name or "San Jose" in area_name:
+    elif area_name and "San Francisco" in area_name or "Oakland" in area_name or "San Jose" in area_name:
         coords = [37.7749, -122.4194]  # SF coordinates
         zoom_level = 9
         title = "San Francisco Bay Area"
-    elif "Gainesville" in area_name:
+    elif area_name and "Gainesville" in area_name:
         coords = [29.6516, -82.3248]  # Gainesville, FL coordinates
         zoom_level = 10
         title = "Gainesville Area"
+    elif area_name and "Hartford" in area_name:
+        coords = [41.7658, -72.6734]  # Hartford, CT coordinates
+        zoom_level = 10
+        title = "Hartford Area"
     
     folium_map = folium.Map(
         location=coords,
@@ -130,13 +134,13 @@ def create_fallback_map(area_name, output_path=None):
         
         pg_data = {
             "id": i + 1,
-            "name": f"PG-{pg_groups[i % len(pg_groups)]}-{area_name[:3]}{i+1}",
+            "name": f"PG-{pg_groups[i % len(pg_groups)]}-{area_name[:3] if area_name else 'LOC'}{i+1}",
             "location": [lat, lng],
             "group": pg_groups[i % len(pg_groups)],
             "physicians": random.randint(3, 15),
             "patients": random.randint(50, 300),
             "status": random.choice(["Active", "Onboarding", "Inactive"]),
-            "address": f"{random.randint(100, 999)} Healthcare Ave, {area_name.split(',')[0]}",
+            "address": f"{random.randint(100, 999)} Healthcare Ave, {area_name.split(',')[0] if area_name else 'Local'} Area",
             "contact": f"(555) {random.randint(100, 999)}-{random.randint(1000, 9999)}"
         }
         
@@ -182,7 +186,7 @@ def create_fallback_map(area_name, output_path=None):
                    background-color: white; border-radius: 8px;
                    border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
                    font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
-            <h4 style="margin-top: 0; color: #1F2937;">Map View of {area_name}</h4>
+            <h4 style="margin-top: 0; color: #1F2937;">Map View of {area_name if area_name else "Area"}</h4>
             <p style="font-size: 12px; margin-bottom: 0;">
                 Showing estimated location with sample data.
             </p>
@@ -200,11 +204,11 @@ def create_fallback_map(area_name, output_path=None):
     folium_map.save(output_path)
     logger.info(f"Fallback map saved to {output_path}")
     
-    # Return the HTML content instead of just the file path
+    # Return the HTML content
     with open(output_path, 'r') as f:
         map_html = f.read()
     
-    return output_path
+    return map_html
 
 # Cache directory setup
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
@@ -479,9 +483,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
         msa_data, county_data, states_data, county_to_msa = get_processed_data()
         if msa_data is None or len(msa_data) == 0:
             logger.error("Failed to load MSA data or MSA data is empty")
-            fallback_html = create_fallback_map(area_name, cache_file)
-            with open(fallback_html, 'r') as f:
-                return f.read()
+            return create_fallback_map(area_name, cache_file)
         
         try:
             # Normalize the area name for comparison
@@ -539,9 +541,7 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
             
             if target_area is None:
                 logger.error(f"Could not find any matching MSA for: {area_name}")
-                fallback_html = create_fallback_map(area_name, cache_file)
-                with open(fallback_html, 'r') as f:
-                    return f.read()
+                return create_fallback_map(area_name, cache_file)
             
             # Verify geometry
             if not hasattr(target_area, 'geometry') or target_area.geometry is None:
@@ -677,19 +677,13 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10):
                     return f.read()
             except Exception as e:
                 logger.error(f"Error saving map: {str(e)}")
-                fallback_html = create_fallback_map(area_name, cache_file)
-                with open(fallback_html, 'r') as f:
-                    return f.read()
+                return create_fallback_map(area_name, cache_file)
             
         except Exception as e:
             logger.error(f"Error generating map: {e}")
             logger.error(traceback.format_exc())
-            fallback_html = create_fallback_map(area_name, cache_file)
-            with open(fallback_html, 'r') as f:
-                return f.read()
+            return create_fallback_map(area_name, cache_file)
     
     # If neither area_name nor coordinates are provided, return a default map
     logger.error("No area name or coordinates provided")
-    fallback_html = create_fallback_map("Unknown Location", None)
-    with open(fallback_html, 'r') as f:
-        return f.read() 
+    return create_fallback_map("Unknown Location", None) 
