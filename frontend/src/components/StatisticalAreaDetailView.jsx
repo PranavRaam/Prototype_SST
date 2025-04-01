@@ -38,8 +38,9 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Special case for Flagstaff and some other cities that have issues
+        // Special case for Fairbanks and some other cities that have issues
         const needsSpecialHandling = 
+          statisticalArea.toLowerCase().includes('fairbanks') || 
           statisticalArea.toLowerCase().includes('flagstaff') || 
           statisticalArea.toLowerCase().includes('sedona') ||
           statisticalArea.toLowerCase().includes('prescott');
@@ -47,7 +48,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         // Get the full backend URL and log it for debugging
         let apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
         if (needsSpecialHandling) {
-          apiUrl += `?force_regen=true&t=${Date.now()}`;
+          apiUrl += `?force_regen=true&use_cached=false&t=${Date.now()}`;
           console.log('Using special handling for this location');
         } else {
           apiUrl += `?t=${Date.now()}`;

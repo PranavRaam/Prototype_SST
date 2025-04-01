@@ -189,10 +189,13 @@ def get_statistical_area_map_by_name(area_name):
         cache_buster = request.args.get('t', '')
         logger.info(f"Cache buster: {cache_buster}")
         
-        # Special override for problematic cities like Flagstaff
+        # Special override for problematic cities like Flagstaff and Fairbanks
         override_cached = False
-        if 'flagstaff' in decoded_area_name.lower() or request.args.get('force_regen', 'false').lower() == 'true':
-            logger.info("Forcing regeneration for Flagstaff or other special case")
+        problem_cities = ['flagstaff', 'fairbanks', 'sedona', 'prescott']
+        is_problem_city = any(city in decoded_area_name.lower() for city in problem_cities)
+
+        if is_problem_city or request.args.get('force_regen', 'false').lower() == 'true':
+            logger.info(f"Forcing regeneration for {decoded_area_name} (recognized as problematic city)")
             override_cached = True
             
         # Set cached=False to force regeneration of the map instead of using cached version

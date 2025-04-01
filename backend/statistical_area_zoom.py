@@ -421,7 +421,43 @@ def handle_special_cities(area_name):
     
     # Define patterns to match certain cities
     flagstaff_pattern = re.compile(r'flagstaff', re.IGNORECASE)
+    fairbanks_pattern = re.compile(r'fairbanks', re.IGNORECASE)
     # Add more patterns as needed
+    
+    # Check for Fairbanks, AK
+    if fairbanks_pattern.search(area_name):
+        logger.info(f"Matched special case: Fairbanks")
+        try:
+            # Create a custom GeoDataFrame with Fairbanks MSA definition
+            import geopandas as gpd
+            from shapely.geometry import Point
+            import pandas as pd
+            
+            # Create a basic area around Fairbanks coordinates
+            fairbanks_coords = [64.8378, -147.7164]  # Fairbanks, AK coordinates
+            fairbanks_point = Point(fairbanks_coords[1], fairbanks_coords[0])
+            
+            # Use a buffer to create a circular area
+            buffer_degrees = 0.3  # Create a slightly larger buffer for Fairbanks
+            fairbanks_geometry = fairbanks_point.buffer(buffer_degrees)
+            
+            # Create a simple GeoDataFrame
+            fairbanks_gdf = gpd.GeoDataFrame(
+                {
+                    'NAME': ['Fairbanks, AK Metro Area'],
+                    'CBSAFP': ['99998'],  # Placeholder ID
+                    'normalized_name': ['fairbanks, ak metro area'],
+                    'geometry': [fairbanks_geometry]
+                }, 
+                crs="EPSG:4326"
+            )
+            
+            logger.info(f"Created custom definition for Fairbanks, AK")
+            return fairbanks_gdf.iloc[0]
+        except Exception as e:
+            logger.error(f"Error creating custom definition for Fairbanks: {str(e)}")
+            logger.error(traceback.format_exc())
+            return None
     
     # Check for Flagstaff, AZ
     if flagstaff_pattern.search(area_name):
@@ -457,6 +493,7 @@ def handle_special_cities(area_name):
             return flagstaff_gdf.iloc[0]
         except Exception as e:
             logger.error(f"Error creating custom definition for Flagstaff: {str(e)}")
+            logger.error(traceback.format_exc())
             return None
             
     # No special case matched
@@ -476,6 +513,14 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
     """
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
+    
+    # Force detailed boundary for specific city names
+    force_special_handling = False
+    special_cities = ['fairbanks', 'flagstaff', 'sedona', 'prescott']
+    if area_name and any(city in area_name.lower() for city in special_cities):
+        logger.info(f"Forcing special handling for {area_name} as it's in the special cities list")
+        force_special_handling = True
+        use_cached = False  # Don't use cached for special cities
     
     # If coordinates are provided and area_name is not, generate map by coordinates
     if area_name is None and lat is not None and lon is not None:
@@ -526,6 +571,11 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
         # Generate cache filename
         sanitized_name = area_name.replace(' ', '_').replace(',', '').replace('-', '_')
         cache_file = os.path.join(CACHE_DIR, f"statistical_area_{sanitized_name}.html")
+        
+        # For special cities, use a different cache file to avoid conflicts
+        if force_special_handling:
+            cache_file = os.path.join(CACHE_DIR, f"special_area_{sanitized_name}_{int(time.time())}.html")
+            logger.info(f"Using special cache file: {cache_file}")
         
         # Check cache first if use_cached is True
         if use_cached and os.path.exists(cache_file):
@@ -730,26 +780,42 @@ def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, f
                 
                 # Add MSA boundary with error handling
                 try:
+                    # Add more visible and distinct boundary
                     folium.GeoJson(
                         target_area.geometry.__geo_interface__,
                         style_function=lambda x: {
                             'fillColor': '#4F46E5',
                             'color': '#312E81',
-                            'weight': 4,
-                            'fillOpacity': 0.3,
-                            'dashArray': '3, 3'
-                        },
-                        name=f"{target_area['NAME']} Boundary",
-                        highlight_function=lambda x: {
                             'weight': 5,
+                            'fillOpacity': 0.35,
+                            'dashArray': '5, 5'
+                        },
+                        highlight_function=lambda x: {
+                            'weight': 6,
                             'fillColor': '#6366F1',
                             'color': '#1E1B4B',
-                            'fillOpacity': 0.5,
+                            'fillOpacity': 0.6,
                             'dashArray': ''
-                        }
+                        },
+                        tooltip=folium.Tooltip(f"{target_area['NAME']} Boundary"),
+                        name=f"{target_area['NAME']} Boundary"
+                    ).add_to(m)
+                    
+                    # Add a more precise boundary outline on top
+                    folium.GeoJson(
+                        target_area.geometry.__geo_interface__,
+                        style_function=lambda x: {
+                            'fillColor': 'transparent',
+                            'color': '#1E1B4B',
+                            'weight': 1.5,
+                            'fillOpacity': 0,
+                            'dashArray': ''
+                        },
+                        name=f"{target_area['NAME']} Outline"
                     ).add_to(m)
                 except Exception as e:
                     logger.error(f"Error adding MSA boundary: {str(e)}")
+                    logger.error(traceback.format_exc())
                 
                 # Add PGs and HHAHs to the map with error handling
                 try:
