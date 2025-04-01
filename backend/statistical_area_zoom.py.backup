@@ -18,36 +18,8 @@ from folium.plugins import MiniMap, Search
 from branca.element import JavascriptLink, CssLink
 from shapely.geometry import shape, Polygon
 from difflib import get_close_matches
+from geopy.geocoders import Nominatim
 import re
-
-# Flag for available modules
-SHAPEFILE_AVAILABLE = False
-GEOPANDAS_AVAILABLE = False
-GEOPY_AVAILABLE = False
-
-# Try to import optional modules but don't fail if they're not available
-try:
-    import shapefile
-    SHAPEFILE_AVAILABLE = True
-    logger = logging.getLogger(__name__)
-    logger.info("Shapefile module is available")
-except ImportError:
-    logger = logging.getLogger(__name__)
-    logger.warning("Shapefile module not available, will use fallback methods")
-
-try:
-    import geopandas as gpd
-    GEOPANDAS_AVAILABLE = True
-    logger.info("GeoPandas module is available")
-except ImportError:
-    logger.warning("GeoPandas module not available, will use fallback methods")
-
-try:
-    from geopy.geocoders import Nominatim
-    GEOPY_AVAILABLE = True
-    logger.info("Geopy module is available")
-except ImportError:
-    logger.warning("Geopy module not available, will use address fallback")
 
 # Constants
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
