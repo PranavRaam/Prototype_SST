@@ -41,7 +41,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         // Always use force_regen and disable caching to ensure detailed boundaries
         // Get the full backend URL and log it for debugging
         const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
-          `?force_regen=true&use_cached=false&detailed=true&t=${Date.now()}&r=${Math.random()}`;
+          `?force_regen=true&use_cached=false&detailed=true&zoom=11&exact_boundary=true&t=${Date.now()}&r=${Math.random()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
         // Use the full backend URL with specific options
@@ -249,7 +249,17 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           )}
         </div>
         <div className="area-map-info">
-          <p>The highlighted area shows the boundaries of {statisticalArea}. Use the zoom controls to explore further.</p>
+          <p>The highlighted area shows the exact boundaries of {statisticalArea}. Use the zoom controls to explore further.</p>
+          <div className="map-info-legend">
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: 'rgba(79, 70, 229, 0.2)', border: '2px solid #312E81' }}></span>
+              <span className="legend-label">MSA Boundary</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: 'transparent', border: '2px solid #1E1B4B' }}></span>
+              <span className="legend-label">Exact Border</span>
+            </div>
+          </div>
         </div>
       </div>
       

@@ -294,7 +294,9 @@ def get_statistical_area_map_by_name(area_name):
         cache_buster = request.args.get('t', '')
         random_param = request.args.get('r', '')
         force_detailed = request.args.get('detailed', 'false').lower() == 'true'
-        logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, force_detailed={force_detailed}")
+        exact_boundary = request.args.get('exact_boundary', 'false').lower() == 'true'
+        zoom_level = int(request.args.get('zoom', '10'))
+        logger.info(f"Request params: cache_buster={cache_buster}, random={random_param}, force_detailed={force_detailed}, exact_boundary={exact_boundary}, zoom={zoom_level}")
         
         # Always force regeneration and detailed boundaries in production
         override_cached = True
@@ -305,7 +307,9 @@ def get_statistical_area_map_by_name(area_name):
         map_html = generate_statistical_area_map(
             decoded_area_name, 
             force_detailed=True, 
-            use_cached=False
+            use_cached=False,
+            zoom=zoom_level,
+            exact_boundary=exact_boundary
         )
         
         if not map_html:
