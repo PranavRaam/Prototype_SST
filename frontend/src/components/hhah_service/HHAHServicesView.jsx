@@ -252,9 +252,12 @@ const HHAHServicesView = () => {
   const [data, setData] = useState(dummyData);
   const [searchTerm, setSearchTerm] = useState('');
   const [signedFilter, setSignedFilter] = useState('all');
-  const [activeSorts, setActiveSorts] = useState([]);
 
-  const applyFiltersAndSorts = (dataToFilter, term, signed, sorts) => {
+  const handleSort = (sortedData) => {
+    setData(sortedData);
+  };
+
+  const applyFiltersAndSorts = (dataToFilter, term, signed) => {
     let filteredData = [...dataToFilter];
 
     // Apply search filter
@@ -274,58 +277,26 @@ const HHAHServicesView = () => {
       );
     }
 
-    // Apply multiple sorts
-    if (sorts.length > 0) {
-      filteredData = [...filteredData].sort((a, b) => {
-        for (const sortId of sorts) {
-          let comparison = 0;
-          switch(sortId) {
-            case 'pg':
-              comparison = a.pg.localeCompare(b.pg);
-              break;
-            case 'physician':
-              comparison = a.physician.localeCompare(b.physician);
-              break;
-            case 'docs':
-              comparison = a.docsToBeSignedCount - b.docsToBeSignedCount;
-              break;
-            case 'days':
-              comparison = a.daysLeftForBilling - b.daysLeftForBilling;
-              break;
-            case 'name':
-              comparison = a.ptName.localeCompare(b.ptName);
-              break;
-            default:
-              break;
-          }
-          if (comparison !== 0) return comparison;
-        }
-        return 0;
-      });
-    }
+    // Apply default sorting (days left ascending, docs to be signed descending)
+    filteredData.sort((a, b) => {
+      if (a.daysLeftForBilling !== b.daysLeftForBilling) {
+        return a.daysLeftForBilling - b.daysLeftForBilling;
+      }
+      return b.docsToBeSignedCount - a.docsToBeSignedCount;
+    });
 
     return filteredData;
   };
 
   const handleSearch = (term) => {
     setSearchTerm(term);
-    const filtered = applyFiltersAndSorts(dummyData, term, signedFilter, activeSorts);
+    const filtered = applyFiltersAndSorts(dummyData, term, signedFilter);
     setData(filtered);
   };
 
   const handleSignedFilter = (status) => {
     setSignedFilter(status);
-    const filtered = applyFiltersAndSorts(dummyData, searchTerm, status, activeSorts);
-    setData(filtered);
-  };
-
-  const toggleSort = (sortId) => {
-    const newActiveSorts = activeSorts.includes(sortId)
-      ? activeSorts.filter(id => id !== sortId)
-      : [...activeSorts, sortId];
-    
-    setActiveSorts(newActiveSorts);
-    const filtered = applyFiltersAndSorts(dummyData, searchTerm, signedFilter, newActiveSorts);
+    const filtered = applyFiltersAndSorts(dummyData, searchTerm, status);
     setData(filtered);
   };
 
@@ -364,7 +335,7 @@ const HHAHServicesView = () => {
               <path d="M19 12H5M12 19l-7-7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <h1 className="viv-hhah-page-title">HHAH Services View</h1>
+          <h1 className="viv-hhah-page-title">HHAH Services</h1>
         </div>
         <div className="viv-hhah-header-right">
           <div className="viv-hhah-filter-group">
@@ -390,79 +361,6 @@ const HHAHServicesView = () => {
           
           <SearchBar onSearch={handleSearch} />
           
-          <div className="viv-hhah-sort-circles-container">
-            {/* Patient Name (A-Z) */}
-            <div 
-              className={`viv-hhah-sort-circle ${activeSorts.includes('name') ? 'viv-hhah-active' : ''}`}
-              onClick={() => toggleSort('name')}
-              title="Patient Name (A-Z)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M16 6h6M16 12h6M16 18h6M4 6h6v12H4V6z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="viv-hhah-tooltip">Patient Name (A-Z)</span>
-            </div>
-
-            {/* PG (A-Z) */}
-            <div 
-              className={`viv-hhah-sort-circle ${activeSorts.includes('pg') ? 'viv-hhah-active' : ''}`}
-              onClick={() => toggleSort('pg')}
-              title="PG (A-Z)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span className="viv-hhah-tooltip">PG (A-Z)</span>
-            </div>
-
-            {/* Physician (A-Z) */}
-            <div 
-              className={`viv-hhah-sort-circle ${activeSorts.includes('physician') ? 'viv-hhah-active' : ''}`}
-              onClick={() => toggleSort('physician')}
-              title="Physician (A-Z)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span className="viv-hhah-tooltip">Physician (A-Z)</span>
-            </div>
-
-            {/* Docs to Sign (Low-High) */}
-            <div 
-              className={`viv-hhah-sort-circle ${activeSorts.includes('docs') ? 'viv-hhah-active' : ''}`}
-              onClick={() => toggleSort('docs')}
-              title="Docs to Sign (Low-High)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              <span className="viv-hhah-tooltip">Docs to Sign (Low-High)</span>
-            </div>
-
-            {/* Days Left (Low-High) */}
-            <div 
-              className={`viv-hhah-sort-circle ${activeSorts.includes('days') ? 'viv-hhah-active' : ''}`}
-              onClick={() => toggleSort('days')}
-              title="Days Left (Low-High)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              <span className="viv-hhah-tooltip">Days Left (Low-High)</span>
-            </div>
-          </div>
-          
           <button className="viv-hhah-action-button" onClick={exportToExcel}>
             Export to Excel
           </button>
@@ -471,7 +369,10 @@ const HHAHServicesView = () => {
       
       <main className="viv-hhah-main-content">
         <div className="viv-hhah-content-card">
-          <ServicesTable data={data} />
+          <ServicesTable 
+            data={applyFiltersAndSorts(data, searchTerm, signedFilter)}
+            onSort={handleSort}
+          />
         </div>
       </main>
     </div>

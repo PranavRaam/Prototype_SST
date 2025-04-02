@@ -1,26 +1,67 @@
 // servicestable.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ServicesTable.css';
 
 const ServicesTable = ({ data, onSort }) => {
   const [sortConfig, setSortConfig] = useState({
-    key: 'daysLeftForBilling',
-    direction: 'asc'
+    primaryKey: 'daysLeftForBilling',
+    primaryDirection: 'asc',
+    secondaryKey: 'docsToBeSignedCount',
+    secondaryDirection: 'desc'
   });
+
+  useEffect(() => {
+    // Apply initial sorting when component mounts
+    const sortedData = [...data].sort((a, b) => {
+      // Primary sort: Days left (ascending)
+      if (a.daysLeftForBilling !== b.daysLeftForBilling) {
+        return a.daysLeftForBilling - b.daysLeftForBilling;
+      }
+      // Secondary sort: Docs to be signed (descending)
+      return b.docsToBeSignedCount - a.docsToBeSignedCount;
+    });
+    onSort(sortedData);
+  }, [data, onSort]);
 
   const handleSort = (key) => {
     let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+    if (sortConfig.primaryKey === key && sortConfig.primaryDirection === 'asc') {
       direction = 'desc';
     }
-    setSortConfig({ key, direction });
-    onSort(key, direction);
+    setSortConfig({ 
+      primaryKey: key,
+      primaryDirection: direction,
+      secondaryKey: key === 'daysLeftForBilling' ? 'docsToBeSignedCount' : null,
+      secondaryDirection: key === 'daysLeftForBilling' ? 'desc' : null
+    });
+    
+    const sortedData = [...data].sort((a, b) => {
+      if (key === 'daysLeftForBilling') {
+        // Primary sort: Days left
+        if (a.daysLeftForBilling !== b.daysLeftForBilling) {
+          return direction === 'asc' 
+            ? a.daysLeftForBilling - b.daysLeftForBilling
+            : b.daysLeftForBilling - a.daysLeftForBilling;
+        }
+        // Secondary sort: Docs to be signed (descending)
+        return b.docsToBeSignedCount - a.docsToBeSignedCount;
+      }
+      // For other columns, simple sort
+      return direction === 'asc'
+        ? (a[key] > b[key] ? 1 : -1)
+        : (a[key] < b[key] ? 1 : -1);
+    });
+    
+    onSort(sortedData);
   };
 
   const getSortIcon = (columnName) => {
-    if (sortConfig.key === columnName) {
-      return sortConfig.direction === 'asc' ? '↑' : '↓';
+    if (sortConfig.primaryKey === columnName) {
+      return sortConfig.primaryDirection === 'asc' ? '↑' : '↓';
+    }
+    if (sortConfig.secondaryKey === columnName) {
+      return sortConfig.secondaryDirection === 'asc' ? '↑' : '↓';
     }
     return '';
   };
@@ -61,7 +102,7 @@ const ServicesTable = ({ data, onSort }) => {
               <td>{row.fromToDate}</td>
               <td>{row.is485Signed ? '✓' : '✗'}</td>
               <td>{row.docsToBeSignedCount}</td>
-              <td>{row.daysLeftForBilling}</td>
+              <td className={row.daysLeftForBilling <= 7 ? 'urgent' : ''}>{row.daysLeftForBilling}</td>
               <td>{row.pg}</td>
               <td>{row.physician}</td>
               <td>{row.remarks}</td>

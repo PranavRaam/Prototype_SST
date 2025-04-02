@@ -51,6 +51,12 @@ const PGFunnel = () => {
     return <div className="pg-funnel-container">Loading PG funnel data...</div>;
   }
 
+  // Transform the funnel data to show PG counts instead of patient values
+  const transformedFunnelData = pgFunnelData.map(stage => ({
+    ...stage,
+    value: pgAssignments[stage.name]?.length || 0
+  }));
+
   const handleFunnelClick = (entry) => {
     if (entry.value === 0) return;
     setExpandedStage(entry.name);
@@ -65,10 +71,7 @@ const PGFunnel = () => {
 
   const handleMoveToStage = (targetStage) => {
     if (!selectedPG || !targetStage || !movePgToStage) return;
-    
-    // Use the context function to move the PG
     movePgToStage(selectedPG, expandedStage, targetStage);
-    
     setShowMoveOptions(false);
     setSelectedPG(null);
   };
@@ -81,10 +84,13 @@ const PGFunnel = () => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const stageName = payload[0].payload.name;
+      const pgCount = pgAssignments[stageName]?.length || 0;
+      
       return (
         <div className="custom-tooltip">
-          <p className="tooltip-label">{payload[0].payload.name}</p>
-          <p className="tooltip-value">{payload[0].value} Patients</p>
+          <p className="tooltip-label">{stageName}</p>
+          <p className="tooltip-value">PGs: {pgCount}</p>
         </div>
       );
     }
@@ -114,7 +120,7 @@ const PGFunnel = () => {
           {showMoveOptions && (
             <div className="move-options">
               <h5>Move {selectedPG} to:</h5>
-              {pgFunnelData
+              {transformedFunnelData
                 .filter(stage => stage.name !== expandedStage)
                 .map((stage, index) => (
                   <button
@@ -133,7 +139,7 @@ const PGFunnel = () => {
             <Tooltip content={<CustomTooltip />} />
             <Funnel
               dataKey="value"
-              data={pgFunnelData.slice(0, 9)}
+              data={transformedFunnelData}
               isAnimationActive={false}
               onClick={handleFunnelClick}
               width={520}

@@ -3,22 +3,32 @@ import './ServicesTable.css';
 
 const ServicesTable = ({ data, onSort, onSelectPatient }) => {
   const [sortConfig, setSortConfig] = useState({
-    key: 'newDocs',
-    direction: 'desc'
+    primaryKey: 'newCPODocsCreated',
+    primaryDirection: 'asc',
+    secondaryKey: 'newDocs',
+    secondaryDirection: 'desc'
   });
 
   const handleSort = (key) => {
     let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+    if (sortConfig.primaryKey === key && sortConfig.primaryDirection === 'asc') {
       direction = 'desc';
     }
-    setSortConfig({ key, direction });
+    setSortConfig({
+      primaryKey: key,
+      primaryDirection: direction,
+      secondaryKey: key === 'newCPODocsCreated' ? 'newDocs' : null,
+      secondaryDirection: key === 'newCPODocsCreated' ? 'desc' : null
+    });
     onSort?.(key, direction);
   };
 
   const getSortIcon = (columnName) => {
-    if (sortConfig.key === columnName) {
-      return sortConfig.direction === 'asc' ? '↑' : '↓';
+    if (columnName === sortConfig.primaryKey) {
+      return sortConfig.primaryDirection === 'asc' ? '↑' : '↓';
+    }
+    if (columnName === sortConfig.secondaryKey) {
+      return sortConfig.secondaryDirection === 'asc' ? '↑' : '↓';
     }
     return '';
   };

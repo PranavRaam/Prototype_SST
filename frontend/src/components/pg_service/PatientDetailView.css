@@ -157,13 +157,17 @@
 }
 
 .patient-meta-item:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
   transform: translateY(-2px);
 }
 
 .meta-icon {
   color: var(--primary-color);
+}
+
+.patient-meta-item:hover .meta-icon {
+  color: white;
 }
 
 .patient-quick-actions {
@@ -430,8 +434,8 @@
 
 .section-badge {
   font-size: 0.75rem;
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
   margin-left: 1rem;
@@ -2041,6 +2045,7 @@
 .document-viewer-actions {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .document-viewer-content {
@@ -2524,29 +2529,64 @@
 }
 
 .sort-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background: var(--light-bg);
+  color: var(--text-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
-  background-color: white;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: var(--radius-md);
-  transition: var(--transition);
 }
 
 .sort-button:hover {
-  background-color: var(--light-bg);
+  background: var(--primary-light);
   color: var(--primary-color);
 }
 
 .sort-button.active {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
   border-color: var(--primary-color);
+}
+
+.action-icon {
+  font-size: 1rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.action-icon:hover {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+.action-icon-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.8;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+}
+
+.action-icon-button:hover {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.action-icon-button .action-icon {
+  font-size: 1rem;
 }
 
 /* Document filters styling */
@@ -3338,4 +3378,68 @@
 
 .status-icon.evaluation {
   color: #0d6efd;
-} 
+}
+
+.ehr-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--light-bg);
+  border-radius: var(--radius-full);
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.ehr-status.present {
+  background-color: var(--success-light);
+  color: var(--success-color);
+}
+
+.ehr-status.absent {
+  background-color: var(--error-light);
+  color: var(--error-color);
+}
+
+.ehr-status:hover {
+  transform: translateY(-2px);
+}
+
+.ehr-icon {
+  font-size: 1rem;
+}
+
+.document-viewer-actions .action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.document-viewer-actions .action-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.document-viewer-actions .action-button.primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.document-viewer-actions .action-button.secondary {
+  background-color: var(--light-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.document-viewer-actions .action-button.secondary:hover {
+  background-color: var(--border-color);
+}
+
+.document-viewer-actions .action-icon {
+  font-size: 1rem;
+}

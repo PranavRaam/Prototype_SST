@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
 import ServicesTable from './ServicesTable';
 import PatientDetailView from './PatientDetailView';
@@ -10,7 +10,7 @@ const dummyData = [
     ptName: "John Smith",
     dob: "1965-03-15",
     pg: "Group A",
-    hhah: "Yes",
+    hhah: "CarePlus HHA",
     cpoMinsCaptured: 45,
     remarks: "Regular checkup needed",
     newDocs: 10,
@@ -20,7 +20,7 @@ const dummyData = [
     ptName: "Mary Johnson",
     dob: "1978-08-22",
     pg: "Group B",
-    hhah: "No",
+    hhah: "ComfortCare HHA",
     cpoMinsCaptured: 30,
     remarks: "Pending assessment",
     newDocs: 9,
@@ -30,7 +30,7 @@ const dummyData = [
     ptName: "Robert Chen",
     dob: "1952-11-05",
     pg: "Group C",
-    hhah: "Yes",
+    hhah: "HealthFirst HHA",
     cpoMinsCaptured: 60,
     remarks: "Post-surgery recovery",
     newDocs: 15,
@@ -40,7 +40,7 @@ const dummyData = [
     ptName: "Elizabeth Taylor",
     dob: "1948-07-19",
     pg: "Group A",
-    hhah: "No",
+    hhah: "GentleCare HHA",
     cpoMinsCaptured: 25,
     remarks: "Medication review pending",
     newDocs: 8,
@@ -50,7 +50,7 @@ const dummyData = [
     ptName: "James Wilson",
     dob: "1972-09-30",
     pg: "Group D",
-    hhah: "Yes",
+    hhah: "Wellness HHA",
     cpoMinsCaptured: 40,
     remarks: "Stable condition",
     newDocs: 12,
@@ -60,7 +60,7 @@ const dummyData = [
     ptName: "Patricia Davis",
     dob: "1961-12-08",
     pg: "Group B",
-    hhah: "Yes",
+    hhah: "CompassionateCare HHA",
     cpoMinsCaptured: 55,
     remarks: "Physical therapy required",
     newDocs: 14,
@@ -70,7 +70,7 @@ const dummyData = [
     ptName: "Thomas Martinez",
     dob: "1955-02-14",
     pg: "Group C",
-    hhah: "No",
+    hhah: "EliteCare HHA",
     cpoMinsCaptured: 35,
     remarks: "High priority - follow up",
     newDocs: 11,
@@ -80,7 +80,7 @@ const dummyData = [
     ptName: "Jennifer Lopez",
     dob: "1980-04-25",
     pg: "Group A",
-    hhah: "Yes",
+    hhah: "GentleCare HHA",
     cpoMinsCaptured: 50,
     remarks: "Annual wellness visit",
     newDocs: 13,
@@ -90,7 +90,7 @@ const dummyData = [
     ptName: "William Anderson",
     dob: "1943-10-31",
     pg: "Group D",
-    hhah: "No",
+    hhah: "SilverLine HHA",
     cpoMinsCaptured: 20,
     remarks: "Memory care evaluation",
     newDocs: 7,
@@ -100,7 +100,7 @@ const dummyData = [
     ptName: "Linda Thompson",
     dob: "1968-06-17",
     pg: "Group B",
-    hhah: "Yes",
+    hhah: "OptimumHealth HHA",
     cpoMinsCaptured: 65,
     remarks: "Completed all documents",
     newDocs: 16,
@@ -110,7 +110,7 @@ const dummyData = [
     ptName: "Charles Robinson",
     dob: "1975-01-09",
     pg: "Group C",
-    hhah: "No",
+    hhah: "BrightPath HHA",
     cpoMinsCaptured: 28,
     remarks: "New patient intake",
     newDocs: 6,
@@ -120,7 +120,7 @@ const dummyData = [
     ptName: "Margaret Scott",
     dob: "1959-05-22",
     pg: "Group A",
-    hhah: "Yes",
+    hhah: "TotalCare HHA",
     cpoMinsCaptured: 48,
     remarks: "Chronic condition management",
     newDocs: 17,
@@ -130,7 +130,7 @@ const dummyData = [
     ptName: "Joseph Nguyen",
     dob: "1963-07-04",
     pg: "Group D",
-    hhah: "No",
+    hhah: "HorizonCare HHA",
     cpoMinsCaptured: 32,
     remarks: "Lab results pending",
     newDocs: 5,
@@ -140,7 +140,7 @@ const dummyData = [
     ptName: "Susan King",
     dob: "1970-12-12",
     pg: "Group B",
-    hhah: "Yes",
+    hhah: "VitalCare HHA",
     cpoMinsCaptured: 58,
     remarks: "Preventive care completed",
     newDocs: 18,
@@ -150,7 +150,7 @@ const dummyData = [
     ptName: "Daniel Wright",
     dob: "1947-03-08",
     pg: "Group C",
-    hhah: "Yes",
+    hhah: "HomeMed HHA",
     cpoMinsCaptured: 42,
     remarks: "Home health services needed",
     newDocs: 19,
@@ -160,7 +160,7 @@ const dummyData = [
     ptName: "Karen Evans",
     dob: "1969-09-19",
     pg: "Group A",
-    hhah: "No",
+    hhah: "LifeFirst HHA",
     cpoMinsCaptured: 27,
     remarks: "Urgent: medication adjustment",
     newDocs: 4,
@@ -170,7 +170,7 @@ const dummyData = [
     ptName: "Paul Baker",
     dob: "1954-11-27",
     pg: "Group D",
-    hhah: "Yes",
+    hhah: "SeniorCare HHA",
     cpoMinsCaptured: 52,
     remarks: "Stable - routine monitoring",
     newDocs: 20,
@@ -180,7 +180,7 @@ const dummyData = [
     ptName: "Nancy Rivera",
     dob: "1973-02-14",
     pg: "Group B",
-    hhah: "No",
+    hhah: "CaringHands HHA",
     cpoMinsCaptured: 38,
     remarks: "Behavioral health referral",
     newDocs: 3,
@@ -190,7 +190,7 @@ const dummyData = [
     ptName: "Mark Cooper",
     dob: "1960-04-03",
     pg: "Group C",
-    hhah: "Yes",
+    hhah: "PrimeCare HHA",
     cpoMinsCaptured: 62,
     remarks: "Cardiac rehab in progress",
     newDocs: 21,
@@ -200,7 +200,7 @@ const dummyData = [
     ptName: "Lisa Morris",
     dob: "1957-08-11",
     pg: "Group A",
-    hhah: "No",
+    hhah: "HeartlandCare HHA",
     cpoMinsCaptured: 29,
     remarks: "Critical: needs immediate review",
     newDocs: 2,
@@ -213,6 +213,19 @@ const PGServicesView = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSorts, setActiveSorts] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+
+  useEffect(() => {
+    // Sort the data when component mounts
+    const sortedData = [...dummyData].sort((a, b) => {
+      // First sort by New CPO Docs Created (ascending)
+      if (a.newCPODocsCreated !== b.newCPODocsCreated) {
+        return a.newCPODocsCreated - b.newCPODocsCreated;
+      }
+      // If New CPO Docs Created is same, sort by Newdocs (descending)
+      return b.newDocs - a.newDocs;
+    });
+    setData(sortedData);
+  }, []);
 
   const applyFiltersAndSorts = (dataToFilter, term, sorts) => {
     let filteredData = [...dataToFilter];
@@ -333,7 +346,7 @@ const PGServicesView = () => {
               <path d="M19 12H5M12 19l-7-7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <h1 className="pg-services-page-title">PG Services View</h1>
+          <h1 className="pg-services-page-title">PG Services</h1>
         </div>
         <div className="pg-services-header-right">
           <SearchBar onSearch={handleSearch} />

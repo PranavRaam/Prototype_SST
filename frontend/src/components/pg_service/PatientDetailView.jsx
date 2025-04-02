@@ -250,7 +250,8 @@ const PatientDetailView = ({ patient, onBack }) => {
     primaryPhysician: 'Dr. Sarah Johnson',
     specialist: 'Dr. Robert Chen',
     allergies: 'Penicillin, Peanuts',
-    medications: 'Lisinopril, Metformin'
+    medications: 'Lisinopril, Metformin',
+    hasEHR: patient?.hasEHR ?? false // Changed to false by default
   });
   
   // Timeline data
@@ -748,7 +749,6 @@ const PatientDetailView = ({ patient, onBack }) => {
     setSelectedDocument(null);
   };
 
-  // Update document status to prepared
   const markAsPrepared = (docId) => {
     setNewPreparedDocs(prevDocs => {
       const updatedDocs = prevDocs.map(doc => {
@@ -759,6 +759,23 @@ const PatientDetailView = ({ patient, onBack }) => {
             `Document ${docId} marked as Prepared`
           );
           return { ...doc, status: 'Prepared' };
+        }
+        return doc;
+      });
+      return updatedDocs;
+    });
+  };
+
+  const markAsUnprepared = (docId) => {
+    setNewPreparedDocs(prevDocs => {
+      const updatedDocs = prevDocs.map(doc => {
+        if (doc.id === docId) {
+          showNotification(
+            'success', 
+            'Status Updated', 
+            `Document ${docId} marked as New`
+          );
+          return { ...doc, status: 'New' };
         }
         return doc;
       });
@@ -951,28 +968,13 @@ Recommendations:
               <FaPhone className="meta-icon" />
               {patientInfo.phone}
             </div>
+            <div className={`ehr-status ${patientInfo.hasEHR ? 'present' : 'absent'}`}>
+              <FaFileMedicalAlt className="ehr-icon" />
+              EHR: {patientInfo.hasEHR ? 'Present' : 'Not Available'}
+            </div>
           </div>
         </div>
         <div className="patient-quick-actions">
-          <button className="action-button primary" onClick={() => setActiveTab('cpo')}>
-            <FaFileMedical className="action-icon" />
-            CPO ({calculateCPOMinutes()} mins)
-          </button>
-          <button className="action-button secondary" onClick={() => setActiveTab('documents')}>
-            <FaFileAlt className="action-icon" />
-            Docs ({documentCounts.total})
-          </button>
-          <div className="icon-button-group">
-            <button className="icon-button" title="Print Patient Info">
-              <FaPrint />
-            </button>
-            <button className="icon-button" title="Export Patient Data">
-              <FaDownload />
-            </button>
-            <button className="icon-button" title="Patient Settings">
-              <FaCog />
-            </button>
-          </div>
         </div>
       </div>
       
@@ -2301,7 +2303,6 @@ Recommendations:
                         <th>Document ID</th>
                         <th>File Name</th>
                         <th>Date Signed</th>
-                        <th>Signed By</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -2336,12 +2337,6 @@ Recommendations:
                             <div className="cell-with-icon">
                               <FaCalendar className="cell-icon" />
                               {formatDate(doc.signedDate)}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="signed-by">
-                              <FaUserMd className="signed-icon" />
-                              {doc.signedBy}
                             </div>
                           </td>
                           <td>
@@ -2623,13 +2618,19 @@ Recommendations:
                 {selectedDocument.status === 'New' && (
                   <button 
                     className="action-button primary"
-                    onClick={() => {
-                      markAsPrepared(selectedDocument.id);
-                      setSelectedDocument({...selectedDocument, status: 'Prepared'});
-                    }}
+                    onClick={() => markAsPrepared(selectedDocument.id)}
                   >
                     <FaCheck className="action-icon" />
                     Mark as Prepared
+                  </button>
+                )}
+                {selectedDocument.status === 'Prepared' && (
+                  <button 
+                    className="action-button secondary"
+                    onClick={() => markAsUnprepared(selectedDocument.id)}
+                  >
+                    <FaTimes className="action-icon" />
+                    Mark as Unprepared
                   </button>
                 )}
                 <button 

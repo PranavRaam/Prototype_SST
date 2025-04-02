@@ -173,6 +173,8 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
 
   // Handle statistical area click
   const handleStatisticalAreaClick = (area) => {
+    console.log('RegionDetailView: MSA clicked:', area);
+    console.log('RegionDetailView: onSelectStatisticalArea exists:', !!onSelectStatisticalArea);
     if (onSelectStatisticalArea) {
       onSelectStatisticalArea(area);
     }

@@ -48,6 +48,12 @@ const HHAHFunnel = () => {
     return <div className="hhah-funnel-container">Loading HHAH funnel data...</div>;
   }
 
+  // Transform the funnel data to show HHAH counts instead of patient values
+  const transformedFunnelData = hhahFunnelData.map(stage => ({
+    ...stage,
+    value: hhahAssignments[stage.name]?.length || 0
+  }));
+
   const handleFunnelClick = (entry) => {
     if (entry.value === 0) return;
     setExpandedStage(entry.name);
@@ -62,10 +68,7 @@ const HHAHFunnel = () => {
 
   const handleMoveToStage = (targetStage) => {
     if (!selectedHHAH || !targetStage || !moveHhahToStage) return;
-
-    // Use the context function to move the HHAH
     moveHhahToStage(selectedHHAH, expandedStage, targetStage);
-    
     setShowMoveOptions(false);
     setSelectedHHAH(null);
   };
@@ -78,10 +81,13 @@ const HHAHFunnel = () => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const stageName = payload[0].payload.name;
+      const hhahCount = hhahAssignments[stageName]?.length || 0;
+      
       return (
         <div className="custom-tooltip">
-          <p className="tooltip-label">{payload[0].payload.name}</p>
-          <p className="tooltip-value">{payload[0].value} Patients</p>
+          <p className="tooltip-label">{stageName}</p>
+          <p className="tooltip-value">HHAHs: {hhahCount}</p>
         </div>
       );
     }
@@ -111,7 +117,7 @@ const HHAHFunnel = () => {
           {showMoveOptions && (
             <div className="move-options">
               <h5>Move {selectedHHAH} to:</h5>
-              {hhahFunnelData
+              {transformedFunnelData
                 .filter(stage => stage.name !== expandedStage)
                 .map((stage, index) => (
                   <button
@@ -130,7 +136,7 @@ const HHAHFunnel = () => {
             <Tooltip content={<CustomTooltip />} />
             <Funnel
               dataKey="value"
-              data={hhahFunnelData}
+              data={transformedFunnelData}
               isAnimationActive={false}
               onClick={handleFunnelClick}
               width={520}
