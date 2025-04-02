@@ -72,342 +72,49 @@ def download_and_unzip(url, extract_to=None, cache=True):
     print(f"Data extracted to {output_dir}")
     return output_dir
 
-def get_county_data(use_alternative_loading=False):
-    """Get county data from Census TIGER/Line shapefiles"""
+def get_county_data():
     url = "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip"
     data_dir = download_and_unzip(url)
     
     county_file = os.path.join(data_dir, "tl_2023_us_county.shp")
+    county_data = gpd.read_file(county_file)
     
-    try:
-        if use_alternative_loading:
-            # Alternative loading method without relying on fiona.path
-            import json
-            import shapely.geometry
-            from shapefile import Reader
-            
-            # Read the shapefile using pyshp instead of fiona
-            reader = Reader(county_file)
-            county_records = []
-            
-            # Extract records and shapes
-            for sr in reader.shapeRecords():
-                attrs = sr.record.as_dict()
-                
-                # Create a shapely geometry from the shape points
-                if sr.shape.shapeType == 5:  # Polygon
-                    pts = sr.shape.points
-                    if len(pts) < 3:  # Need at least 3 points for a polygon
-                        continue
-                    geom = shapely.geometry.Polygon(pts)
-                else:
-                    # Skip non-polygon shapes
-                    continue
-                
-                # Add essential attributes and geometry
-                record = {
-                    'STATEFP': attrs.get('STATEFP', ''),
-                    'COUNTYFP': attrs.get('COUNTYFP', ''),
-                    'NAME': attrs.get('NAME', ''),
-                    'geometry': geom
-                }
-                county_records.append(record)
-            
-            # Create a GeoDataFrame from the records
-            import pandas as pd
-            import geopandas as gpd
-            county_data = gpd.GeoDataFrame(county_records, crs="EPSG:4326")
-        else:
-            # Standard loading with geopandas/fiona
-            county_data = gpd.read_file(county_file)
-    except Exception as e:
-        print(f"Error loading county data: {str(e)}")
-        print("Falling back to alternative loading method")
-        # If standard method fails, try alternative anyway
-        import json
-        import shapely.geometry
-        from shapefile import Reader
-        
-        # Read the shapefile using pyshp instead of fiona
-        reader = Reader(county_file)
-        county_records = []
-        
-        # Extract records and shapes
-        for sr in reader.shapeRecords():
-            attrs = sr.record.as_dict()
-            
-            # Create a shapely geometry from the shape points
-            if sr.shape.shapeType == 5:  # Polygon
-                pts = sr.shape.points
-                if len(pts) < 3:  # Need at least 3 points for a polygon
-                    continue
-                geom = shapely.geometry.Polygon(pts)
-            else:
-                # Skip non-polygon shapes
-                continue
-            
-            # Add essential attributes and geometry
-            record = {
-                'STATEFP': attrs.get('STATEFP', ''),
-                'COUNTYFP': attrs.get('COUNTYFP', ''),
-                'NAME': attrs.get('NAME', ''),
-                'geometry': geom
-            }
-            county_records.append(record)
-        
-        # Create a GeoDataFrame from the records
-        import pandas as pd
-        import geopandas as gpd
-        county_data = gpd.GeoDataFrame(county_records, crs="EPSG:4326")
-    
-    # Filter US states only
     county_data = county_data[county_data['STATEFP'].isin([
         '01', '02', '04', '05', '06', '08', '09', '10', '11', '12', '13', '15', '16', '17', '18', '19',
         '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35',
         '36', '37', '38', '39', '40', '41', '42', '44', '45', '46', '47', '48', '49', '50', '51', '53', '54', '55', '56'
     ])]
     
-    # Simplify geometries
     county_data['geometry'] = county_data.geometry.simplify(0.01)
     
     return county_data
 
-def get_states_data(use_alternative_loading=False):
-    """Get state data from Census TIGER/Line shapefiles"""
+def get_states_data():
     url = "https://www2.census.gov/geo/tiger/TIGER2023/STATE/tl_2023_us_state.zip"
     data_dir = download_and_unzip(url)
     
     states_file = os.path.join(data_dir, "tl_2023_us_state.shp")
+    states_data = gpd.read_file(states_file)
     
-    try:
-        if use_alternative_loading:
-            # Alternative loading method without relying on fiona.path
-            import json
-            import shapely.geometry
-            from shapefile import Reader
-            
-            # Read the shapefile using pyshp instead of fiona
-            reader = Reader(states_file)
-            state_records = []
-            
-            # Extract records and shapes
-            for sr in reader.shapeRecords():
-                attrs = sr.record.as_dict()
-                
-                # Create a shapely geometry from the shape points
-                if sr.shape.shapeType == 5:  # Polygon
-                    pts = sr.shape.points
-                    if len(pts) < 3:  # Need at least 3 points for a polygon
-                        continue
-                    geom = shapely.geometry.Polygon(pts)
-                else:
-                    # Skip non-polygon shapes
-                    continue
-                
-                # Add essential attributes and geometry
-                record = {
-                    'STATEFP': attrs.get('STATEFP', ''),
-                    'STUSPS': attrs.get('STUSPS', ''),
-                    'NAME': attrs.get('NAME', ''),
-                    'geometry': geom
-                }
-                state_records.append(record)
-            
-            # Create a GeoDataFrame from the records
-            import pandas as pd
-            import geopandas as gpd
-            states_data = gpd.GeoDataFrame(state_records, crs="EPSG:4326")
-        else:
-            # Standard loading with geopandas/fiona
-            states_data = gpd.read_file(states_file)
-    except Exception as e:
-        print(f"Error loading states data: {str(e)}")
-        print("Falling back to alternative loading method")
-        # If standard method fails, try alternative anyway
-        import json
-        import shapely.geometry
-        from shapefile import Reader
-        
-        # Read the shapefile using pyshp instead of fiona
-        reader = Reader(states_file)
-        state_records = []
-        
-        # Extract records and shapes
-        for sr in reader.shapeRecords():
-            attrs = sr.record.as_dict()
-            
-            # Create a shapely geometry from the shape points
-            if sr.shape.shapeType == 5:  # Polygon
-                pts = sr.shape.points
-                if len(pts) < 3:  # Need at least 3 points for a polygon
-                    continue
-                geom = shapely.geometry.Polygon(pts)
-            else:
-                # Skip non-polygon shapes
-                continue
-            
-            # Add essential attributes and geometry
-            record = {
-                'STATEFP': attrs.get('STATEFP', ''),
-                'STUSPS': attrs.get('STUSPS', ''),
-                'NAME': attrs.get('NAME', ''),
-                'geometry': geom
-            }
-            state_records.append(record)
-        
-        # Create a GeoDataFrame from the records
-        import pandas as pd
-        import geopandas as gpd
-        states_data = gpd.GeoDataFrame(state_records, crs="EPSG:4326")
-    
-    # Filter out territories
     states_data = states_data[~states_data['STUSPS'].isin(['AS', 'GU', 'MP', 'PR', 'VI'])]
     states_data['geometry'] = states_data.geometry.simplify(0.01)
     
     return states_data
 
-def get_msa_data(use_alternative_loading=False):
-    """Get Metropolitan Statistical Area data from Census TIGER/Line shapefiles"""
-    try:
-        url = "https://www2.census.gov/geo/tiger/TIGER2023/CBSA/tl_2023_us_cbsa.zip"
-        data_dir = download_and_unzip(url)
-        
-        msa_file = os.path.join(data_dir, "tl_2023_us_cbsa.shp")
-        
-        if use_alternative_loading:
-            print("Using alternative loading method for MSA data")
-            # Alternative loading method without relying on fiona.path
-            import json
-            import shapely.geometry
-            from shapefile import Reader
-            
-            # Read the shapefile using pyshp instead of fiona
-            reader = Reader(msa_file)
-            msa_records = []
-            
-            # Extract records and shapes
-            for sr in reader.shapeRecords():
-                attrs = sr.record.as_dict()
-                
-                # Create a shapely geometry from the shape points
-                if sr.shape.shapeType == 5:  # Polygon
-                    pts = sr.shape.points
-                    if len(pts) < 3:  # Need at least 3 points for a polygon
-                        continue
-                    geom = shapely.geometry.Polygon(pts)
-                else:
-                    # Skip non-polygon shapes
-                    continue
-                
-                # Add essential attributes and geometry
-                record = {
-                    'CBSAFP': attrs.get('CBSAFP', ''),
-                    'NAME': attrs.get('NAME', ''),
-                    'LSAD': attrs.get('LSAD', ''),
-                    'geometry': geom
-                }
-                msa_records.append(record)
-            
-            # Create a GeoDataFrame from the records
-            import pandas as pd
-            import geopandas as gpd
-            msa_data = gpd.GeoDataFrame(msa_records, crs="EPSG:4326")
-        else:
-            # Standard loading with geopandas/fiona
-            msa_data = gpd.read_file(msa_file)
-        
-        # Filter for Metropolitan Statistical Areas (both M1 and M2)
-        # M1 = Metropolitan Statistical Area
-        # M2 = Metropolitan Division
-        if 'LSAD' in msa_data.columns:
-            filtered_msa_data = msa_data[msa_data['LSAD'].isin(['M1', 'M2'])]
-            if len(filtered_msa_data) > 0:
-                msa_data = filtered_msa_data
-            else:
-                print("Warning: No MSA data found after filtering!")
-                print(f"Available LSAD values: {msa_data['LSAD'].unique()}")
-        else:
-            print("Warning: LSAD column not found in MSA data")
-        
-        # Ensure we have the required columns
-        required_columns = ['CBSAFP', 'NAME', 'geometry']
-        missing_columns = [col for col in required_columns if col not in msa_data.columns]
-        if missing_columns:
-            raise Exception(f"Missing required columns in MSA data: {missing_columns}")
-        
-        # Clean and process the data
-        msa_data['geometry'] = msa_data.geometry.simplify(0.01)
-        msa_data = msa_data.copy()  # Make a copy to avoid SettingWithCopyWarning
-        
-        # Add placeholder for state count
-        msa_data['STATE_COUNT'] = 0
-        
-        print(f"Loaded {len(msa_data)} Metropolitan Statistical Areas")
-        return msa_data
-        
-    except Exception as e:
-        print(f"Error loading MSA data: {str(e)}")
-        print("Trying alternative loading method...")
-        
-        try:
-            # Fall back to alternative method even if not explicitly requested
-            url = "https://www2.census.gov/geo/tiger/TIGER2023/CBSA/tl_2023_us_cbsa.zip"
-            data_dir = download_and_unzip(url)
-            
-            msa_file = os.path.join(data_dir, "tl_2023_us_cbsa.shp")
-            
-            # Alternative loading method without relying on fiona.path
-            import json
-            import shapely.geometry
-            from shapefile import Reader
-            
-            # Read the shapefile using pyshp instead of fiona
-            reader = Reader(msa_file)
-            msa_records = []
-            
-            # Extract records and shapes
-            for sr in reader.shapeRecords():
-                attrs = sr.record.as_dict()
-                
-                # Create a shapely geometry from the shape points
-                if sr.shape.shapeType == 5:  # Polygon
-                    pts = sr.shape.points
-                    if len(pts) < 3:  # Need at least 3 points for a polygon
-                        continue
-                    geom = shapely.geometry.Polygon(pts)
-                else:
-                    # Skip non-polygon shapes
-                    continue
-                
-                # Add essential attributes and geometry
-                record = {
-                    'CBSAFP': attrs.get('CBSAFP', ''),
-                    'NAME': attrs.get('NAME', ''),
-                    'LSAD': attrs.get('LSAD', ''),
-                    'geometry': geom
-                }
-                msa_records.append(record)
-            
-            # Create a GeoDataFrame from the records
-            import pandas as pd
-            import geopandas as gpd
-            msa_data = gpd.GeoDataFrame(msa_records, crs="EPSG:4326")
-            
-            # Filter for Metropolitan Statistical Areas if LSAD column exists
-            if 'LSAD' in msa_data.columns:
-                filtered_msa_data = msa_data[msa_data['LSAD'].isin(['M1', 'M2'])]
-                if len(filtered_msa_data) > 0:
-                    msa_data = filtered_msa_data
-            
-            # Add placeholder for state count
-            msa_data['STATE_COUNT'] = 0
-            
-            print(f"Loaded {len(msa_data)} Metropolitan Statistical Areas using alternative method")
-            return msa_data
-            
-        except Exception as fallback_error:
-            print(f"Alternative loading method also failed: {str(fallback_error)}")
-            return None
+def get_msa_data():
+    url = "https://www2.census.gov/geo/tiger/TIGER2023/CBSA/tl_2023_us_cbsa.zip"
+    data_dir = download_and_unzip(url)
+    
+    msa_file = os.path.join(data_dir, "tl_2023_us_cbsa.shp")
+    msa_data = gpd.read_file(msa_file)
+    
+    msa_data = msa_data[msa_data['LSAD'] == 'M1']
+    msa_data['geometry'] = msa_data.geometry.simplify(0.01)
+    
+    # Add placeholder for state count that will be populated later
+    msa_data['STATE_COUNT'] = 0
+    
+    return msa_data
 
 def get_county_msa_relationships():
     try:
@@ -1006,31 +713,239 @@ def create_enhanced_interactive_map(county_data, msa_data, regions):
     )
     m.add_child(legend)
     
-    # Add MSA legend
-    m.get_root().html.add_child(folium.Element("""
-    <div style="position: fixed; bottom: 40px; right: 10px; z-index: 999; 
-                background-color: white; padding: 12px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.3);">
-        <div style="text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 14px;">Metropolitan Statistical Areas</div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-            <svg height="18" width="50">
-                <line x1="0" y1="9" x2="50" y2="9" style="stroke:#3388FF;stroke-width:2;stroke-dasharray:5,5" />
-            </svg>
-            <span style="margin-left: 5px; font-size: 13px;">MSA Boundary</span>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <svg height="18" width="22">
-                <rect x="0" y="0" width="22" height="18" style="fill:rgba(51,136,255,0.05);stroke:#3388FF;stroke-width:1" />
-            </svg>
-            <span style="margin-left: 5px; font-size: 13px;">MSA Area</span>
-        </div>
-    </div>
-    """))
-    
     # Add map controls
-    folium.LayerControl(collapsed=False).add_to(m)
+    folium.LayerControl(collapsed=False, position='topright').add_to(m)
     MousePosition().add_to(m)
     Draw(export=True).add_to(m)
     Fullscreen().add_to(m)
+    
+    # Add custom filter controls directly in HTML
+    custom_filter_html = """
+    <div id="custom-layer-control" style="
+        position: absolute;
+        top: 120px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 12px 15px;
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        border: 2px solid #666;
+        border-radius: 5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        width: 210px;
+    ">
+        <div style="font-weight: bold; font-size: 15px; margin-bottom: 12px; text-align: center;">Map Controls</div>
+        
+        <div style="margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 8px;">Base Map:</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="margin: 0; display: block;">
+                    <input type="radio" name="baseMap" value="light" checked> Light Map
+                </label>
+                <label style="margin: 0; display: block;">
+                    <input type="radio" name="baseMap" value="dark"> Dark Map
+                </label>
+                <label style="margin: 0; display: block;">
+                    <input type="radio" name="baseMap" value="street"> Street Map
+                </label>
+            </div>
+        </div>
+        
+        <div style="border-top: 1px solid #ccc; padding-top: 12px; margin-top: 5px;">
+            <div style="font-weight: bold; margin-bottom: 8px;">Layers:</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="margin: 0; display: block;">
+                    <input type="checkbox" name="stateLayer" checked> State Boundaries
+                </label>
+                <label style="margin: 0; display: block;">
+                    <input type="checkbox" name="countyLayer" checked> Counties by Region
+                </label>
+                <label style="margin: 0; display: block;">
+                    <input type="checkbox" name="msaLayer" checked> Metropolitan Statistical Areas
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Wait for map to initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find the Leaflet map instance
+        let leafletMap = null;
+        let baseMaps = {};
+        let overlayMaps = {};
+        
+        // Function to find map components
+        function findMapComponents() {
+            try {
+                // Look for map variable in global scope
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].addLayer === 'function') {
+                        leafletMap = window[key];
+                        console.log('Found Leaflet map:', key);
+                        break;
+                    }
+                }
+                
+                // Find layer control objects 
+                for (let key in window) {
+                    if (key.startsWith('layer_control_') && window[key + '_layers']) {
+                        const layers = window[key + '_layers'];
+                        
+                        if (layers.base_layers) {
+                            baseMaps = layers.base_layers;
+                            console.log('Found base layers:', Object.keys(baseMaps));
+                        }
+                        
+                        if (layers.overlays) {
+                            overlayMaps = layers.overlays;
+                            console.log('Found overlay layers:', Object.keys(overlayMaps));
+                        }
+                        
+                        break;
+                    }
+                }
+                
+                return leafletMap && (Object.keys(baseMaps).length > 0 || Object.keys(overlayMaps).length > 0);
+            } catch (e) {
+                console.error('Error finding map components:', e);
+                return false;
+            }
+        }
+        
+        // Setup the custom controls
+        function setupCustomControls() {
+            // Base map radio buttons
+            const baseMapRadios = document.querySelectorAll('input[name="baseMap"]');
+            baseMapRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        const mapType = this.value;
+                        setBaseMap(mapType);
+                    }
+                });
+            });
+            
+            // Layer checkboxes
+            document.querySelector('input[name="stateLayer"]').addEventListener('change', function() {
+                toggleLayer('State Boundaries', this.checked);
+            });
+            
+            document.querySelector('input[name="countyLayer"]').addEventListener('change', function() {
+                toggleLayer('All Counties by Region', this.checked);
+            });
+            
+            document.querySelector('input[name="msaLayer"]').addEventListener('change', function() {
+                toggleLayer('Metropolitan Statistical Areas', this.checked);
+            });
+        }
+        
+        // Function to set base map
+        function setBaseMap(mapType) {
+            console.log('Setting base map to:', mapType);
+            
+            if (!leafletMap) {
+                console.error('Map not found');
+                return;
+            }
+            
+            const baseMapLabels = {
+                'light': 'Light Map',
+                'dark': 'Dark Map',
+                'street': 'Street Map'
+            };
+            
+            const targetLabel = baseMapLabels[mapType] || 'Light Map';
+            
+            // Find the layer
+            let targetLayer = null;
+            for (const label in baseMaps) {
+                if (label === targetLabel) {
+                    targetLayer = baseMaps[label];
+                    break;
+                }
+            }
+            
+            if (!targetLayer) {
+                console.error('Base map not found:', targetLabel);
+                return;
+            }
+            
+            // Remove all base layers
+            for (const label in baseMaps) {
+                const layer = baseMaps[label];
+                if (leafletMap.hasLayer(layer)) {
+                    leafletMap.removeLayer(layer);
+                }
+            }
+            
+            // Add the target base layer
+            leafletMap.addLayer(targetLayer);
+            console.log('Base map set to:', targetLabel);
+        }
+        
+        // Function to toggle overlay layers
+        function toggleLayer(layerName, visible) {
+            console.log('Toggling layer:', layerName, visible);
+            
+            if (!leafletMap) {
+                console.error('Map not found');
+                return;
+            }
+            
+            // Find the layer
+            const layer = overlayMaps[layerName];
+            if (!layer) {
+                console.error('Layer not found:', layerName);
+                return;
+            }
+            
+            // Toggle layer visibility
+            if (visible) {
+                if (!leafletMap.hasLayer(layer)) {
+                    leafletMap.addLayer(layer);
+                }
+            } else {
+                if (leafletMap.hasLayer(layer)) {
+                    leafletMap.removeLayer(layer);
+                }
+            }
+        }
+        
+        // Remove any external MSA legend box that appears
+        function removeMSALegend() {
+            // Find any div that contains "Metropolitan Statistical Areas" and hide it
+            const allDivs = document.querySelectorAll('div');
+            allDivs.forEach(div => {
+                if (div.innerText && div.innerText.includes('Metropolitan Statistical Areas')) {
+                    // Don't hide our custom control
+                    if (!div.closest('#custom-layer-control')) {
+                        console.log('Found MSA legend to hide:', div);
+                        div.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
+        // Initialize
+        setTimeout(function() {
+            if (findMapComponents()) {
+                setupCustomControls();
+                removeMSALegend();
+                console.log('Custom controls initialized');
+            } else {
+                console.error('Could not initialize custom controls - map components not found');
+            }
+        }, 1000);
+        
+        // Try again after another second, sometimes legends are added dynamically
+        setTimeout(removeMSALegend, 2000);
+    });
+    </script>
+    """
+    
+    m.get_root().html.add_child(folium.Element(custom_filter_html))
     
     # Add minimap
     minimap = MiniMap(
@@ -1068,12 +983,130 @@ def create_enhanced_interactive_map(county_data, msa_data, regions):
         m.add_child(msa_search)
     
     # Add data source info
-    # m.get_root().html.add_child(folium.Element("""
-    # <div style="position: fixed; bottom: 10px; left: 10px; z-index: 1000; background-color: rgba(255, 255, 255, 0.8); 
-    #             padding: 8px; border-radius: 5px; font-size: 12px; border: 1px solid #aaa">
-    #     Data sources: US Census TIGER/Line Shapefiles 2023
-    # </div>
-    # """))
+    m.get_root().html.add_child(folium.Element("""
+    <div style="position: fixed; bottom: 10px; left: 10px; z-index: 1000; background-color: rgba(255, 255, 255, 0.8); 
+                padding: 8px; border-radius: 5px; font-size: 12px; border: 1px solid #aaa">
+        Data sources: US Census TIGER/Line Shapefiles 2023
+    </div>
+    """))
+    
+    # Add special iframe integration script for frontend
+    m.get_root().html.add_child(folium.Element("""
+    <script>
+    // Function to aggressively remove MSA legend
+    function removeMSALegend() {
+        // Multiple approaches to find and remove MSA legend
+        const selectors = [
+            '.leaflet-top.leaflet-right > div:nth-child(2)',
+            '.leaflet-control-layers-overlays label:contains("Metropolitan")',
+            'div[class*="legend"]',
+            '.info.legend',
+            '.leaflet-control:contains("Metropolitan")',
+            '.leaflet-control:contains("MSA")'
+        ];
+
+        selectors.forEach(selector => {
+            try {
+                document.querySelectorAll(selector).forEach(element => {
+                    if (element.textContent.includes('Metropolitan') || 
+                        element.textContent.includes('MSA')) {
+                        element.remove();
+                    }
+                });
+            } catch(e) {
+                console.log('Error removing element with selector:', selector, e);
+            }
+        });
+
+        // Direct DOM traversal approach
+        document.querySelectorAll('div').forEach(div => {
+            try {
+                if ((div.textContent || '').includes('Metropolitan') || 
+                    (div.textContent || '').includes('MSA')) {
+                    const parent = div.closest('.leaflet-control');
+                    if (parent && !parent.classList.contains('leaflet-control-layers')) {
+                        parent.remove();
+                    }
+                }
+            } catch(e) {
+                console.log('Error in DOM traversal:', e);
+            }
+        });
+    }
+
+    // Function to ensure legend stays removed
+    function ensureLegendRemoval() {
+        removeMSALegend();
+        
+        // Schedule periodic checks
+        setInterval(removeMSALegend, 500); // Check every 500ms
+        
+        // Also check on any DOM mutations
+        const observer = new MutationObserver(function(mutations) {
+            removeMSALegend();
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial delay to let map initialize
+        setTimeout(ensureLegendRemoval, 1000);
+        
+        // Notify parent when map is fully loaded
+        if (window.parent) {
+            window.parent.postMessage({ type: 'MAP_LOADED', success: true }, '*');
+        }
+    });
+    </script>
+    
+    <style>
+    /* Aggressive CSS to hide MSA legend */
+    .leaflet-top.leaflet-right > div:nth-child(2),
+    .leaflet-control:has(div:contains("Metropolitan")),
+    .leaflet-control:has(div:contains("MSA")),
+    div[class*="legend"]:has(div:contains("Metropolitan")),
+    div[class*="legend"]:has(div:contains("MSA")),
+    .info.legend:has(div:contains("Metropolitan")),
+    .info.legend:has(div:contains("MSA")),
+    .leaflet-control-layers-overlays label:has(span:contains("Metropolitan")),
+    div[style*="position: fixed"]:has(div:contains("Metropolitan")),
+    div[style*="position: absolute"]:has(div:contains("Metropolitan")) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        pointer-events: none !important;
+        z-index: -9999 !important;
+        clip: rect(0, 0, 0, 0) !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    /* Hide any element containing MSA or Metropolitan text in the top-right corner */
+    .leaflet-top.leaflet-right > *:not(:first-child) {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Additional safety measures */
+    [class*="msa-legend"],
+    [class*="metropolitan-legend"],
+    [id*="msa-legend"],
+    [id*="metropolitan-legend"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    </style>
+    """))
     
     return m, fig
 
@@ -1096,9 +1129,21 @@ def main():
     print("Creating interactive map...")
     m, fig = create_enhanced_interactive_map(county_data, msa_data, regions)
     
-    print("Saving map to HTML...")
-    m.save("us_20regions_map.html")
-    print("Map saved to us_20regions_map.html")
+    output_file = "us_20regions_map.html"
+    print(f"Saving map to {output_file}...")
+    m.save(output_file)
+    print(f"Map saved to {output_file}")
+    
+    # Try to apply map interaction script for frontend integration
+    try:
+        from map_injector import inject_script_into_map
+        print("Injecting interaction scripts for frontend compatibility...")
+        inject_script_into_map(output_file)
+        print("Script injection complete")
+    except ImportError:
+        print("Warning: map_injector module not found, skipping script injection")
+    except Exception as e:
+        print(f"Warning: Error during script injection: {str(e)}")
     
     return m, county_data, msa_data, regions
 

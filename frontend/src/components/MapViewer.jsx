@@ -1,17 +1,39 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { initializeMap } from '../utils/mapInteraction';
 import { getApiUrl } from '../config';
 import './MapViewer.css';
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000; // 2 seconds
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 1500; // 1.5 seconds
+const POLLING_INTERVAL = 1000; // 1 second
 
 const MapViewer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  
   const iframeRef = useRef(null);
   const mapStatusCheckRef = useRef(null);
+
+  // Show fullscreen tip after map is loaded
+  useEffect(() => {
+    if (mapVisible && !isFullScreen) {
+      const timer = setTimeout(() => {
+        setShowTip(true);
+      }, 2000);
+      
+      const hideTimer = setTimeout(() => {
+        setShowTip(false);
+      }, 8000); // Auto-hide after 6 seconds of being shown
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [mapVisible, isFullScreen]);
 
   const checkMapStatus = useCallback(async () => {
     try {
@@ -28,95 +50,110 @@ const MapViewer = () => {
   }, []);
 
   const generateMap = useCallback(async () => {
+    setIsLoading(true);
+    setMapVisible(false);
     try {
-      const response = await fetch(getApiUrl('/api/generate-map'));
+      const response = await fetch(getApiUrl('/api/generate-map?force=true'));
       if (!response.ok) {
         throw new Error('Failed to generate map');
       }
       const data = await response.json();
+      
+      // Start polling to check when map is ready
+      startPolling();
+      
       return data;
     } catch (err) {
       console.error('Error generating map:', err);
+      setIsLoading(false);
+      setError('Failed to generate map. Please try again.');
       return null;
     }
+  }, []);
+
+  const startPolling = useCallback(() => {
+    // Clear any existing polling
+    if (mapStatusCheckRef.current) {
+      clearInterval(mapStatusCheckRef.current);
+    }
+    
+    // Start new polling
+    mapStatusCheckRef.current = setInterval(async () => {
+      try {
+        const status = await checkMapStatus();
+        console.log('Map status:', status);
+        
+        if (status && status.mapExists) {
+          clearInterval(mapStatusCheckRef.current);
+          setIsLoading(false);
+          setMapVisible(true);
+          
+          // Reload the iframe to show the new map
+          if (iframeRef.current) {
+            loadMapInIframe();
+          }
+        } else if (status && !status.generationInProgress) {
+          // Map generation completed but no map exists - error
+          clearInterval(mapStatusCheckRef.current);
+          setIsLoading(false);
+          setError('Map generation completed but no map was found.');
+        }
+      } catch (err) {
+        console.error('Error during polling:', err);
+      }
+    }, POLLING_INTERVAL);
+  }, [checkMapStatus]);
+
+  const loadMapInIframe = useCallback(() => {
+    if (!iframeRef.current) return;
+    
+    // Add a timestamp to bust cache
+    const timestamp = new Date().getTime();
+    iframeRef.current.src = `${getApiUrl('/api/map')}?t=${timestamp}`;
   }, []);
 
   const loadMap = useCallback(async () => {
     try {
       // First check if map exists
-      let status;
-      try {
-        status = await checkMapStatus();
-        if (!status) {
-          throw new Error('Failed to check map status');
-        }
-      } catch (err) {
-        console.error('Error checking map status:', err);
-        // CORS error fallback - assume map exists and try to load it directly
-        console.log('Attempting to load map directly due to possible CORS issue');
-        setIsLoading(false);
-        return true;
+      const status = await checkMapStatus();
+      
+      if (!status) {
+        throw new Error('Failed to check map status');
       }
-
+      
       if (status.mapExists) {
-        // Map exists, try to load it
-        const response = await fetch(getApiUrl('/api/map'));
-        if (!response.ok) {
-          throw new Error('Map could not be loaded');
-        }
+        // Map exists, display it
         setIsLoading(false);
+        setMapVisible(true);
         return true;
       }
-
-      // Map doesn't exist, generate it
-      if (!status.generationInProgress) {
-        try {
-          const generateResult = await generateMap();
-          if (!generateResult || !generateResult.success) {
-            throw new Error('Failed to start map generation');
-          }
-        } catch (err) {
-          console.error('Error generating map:', err);
-          // CORS error fallback - attempt to proceed anyway
-          console.log('Attempting to continue despite map generation error');
-          setIsLoading(false);
-          return true;
-        }
+      
+      if (status.generationInProgress) {
+        // Map is being generated, start polling
+        startPolling();
+        return true;
       }
-
-      // Start polling for map status
-      if (mapStatusCheckRef.current) {
-        clearInterval(mapStatusCheckRef.current);
-      }
-
-      mapStatusCheckRef.current = setInterval(async () => {
-        try {
-          const newStatus = await checkMapStatus();
-          if (newStatus && newStatus.mapExists) {
-            clearInterval(mapStatusCheckRef.current);
-            setIsLoading(false);
-          }
-        } catch (err) {
-          console.error('Error checking map status during polling:', err);
-          // If we can't check status, just stop polling and show the map anyway
-          clearInterval(mapStatusCheckRef.current);
-          setIsLoading(false);
-        }
-      }, 2000);
-
+      
+      // Map doesn't exist and isn't being generated
+      // Auto-generate the map
+      console.log('Map does not exist, auto-generating...');
+      await generateMap();
       return true;
+      
     } catch (err) {
       console.error('Error loading map:', err);
+      setIsLoading(false);
+      setError('Failed to load map. Please refresh the page.');
       return false;
     }
-  }, [checkMapStatus, generateMap]);
+  }, [checkMapStatus, startPolling, generateMap]);
 
   useEffect(() => {
     let mounted = true;
 
     const initializeMapLoading = async () => {
       if (retryCount >= MAX_RETRIES) {
-        setError('Failed to load map after multiple attempts. Please try again later.');
+        setError('Failed to load map after multiple attempts. Please refresh the page.');
         setIsLoading(false);
         return;
       }
@@ -130,41 +167,45 @@ const MapViewer = () => {
 
     initializeMapLoading();
 
-    // Setup message listener for control panel actions
-    const handleMapMessages = (event) => {
-      const iframe = iframeRef.current;
-      if (!iframe || !iframe.contentWindow) return;
-
-      // Messages from control panel to map
-      if (event.data && event.data.type) {
-        iframe.contentWindow.postMessage(event.data, '*');
-      }
-    };
-
-    window.addEventListener('message', handleMapMessages);
-
     return () => {
       mounted = false;
-      window.removeEventListener('message', handleMapMessages);
       if (mapStatusCheckRef.current) {
         clearInterval(mapStatusCheckRef.current);
       }
     };
   }, [loadMap, retryCount]);
 
-  const handleIframeLoad = () => {
+  // Add event listener for ESC key to exit full screen
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isFullScreen) {
+        setIsFullScreen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullScreen]);
+
+  const handleIframeLoad = useCallback(() => {
+    console.log('Iframe loaded');
     setIsLoading(false);
-    
-    // Initialize map interactions
-    if (iframeRef.current) {
-      initializeMap(iframeRef.current);
-    }
-  };
+    // We can't access iframe content due to cross-origin restrictions
+    // The MSA legend hiding is handled in the backend (main.py)
+  }, []);
 
   const handleRetry = () => {
     setError(null);
     setRetryCount(0);
     setIsLoading(true);
+    setMapVisible(false);
+    loadMap();
+  };
+
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
   };
 
   if (error) {
@@ -182,25 +223,55 @@ const MapViewer = () => {
   }
 
   return (
-    <div className="map-container">
-      {isLoading && (
+    <div className={`map-container ${isFullScreen ? 'fullscreen' : ''}`}>
+      {isLoading ? (
         <div className="map-loading">
           <div className="spinner"></div>
           <p>Loading map...{retryCount > 0 ? ` (Attempt ${retryCount + 1}/${MAX_RETRIES})` : ''}</p>
         </div>
+      ) : !mapVisible ? (
+        <div className="map-loading">
+          <div className="spinner"></div>
+          <p>Generating map visualization...</p>
+        </div>
+      ) : (
+        <>
+          <div className="map-controls">
+            <button 
+              className="fullscreen-button" 
+              onClick={toggleFullScreen}
+              title={isFullScreen ? "Exit Full Screen" : "View Full Screen"}
+            >
+              {isFullScreen ? "Exit Full Screen" : "View Full Screen"}
+            </button>
+          </div>
+          
+          {showTip && (
+            <div className="fullscreen-tip">
+              <div className="tip-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <span>For best experience, view in full screen to access all filters and controls</span>
+                <button onClick={() => setShowTip(false)} className="close-tip">×</button>
+              </div>
+            </div>
+          )}
+          
+          <iframe
+            ref={iframeRef}
+            src={`${getApiUrl('/api/map')}?t=${new Date().getTime()}`}
+            title="US 20-Region Classification Map"
+            className="map-frame"
+            onLoad={handleIframeLoad}
+            allowFullScreen
+            loading="eager"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            importance="high"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </>
       )}
-      <iframe
-        ref={iframeRef}
-        src={getApiUrl('/api/map')}
-        title="US 20-Region Classification Map"
-        className="map-frame"
-        onLoad={handleIframeLoad}
-        allowFullScreen
-        loading="lazy"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-        importance="high"
-        referrerpolicy="no-referrer-when-downgrade"
-      />
     </div>
   );
 };

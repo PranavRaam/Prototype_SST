@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Regions Map Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .map-container {
+            height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .control-section {
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #3a80d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>US Regions Map Test</h1>
+        
+        <div class="map-container">
+            <iframe id="mapFrame" src="/api/map" title="US 20-Region Classification Map"></iframe>
+        </div>
+        
+        <div class="controls">
+            <div class="control-section">
+                <h2>Base Map</h2>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="baseMap" value="light" checked>
+                        Light Map
+                    </label>
+                    <label>
+                        <input type="radio" name="baseMap" value="dark">
+                        Dark Map
+                    </label>
+                    <label>
+                        <input type="radio" name="baseMap" value="street">
+                        Street Map
+                    </label>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2>Layers</h2>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="stateBoundaries" checked>
+                        State Boundaries
+                    </label>
+                    <label>
+                        <input type="checkbox" id="countiesByRegion" checked>
+                        Counties by Region
+                    </label>
+                    <label>
+                        <input type="checkbox" id="msaAreas" checked>
+                        Metropolitan Statistical Areas
+                    </label>
+                </div>
+            </div>
+            
+            <button id="refreshBtn">Refresh Map</button>
+        </div>
+    </div>
+    
+    <script>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapFrame = document.getElementById('mapFrame');
+            const baseMapRadios = document.querySelectorAll('input[name="baseMap"]');
+            const stateBoundariesCheckbox = document.getElementById('stateBoundaries');
+            const countiesByRegionCheckbox = document.getElementById('countiesByRegion');
+            const msaAreasCheckbox = document.getElementById('msaAreas');
+            const refreshBtn = document.getElementById('refreshBtn');
+            
+            // Function to send message to the map iframe
+            function sendMessageToMap(message) {
+                console.log('Sending message to map:', message);
+                mapFrame.contentWindow.postMessage(message, '*');
+            }
+            
+            // Set up event listeners for controls
+            baseMapRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        sendMessageToMap({
+                            type: 'setBaseMap',
+                            value: this.value
+                        });
+                    }
+                });
+            });
+            
+            stateBoundariesCheckbox.addEventListener('change', function() {
+                sendMessageToMap({
+                    type: 'toggleLayer',
+                    layer: 'stateBoundaries',
+                    visible: this.checked
+                });
+            });
+            
+            countiesByRegionCheckbox.addEventListener('change', function() {
+                sendMessageToMap({
+                    type: 'toggleLayer',
+                    layer: 'countiesByRegion',
+                    visible: this.checked
+                });
+            });
+            
+            msaAreasCheckbox.addEventListener('change', function() {
+                sendMessageToMap({
+                    type: 'toggleLayer',
+                    layer: 'msaAreas',
+                    visible: this.checked
+                });
+            });
+            
+            refreshBtn.addEventListener('click', function() {
+                // Reload the iframe
+                const timestamp = new Date().getTime();
+                mapFrame.src = `/api/map?t=${timestamp}`;
+                
+                // Reset controls to default state
+                document.querySelector('input[value="light"]').checked = true;
+                stateBoundariesCheckbox.checked = true;
+                countiesByRegionCheckbox.checked = true;
+                msaAreasCheckbox.checked = true;
+            });
+            
+            // Handle iframe load event
+            mapFrame.addEventListener('load', function() {
+                console.log('Map iframe loaded');
+                
+                // Wait a moment for the map to initialize
+                setTimeout(() => {
+                    // Set initial state
+                    const checkedBaseMap = document.querySelector('input[name="baseMap"]:checked').value;
+                    sendMessageToMap({
+                        type: 'setBaseMap',
+                        value: checkedBaseMap
+                    });
+                    
+                    sendMessageToMap({
+                        type: 'toggleLayer',
+                        layer: 'stateBoundaries',
+                        visible: stateBoundariesCheckbox.checked
+                    });
+                    
+                    sendMessageToMap({
+                        type: 'toggleLayer',
+                        layer: 'countiesByRegion',
+                        visible: countiesByRegionCheckbox.checked
+                    });
+                    
+                    sendMessageToMap({
+                        type: 'toggleLayer',
+                        layer: 'msaAreas',
+                        visible: msaAreasCheckbox.checked
+                    });
+                }, 2000);
+            });
+            
+            // Listen for messages from the map
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'mapReady') {
+                    console.log('Map reports it is ready');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

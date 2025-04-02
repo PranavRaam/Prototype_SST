@@ -1,120 +1,208 @@
 /**
- * Utility functions for map interaction via postMessage API
+ * Utility functions for map interaction via direct iframe DOM manipulation
  */
 
+// Keep track of current map settings
+let currentMapSettings = {
+  baseMap: 'light',
+  states: true,
+  counties: true,
+  msas: true
+};
+
+// Reference to the iframe element
+let mapIframe = null;
+let messageListener = null;
+let pendingRefreshTimeout = null;
+
 /**
- * Initialize message listeners in the map iframe
- * This code would be injected into the map's HTML
+ * Initialize the map interaction
+ * @param {HTMLIFrameElement} iframe - The map iframe element 
  */
-export const mapIframeScript = `
-(function() {
-  // Listen for messages from the parent window
-  window.addEventListener('message', function(event) {
-    // Security check - don't use origin check for cross-origin iframes
-    // Instead, we verify the message structure
-    if (!event.data || !event.data.type) return;
-
-    // Process different message types
-    switch(event.data.type) {
-      case 'setBaseMap':
-        setBaseMap(event.data.value);
-        break;
-      case 'toggleLayer':
-        toggleLayer(event.data.layer, event.data.visible);
-        break;
-      default:
-        console.log('Unknown message type:', event.data.type);
-    }
-  });
-
-  // Function to change the base map
-  function setBaseMap(mapType) {
+export const initializeMap = (iframe) => {
+  console.log('Initializing map interaction...');
+  
+  // Clean up any previous instance
+  cleanupMap();
+  
+  // Store reference to new iframe
+  mapIframe = iframe;
+  
+  // Wait for iframe to fully load
+  setTimeout(() => {
+    // Try to access the iframe's content window
     try {
-      // Get all tile layers
-      const tileLayers = Object.values(window.document.querySelectorAll('.leaflet-tile-pane .leaflet-layer'));
-      
-      // Hide all layers first
-      tileLayers.forEach(layer => {
-        layer.style.zIndex = 0;
-        layer.style.opacity = 0;
-      });
-      
-      // Show the selected layer
-      // Assuming the order: 0=light, 1=dark, 2=street
-      let index = 0;
-      switch(mapType) {
-        case 'dark': index = 1; break;
-        case 'street': index = 2; break;
-        default: index = 0; // light
+      // Check if we can directly manipulate the iframe content
+      if (mapIframe && mapIframe.contentWindow) {
+        console.log('Iframe content window accessible, sending test message');
+        
+        // Create a message listener
+        messageListener = (event) => {
+          // Verify the message is from our iframe
+          if (!mapIframe || event.source !== mapIframe.contentWindow) return;
+          
+          console.log('Received message from map:', event.data);
+          
+          // Handle responses
+          if (event.data.type === 'mapReady' || event.data.type === 'ACCESS_CONFIRMED') {
+            console.log('Map confirmed ready for interaction');
+          } else if (event.data.type === 'layerToggled' && event.data.success) {
+            console.log(`Layer ${event.data.layer} toggled successfully to ${event.data.visible}`);
+            // Clear any pending timeout for this layer since it was confirmed
+            clearPendingRefresh();
+          } else if (event.data.type === 'baseMapSet' && event.data.success) {
+            console.log(`Base map set successfully to ${event.data.value}`);
+            // Clear any pending timeout for this action since it was confirmed
+            clearPendingRefresh();
+          } else if (event.data.type === 'layerToggleError' || event.data.type === 'baseMapError') {
+            console.error('Error from map:', event.data);
+            // Force refresh as fallback
+            refreshIframe();
+          }
+        };
+        
+        // Add the message listener
+        window.addEventListener('message', messageListener);
+        
+        // Try to run a test function in the iframe to verify access
+        mapIframe.contentWindow.postMessage({
+          type: 'checkReady'
+        }, '*');
       }
-      
-      if (tileLayers[index]) {
-        tileLayers[index].style.zIndex = 1;
-        tileLayers[index].style.opacity = 1;
-      }
-    } catch (err) {
-      console.error('Error setting base map:', err);
+    } catch (e) {
+      console.error('Cannot access iframe content window:', e);
     }
-  }
-
-  // Function to toggle a layer
-  function toggleLayer(layerName, visible) {
-    try {
-      let selector = '';
-      switch(layerName) {
-        case 'stateBoundaries':
-          selector = '.leaflet-overlay-pane path[fill="transparent"]';
-          break;
-        case 'countiesByRegion':
-          selector = '.leaflet-overlay-pane path:not([fill="transparent"])';
-          break;
-        case 'msaAreas':
-          selector = '.leaflet-overlay-pane path[stroke="#3388FF"]';
-          break;
-      }
-      
-      if (selector) {
-        const elements = window.document.querySelectorAll(selector);
-        elements.forEach(el => {
-          el.style.display = visible ? 'block' : 'none';
-        });
-      }
-    } catch (err) {
-      console.error('Error toggling layer:', err);
-    }
-  }
-})();
-`;
+    
+    console.log('Map initialization complete');
+  }, 1000);
+};
 
 /**
- * Send message to the map iframe
- * @param {Object} message - Message to send
+ * Clean up map resources
+ */
+export const cleanupMap = () => {
+  // Remove message listener if exists
+  if (messageListener) {
+    window.removeEventListener('message', messageListener);
+    messageListener = null;
+  }
+  
+  // Clear iframe reference
+  mapIframe = null;
+};
+
+/**
+ * Send a message to the map iframe
  */
 export const sendMessageToMap = (message) => {
-  const iframe = document.querySelector('.map-frame');
-  if (iframe && iframe.contentWindow) {
-    // Send message to any origin (since the iframe is cross-origin)
-    iframe.contentWindow.postMessage(message, '*');
+  console.log('Sending message to map:', message);
+  
+  if (!mapIframe) {
+    // Just update internal state without showing errors
+    // since we're using direct HTML approach now
+    updateInternalState(message);
+    return;
+  }
+  
+  // Update current settings based on the message
+  updateInternalState(message);
+  
+  // Clear any existing timeout
+  clearPendingRefresh();
+  
+  // Send the message to the iframe via postMessage
+  try {
+    // For Folium maps, we need to use specific layer names
+    let updatedMessage = { ...message };
+    
+    if (message.type === 'toggleLayer') {
+      // Map our frontend layer names to the actual Folium layer names
+      const layerMappings = {
+        'stateBoundaries': 'State Boundaries',
+        'countiesByRegion': 'All Counties by Region',
+        'msaAreas': 'Metropolitan Statistical Areas'
+      };
+      
+      updatedMessage.layer = layerMappings[message.layer] || message.layer;
+    }
+    
+    mapIframe.contentWindow.postMessage(updatedMessage, '*');
+    console.log('Message sent to iframe:', updatedMessage);
+    
+    // As a fallback, we'll still refresh the iframe after a short delay
+    // if we don't get a confirmation back
+    pendingRefreshTimeout = setTimeout(() => {
+      console.log('No confirmation received, using URL fallback');
+      if (mapIframe) {
+        refreshIframe();
+      }
+      pendingRefreshTimeout = null;
+    }, 1000); // Increased timeout to allow more time for response
+  } catch (e) {
+    console.error('Error sending message to iframe:', e);
+    // Fall back to refreshing the iframe with new URL parameters
+    refreshIframe();
   }
 };
 
 /**
- * Initialize the map once it's loaded
- * @param {HTMLIFrameElement} iframe - The map iframe element
+ * Update the internal state based on the message
  */
-export const initializeMap = (iframe) => {
-  try {
-    console.log('Initializing map interaction...');
-    
-    // For cross-origin iframes, we cannot inject scripts
-    // Instead, just setup the message passing
-    
-    // We'll send a ready message to the iframe to check if it's ready
-    setTimeout(() => {
-      sendMessageToMap({ type: 'checkReady' });
-      console.log('Sent initial ready check to map iframe');
-    }, 1000);
-  } catch (err) {
-    console.error('Error initializing map:', err);
+function updateInternalState(message) {
+  // Update current settings based on the message
+  if (message.type === 'setBaseMap') {
+    currentMapSettings.baseMap = message.value;
+  } else if (message.type === 'toggleLayer') {
+    switch (message.layer) {
+      case 'stateBoundaries':
+        currentMapSettings.states = message.visible;
+        break;
+      case 'countiesByRegion':
+        currentMapSettings.counties = message.visible;
+        break;
+      case 'msaAreas':
+        currentMapSettings.msas = message.visible;
+        break;
+      default:
+        console.warn('Unknown layer:', message.layer);
+    }
   }
-}; 
+}
+
+/**
+ * Refresh the iframe by updating the URL with current settings
+ */
+function refreshIframe() {
+  if (!mapIframe) {
+    console.error('Cannot refresh iframe: not found');
+    return;
+  }
+  
+  try {
+    // Get the base URL without query parameters
+    const baseUrl = mapIframe.src.split('?')[0];
+    
+    // Build the query parameters
+    const params = new URLSearchParams();
+    params.append('baseMap', currentMapSettings.baseMap);
+    params.append('states', currentMapSettings.states);
+    params.append('counties', currentMapSettings.counties);
+    params.append('msas', currentMapSettings.msas);
+    params.append('t', new Date().getTime()); // Cache-busting timestamp
+    
+    // Update the iframe src
+    mapIframe.src = `${baseUrl}?${params.toString()}`;
+  } catch (err) {
+    console.error('Error refreshing iframe:', err);
+  }
+}
+
+/**
+ * Clear any pending refresh timeouts
+ */
+function clearPendingRefresh() {
+  if (pendingRefreshTimeout) {
+    clearTimeout(pendingRefreshTimeout);
+    pendingRefreshTimeout = null;
+  }
+}
