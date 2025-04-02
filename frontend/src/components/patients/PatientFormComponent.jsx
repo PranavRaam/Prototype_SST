@@ -768,7 +768,7 @@ const PatientFormComponent = () => {
   const [newPrimaryCode, setNewPrimaryCode] = useState('');
   const [newSecondaryCode, setNewSecondaryCode] = useState('');
   const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filteredPatients, setFilteredPatients] = useState([]);
 
@@ -910,35 +910,59 @@ const PatientFormComponent = () => {
   };
 
   const handleMonthYearSelect = () => {
+    console.log("Opening month picker modal");
     setShowMonthPicker(true);
   };
 
   const handleMonthYearSubmit = () => {
-    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
-    const endDate = new Date(selectedYear, selectedMonth, 0);
-
+    // Convert selected month to number
+    const monthNum = parseInt(selectedMonth);
+    const yearNum = parseInt(selectedYear);
+    
+    if (!monthNum || !yearNum) {
+      alert("Please select both month and year");
+      return;
+    }
+    
+    const startDate = new Date(yearNum, monthNum - 1, 1);
+    const endDate = new Date(yearNum, monthNum, 0); // Last day of selected month
+    
+    console.log("Filtering patients for:", startDate, "to", endDate);
+    
     const filtered = patients.filter(patient => {
       // Check if cert/recert is signed in the selected month
-      const certSignedDate = patient.certStatus === 'Document Signed' || patient.certStatus === 'Document Billed' 
-        ? new Date(patient.certSignedDate) 
-        : null;
-      const recertSignedDate = patient.recertStatus === 'Document Signed' || patient.recertStatus === 'Document Billed' 
-        ? new Date(patient.recertSignedDate) 
-        : null;
-
-      const isSignedInMonth = (certSignedDate && certSignedDate >= startDate && certSignedDate <= endDate) ||
-                            (recertSignedDate && recertSignedDate >= startDate && recertSignedDate <= endDate);
-
+      let certSignedDate = null;
+      let recertSignedDate = null;
+      
+      if (patient.certSignedDate && (patient.certStatus === 'Document Signed' || patient.certStatus === 'Document Billed')) {
+        // Convert MM-DD-YYYY to Date object
+        const [month, day, year] = patient.certSignedDate.split('-').map(num => parseInt(num));
+        certSignedDate = new Date(year, month - 1, day);
+      }
+      
+      if (patient.recertSignedDate && (patient.recertStatus === 'Document Signed' || patient.recertStatus === 'Document Billed')) {
+        const [month, day, year] = patient.recertSignedDate.split('-').map(num => parseInt(num));
+        recertSignedDate = new Date(year, month - 1, day);
+      }
+      
+      const isSignedInMonth = 
+        (certSignedDate && certSignedDate >= startDate && certSignedDate <= endDate) ||
+        (recertSignedDate && recertSignedDate >= startDate && recertSignedDate <= endDate);
+      
       // Check if total ICD codes >= 3
-      const totalIcdCodes = [...(patient.primaryDiagnosisCodes || []), ...(patient.secondaryDiagnosisCodes || [])].length;
+      const totalIcdCodes = [
+        ...(patient.primaryDiagnosisCodes || []), 
+        ...(patient.secondaryDiagnosisCodes || [])
+      ].length;
       const hasEnoughIcdCodes = totalIcdCodes >= 3;
-
+      
       // Check if EHR is yes
       const hasEhr = patient.patientInEHR === 'yes';
-
+      
       return isSignedInMonth && hasEnoughIcdCodes && hasEhr;
     });
-
+    
+    console.log("Filtered patients:", filtered.length);
     setFilteredPatients(filtered);
     setShowMonthPicker(false);
   };
@@ -1516,7 +1540,7 @@ const PatientFormComponent = () => {
         </div>
       )}
 
-      {filteredPatients.length > 0 && (
+      {filteredPatients.length > 0 ? (
         <div className="filtered-results">
           <h3>Filtered Patients: {filteredPatients.length}</h3>
           <button 
@@ -1526,6 +1550,18 @@ const PatientFormComponent = () => {
             Download Excel
           </button>
         </div>
+      ) : (
+        selectedMonth && selectedYear && !showMonthPicker && (
+          <div className="filtered-results filtered-results-empty">
+            <h3>No patients match the selected criteria</h3>
+            <button 
+              className="patient-form-button select-button"
+              onClick={() => setShowMonthPicker(true)}
+            >
+              Change Filter
+            </button>
+          </div>
+        )
       )}
 
       {patients.length > 0 && (
