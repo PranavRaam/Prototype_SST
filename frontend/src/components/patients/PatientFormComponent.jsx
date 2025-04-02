@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import './PatientFormComponent.css';
 import * as XLSX from 'xlsx';
 
-const PatientFormComponent = () => {
+const PatientFormComponent = ({ onPatientClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
   const [patients, setPatients] = useState([
@@ -768,8 +768,8 @@ const PatientFormComponent = () => {
   const [newPrimaryCode, setNewPrimaryCode] = useState('');
   const [newSecondaryCode, setNewSecondaryCode] = useState('');
   const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [filteredPatients, setFilteredPatients] = useState([]);
 
   const handleChange = (e) => {
@@ -890,8 +890,10 @@ const PatientFormComponent = () => {
     }
   };
 
-  const handleViewPatient = (id) => {
-    // Implementation of handleViewPatient
+  const handleViewPatient = (patient) => {
+    if (onPatientClick) {
+      onPatientClick(patient);
+    }
   };
 
   const handleEditPatient = (id) => {
@@ -910,59 +912,35 @@ const PatientFormComponent = () => {
   };
 
   const handleMonthYearSelect = () => {
-    console.log("Opening month picker modal");
     setShowMonthPicker(true);
   };
 
   const handleMonthYearSubmit = () => {
-    // Convert selected month to number
-    const monthNum = parseInt(selectedMonth);
-    const yearNum = parseInt(selectedYear);
-    
-    if (!monthNum || !yearNum) {
-      alert("Please select both month and year");
-      return;
-    }
-    
-    const startDate = new Date(yearNum, monthNum - 1, 1);
-    const endDate = new Date(yearNum, monthNum, 0); // Last day of selected month
-    
-    console.log("Filtering patients for:", startDate, "to", endDate);
-    
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+    const endDate = new Date(selectedYear, selectedMonth, 0);
+
     const filtered = patients.filter(patient => {
       // Check if cert/recert is signed in the selected month
-      let certSignedDate = null;
-      let recertSignedDate = null;
-      
-      if (patient.certSignedDate && (patient.certStatus === 'Document Signed' || patient.certStatus === 'Document Billed')) {
-        // Convert MM-DD-YYYY to Date object
-        const [month, day, year] = patient.certSignedDate.split('-').map(num => parseInt(num));
-        certSignedDate = new Date(year, month - 1, day);
-      }
-      
-      if (patient.recertSignedDate && (patient.recertStatus === 'Document Signed' || patient.recertStatus === 'Document Billed')) {
-        const [month, day, year] = patient.recertSignedDate.split('-').map(num => parseInt(num));
-        recertSignedDate = new Date(year, month - 1, day);
-      }
-      
-      const isSignedInMonth = 
-        (certSignedDate && certSignedDate >= startDate && certSignedDate <= endDate) ||
-        (recertSignedDate && recertSignedDate >= startDate && recertSignedDate <= endDate);
-      
+      const certSignedDate = patient.certStatus === 'Document Signed' || patient.certStatus === 'Document Billed' 
+        ? new Date(patient.certSignedDate) 
+        : null;
+      const recertSignedDate = patient.recertStatus === 'Document Signed' || patient.recertStatus === 'Document Billed' 
+        ? new Date(patient.recertSignedDate) 
+        : null;
+
+      const isSignedInMonth = (certSignedDate && certSignedDate >= startDate && certSignedDate <= endDate) ||
+                            (recertSignedDate && recertSignedDate >= startDate && recertSignedDate <= endDate);
+
       // Check if total ICD codes >= 3
-      const totalIcdCodes = [
-        ...(patient.primaryDiagnosisCodes || []), 
-        ...(patient.secondaryDiagnosisCodes || [])
-      ].length;
+      const totalIcdCodes = [...(patient.primaryDiagnosisCodes || []), ...(patient.secondaryDiagnosisCodes || [])].length;
       const hasEnoughIcdCodes = totalIcdCodes >= 3;
-      
+
       // Check if EHR is yes
       const hasEhr = patient.patientInEHR === 'yes';
-      
+
       return isSignedInMonth && hasEnoughIcdCodes && hasEhr;
     });
-    
-    console.log("Filtered patients:", filtered.length);
+
     setFilteredPatients(filtered);
     setShowMonthPicker(false);
   };
@@ -1001,21 +979,33 @@ const PatientFormComponent = () => {
   return (
     <div className="patient-form-container">
       <div className="patient-form-header">
-        <h2>Patient Management</h2>
         <div className="patient-form-actions">
           <button 
-            className="patient-form-button select-button"
-            onClick={() => setShowMonthPicker(true)}
-          >
-            Select Month/Year
-          </button>
-          <button 
-            className="patient-form-button add-button"
+            className="patient-form-button"
             onClick={() => setShowModal(true)}
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
             Add New Patient
           </button>
+
+          <button 
+            className="patient-form-button"
+            onClick={handleMonthYearSelect}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Select Month/Year
+          </button>
         </div>
+
+        <h2 className="patient-form-title">Patient Management</h2>
       </div>
 
       {showModal && (
@@ -1441,6 +1431,7 @@ const PatientFormComponent = () => {
                   value={editingPatient ? editingPatient.patientRemarks : formData.patientRemarks}
                   onChange={handleChange}
                   rows="3"
+                  style={{ backgroundColor: "#ffffff" }}
                 ></textarea>
               </div>
 
@@ -1540,28 +1531,21 @@ const PatientFormComponent = () => {
         </div>
       )}
 
-      {filteredPatients.length > 0 ? (
+      {filteredPatients.length > 0 && (
         <div className="filtered-results">
           <h3>Filtered Patients: {filteredPatients.length}</h3>
           <button 
             className="download-button"
             onClick={handleDownloadExcel}
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
             Download Excel
           </button>
         </div>
-      ) : (
-        selectedMonth && selectedYear && !showMonthPicker && (
-          <div className="filtered-results filtered-results-empty">
-            <h3>No patients match the selected criteria</h3>
-            <button 
-              className="patient-form-button select-button"
-              onClick={() => setShowMonthPicker(true)}
-            >
-              Change Filter
-            </button>
-          </div>
-        )
       )}
 
       {patients.length > 0 && (
@@ -1573,7 +1557,7 @@ const PatientFormComponent = () => {
                 <th>DOB</th>
                 <th>PG</th>
                 <th>HHAH</th>
-                <th>CPO Mins Captured</th>
+                <th>CPO Mins</th>
                 <th>Remarks</th>
                 <th>New Docs</th>
                 <th>New CPO Docs</th>
@@ -1583,7 +1567,12 @@ const PatientFormComponent = () => {
             <tbody>
               {patients.map(patient => (
                 <tr key={patient.id}>
-                  <td>{`${patient.patientLastName}, ${patient.patientFirstName} ${patient.patientMiddleName}`}</td>
+                  <td 
+                    className="patient-name-cell"
+                    onClick={() => handleViewPatient(patient)}
+                  >
+                    {`${patient.patientLastName}, ${patient.patientFirstName} ${patient.patientMiddleName}`}
+                  </td>
                   <td>{patient.patientDOB}</td>
                   <td>{patient.pg}</td>
                   <td>{patient.hhah}</td>
@@ -1594,7 +1583,10 @@ const PatientFormComponent = () => {
                   <td>
                     <button 
                       className="action-button edit-button"
-                      onClick={() => handleEditPatient(patient.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditPatient(patient.id);
+                      }}
                     >
                       Edit
                     </button>

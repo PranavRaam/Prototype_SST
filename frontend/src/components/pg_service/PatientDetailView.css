@@ -789,7 +789,7 @@
 .doc-type-select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-light);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
 
 .file-name {
@@ -2037,9 +2037,24 @@
 .document-meta-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin-right: 10px;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+}
+
+.document-meta-item .doc-id-input,
+.document-meta-item .doc-type-select {
+  min-width: 120px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.meta-icon {
+  color: #6366F1;
+  font-size: 1.25rem;
 }
 
 .document-viewer-actions {
@@ -3442,4 +3457,118 @@
 
 .document-viewer-actions .action-icon {
   font-size: 1rem;
+}
+
+.doc-id-input {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: white;
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.doc-id-input:hover {
+  border-color: var(--primary-color);
+}
+
+.doc-id-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced document ID field styling */
+.doc-id-field {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  width: 100%;
+  transition: var(--transition);
+}
+
+.doc-id-field:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.doc-id-field.editing {
+  border-color: var(--primary-color);
+  background-color: white;
+}
+
+.doc-id-field.focused {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.doc-id-icon {
+  color: var(--primary-color);
+  margin-right: 8px;
+  font-size: 0.85rem;
+}
+
+.doc-id-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.doc-id-display.viewer {
+  width: auto;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.edit-indicator {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.doc-id-field:hover .edit-indicator {
+  opacity: 1;
+}
+
+.edit-icon {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  margin-left: 8px;
+}
+
+/* Document ID validation styling */
+.doc-id-field.invalid {
+  border-color: var(--error-color);
+  background-color: var(--error-light);
+}
+
+.doc-id-field.invalid .doc-id-icon {
+  color: var(--error-color);
+}
+
+.validation-message {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--error-light);
+  color: var(--error-dark);
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  border: 1px solid var(--error-color);
+  border-top: none;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }

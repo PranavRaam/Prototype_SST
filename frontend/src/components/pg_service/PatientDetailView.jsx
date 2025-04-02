@@ -208,6 +208,141 @@ const generateMockTimelineData = () => {
   ];
 };
 
+// DocIdInput component for better user experience
+const DocIdInput = ({ docId, onUpdate }) => {
+  const [value, setValue] = useState(docId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isValid, setIsValid] = useState(true);
+  const [validationMessage, setValidationMessage] = useState('');
+  const inputRef = useRef(null);
+  
+  // Reset value if docId changes from outside
+  useEffect(() => {
+    setValue(docId);
+    validateDocId(docId);
+  }, [docId]);
+  
+  // Auto-focus when entering edit mode
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+  
+  // Simple validation for doc IDs
+  const validateDocId = (id) => {
+    // Check if empty
+    if (!id.trim()) {
+      setIsValid(false);
+      setValidationMessage('ID cannot be empty');
+      return false;
+    }
+    
+    // Check if follows common pattern for backoffice IDs (e.g., DOC-123)
+    const backofficePattern = /^[A-Z]+-\d+$/;
+    if (!backofficePattern.test(id)) {
+      setIsValid(false);
+      setValidationMessage('Recommended format: PREFIX-123');
+      return false;
+    }
+    
+    setIsValid(true);
+    setValidationMessage('');
+    return true;
+  };
+  
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    validateDocId(newValue);
+  };
+  
+  const handleBlur = () => {
+    setIsEditing(false);
+    setIsFocused(false);
+    
+    // Auto-format the ID if not valid but not empty
+    if (!isValid && value.trim()) {
+      // If it's just missing the dash, try to format it
+      if (/^[A-Za-z]+\d+$/.test(value)) {
+        // Extract prefix and number, then format
+        const match = value.match(/^([A-Za-z]+)(\d+)$/);
+        if (match) {
+          const formattedId = `${match[1].toUpperCase()}-${match[2]}`;
+          setValue(formattedId);
+          onUpdate(docId, formattedId);
+          return;
+        }
+      }
+    }
+    
+    if (value !== docId) {
+      // Even if not valid format, still update if not empty
+      if (value.trim()) {
+        onUpdate(docId, value);
+      } else {
+        // Reset to original if empty
+        setValue(docId);
+      }
+    }
+  };
+  
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+  
+  const handleClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    }
+  };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      inputRef.current.blur();
+    } else if (e.key === 'Escape') {
+      setValue(docId);
+      setIsEditing(false);
+      setIsFocused(false);
+    }
+  };
+  
+  return (
+    <div 
+      className={`doc-id-field ${isEditing ? 'editing' : ''} ${isFocused ? 'focused' : ''} ${!isValid ? 'invalid' : ''}`} 
+      onClick={handleClick}
+      title={validationMessage || 'Click to edit document ID'}
+    >
+      <FaHashtag className="doc-id-icon" />
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          className="doc-id-input"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          placeholder="PREFIX-123"
+        />
+      ) : (
+        <div className="doc-id-display">
+          <span>{docId}</span>
+          <div className="edit-indicator">
+            <FaEdit className="edit-icon" />
+          </div>
+        </div>
+      )}
+      {isEditing && validationMessage && (
+        <div className="validation-message">{validationMessage}</div>
+      )}
+    </div>
+  );
+};
+
 const PatientDetailView = ({ patient, onBack }) => {
   // State for active tab and document type select
   const [activeTab, setActiveTab] = useState('patientInfo');
@@ -232,26 +367,31 @@ const PatientDetailView = ({ patient, onBack }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [patientInfo, setPatientInfo] = useState({
     id: patient?.id || 'PT-12345',
-    name: patient?.ptName || 'John Smith',
-    dob: patient?.dob || '1965-03-15',
+    name: patient?.patientFirstName ? `${patient.patientLastName}, ${patient.patientFirstName} ${patient.patientMiddleName || ''}` : patient?.ptName || 'John Smith',
+    dob: patient?.patientDOB || patient?.dob || '1965-03-15',
     gender: 'Male',
     status: 'active',
-    phone: '+1 (555) 123-4567',
+    phone: patient?.contactNumber || '+1 (555) 123-4567',
     email: 'patient@example.com',
     address: '123 Main Street, Anytown, CA 12345',
-    insurance: 'Medicare',
+    insurance: patient?.patientInsurance || 'Medicare',
     insuranceId: 'MED12345678',
     pg: patient?.pg || 'Group A',
     hhah: patient?.hhah || 'Yes',
-    admissionDate: '2023-04-01',
+    admissionDate: patient?.patientSOC || '2023-04-01',
     dischargeDate: '',
-    primaryDiagnosis: 'Hypertension',
-    secondaryDiagnosis: 'Type 2 Diabetes',
-    primaryPhysician: 'Dr. Sarah Johnson',
+    primaryDiagnosis: patient?.primaryDiagnosisCodes ? patient.primaryDiagnosisCodes.join(", ") : 'Hypertension',
+    secondaryDiagnosis: patient?.secondaryDiagnosisCodes ? patient.secondaryDiagnosisCodes.join(", ") : 'Type 2 Diabetes',
+    primaryPhysician: patient?.physicianName || 'Dr. Sarah Johnson',
     specialist: 'Dr. Robert Chen',
     allergies: 'Penicillin, Peanuts',
     medications: 'Lisinopril, Metformin',
-    hasEHR: patient?.hasEHR ?? false // Changed to false by default
+    renderingPractitioner: patient?.renderingPractitioner || '',
+    hasEHR: patient?.patientInEHR === 'yes' || false,
+    cpoMinsCaptured: patient?.cpoMinsCaptured || 0,
+    newDocs: patient?.newDocs || 0,
+    newCPODocsCreated: patient?.newCpoDocsCreated || 0,
+    remarks: patient?.patientRemarks || patient?.remarks || '',
   });
   
   // Timeline data
@@ -577,6 +717,23 @@ const PatientDetailView = ({ patient, onBack }) => {
     );
   };
   
+  // Function to update document ID
+  const updateDocId = (docId, newId) => {
+    // Update in new/prepared docs
+    setNewPreparedDocs(prevDocs => 
+      prevDocs.map(doc => 
+        doc.id === docId ? { ...doc, id: newId } : doc
+      )
+    );
+    
+    // Update in signed docs
+    setSignedDocs(prevDocs => 
+      prevDocs.map(doc => 
+        doc.id === docId ? { ...doc, id: newId } : doc
+      )
+    );
+  };
+  
   // Function to update signed date
   const updateSignedDate = (docId, date) => {
     setSignedDocs(prevDocs => 
@@ -733,9 +890,39 @@ const PatientDetailView = ({ patient, onBack }) => {
     setSortDirection('desc');
   };
 
-  // Document viewer state
+  // State for document viewer
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isEditingDocumentDetails, setIsEditingDocumentDetails] = useState(false);
+
+  // Function to update document viewer document
+  const updateViewerDocument = (field, value) => {
+    setSelectedDocument(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Function to save document changes from viewer
+  const saveDocumentChanges = () => {
+    // Update document in the proper state array
+    if (selectedDocument.status) {
+      setNewPreparedDocs(prevDocs => 
+        prevDocs.map(doc => 
+          doc.id === selectedDocument.id ? selectedDocument : doc
+        )
+      );
+    } else {
+      setSignedDocs(prevDocs => 
+        prevDocs.map(doc => 
+          doc.id === selectedDocument.id ? selectedDocument : doc
+        )
+      );
+    }
+    
+    setIsEditingDocumentDetails(false);
+    showNotification('success', 'Document Updated', 'Document details have been updated successfully');
+  };
 
   // Function to open document viewer
   const openDocumentViewer = (doc) => {
@@ -1365,12 +1552,13 @@ Recommendations:
                     />
                   ) : (
                     <div className="tag-list">
-                      {patientInfo.allergies.split(',').map((allergy, index) => (
+                      {patientInfo.allergies && patientInfo.allergies.split(',').map((allergy, index) => (
                         <span key={index} className="medical-tag allergy">
                           <FaAllergies className="tag-icon" />
                           {allergy.trim()}
                         </span>
                       ))}
+                      {!patientInfo.allergies && <span>No known allergies</span>}
                     </div>
                   )}
                 </div>
@@ -1389,12 +1577,13 @@ Recommendations:
                     />
                   ) : (
                     <div className="tag-list">
-                      {patientInfo.medications.split(',').map((medication, index) => (
+                      {patientInfo.medications && patientInfo.medications.split(',').map((medication, index) => (
                         <span key={index} className="medical-tag medication">
                           <FaPills className="tag-icon" />
                           {medication.trim()}
                         </span>
                       ))}
+                      {!patientInfo.medications && <span>No medications</span>}
                     </div>
                   )}
                 </div>
@@ -2219,8 +2408,7 @@ Recommendations:
                           </td>
                           <td>
                             <div className="cell-with-icon">
-                              <FaHashtag className="cell-icon" />
-                              {doc.id}
+                              <DocIdInput docId={doc.id} onUpdate={updateDocId} />
                             </div>
                           </td>
                           <td>
@@ -2317,8 +2505,7 @@ Recommendations:
                           </td>
                           <td>
                             <div className="cell-with-icon">
-                              <FaHashtag className="cell-icon" />
-                              {doc.id}
+                              <DocIdInput docId={doc.id} onUpdate={updateDocId} />
                             </div>
                           </td>
                           <td>
@@ -2601,11 +2788,38 @@ Recommendations:
                 <div className="document-meta">
                   <span className="document-meta-item">
                     <FaHashtag className="meta-icon" />
-                    {selectedDocument.id}
+                    {isEditingDocumentDetails ? (
+                      <input 
+                        type="text" 
+                        value={selectedDocument.id} 
+                        onChange={(e) => updateViewerDocument('id', e.target.value)}
+                        className="doc-id-input"
+                      />
+                    ) : (
+                      <div className="doc-id-display viewer">
+                        <span>{selectedDocument.id}</span>
+                        <div className="edit-indicator">
+                          <FaEdit className="edit-icon" />
+                        </div>
+                      </div>
+                    )}
                   </span>
                   <span className="document-meta-item">
                     <FaFileAlt className="meta-icon" />
-                    Type: {selectedDocument.type || "Not specified"}
+                    Type: {isEditingDocumentDetails ? (
+                      <select 
+                        value={selectedDocument.type || ''} 
+                        onChange={(e) => updateViewerDocument('type', e.target.value)}
+                        className="doc-type-select"
+                      >
+                        <option value="">Select Type</option>
+                        {documentTypes.map(type => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      selectedDocument.type || "Not specified"
+                    )}
                   </span>
                   {selectedDocument.status && (
                     <span className={`status-pill ${selectedDocument.status.toLowerCase()}`}>
@@ -2615,31 +2829,59 @@ Recommendations:
                 </div>
               </div>
               <div className="document-viewer-actions">
-                {selectedDocument.status === 'New' && (
-                  <button 
-                    className="action-button primary"
-                    onClick={() => markAsPrepared(selectedDocument.id)}
-                  >
-                    <FaCheck className="action-icon" />
-                    Mark as Prepared
-                  </button>
+                {isEditingDocumentDetails ? (
+                  <>
+                    <button 
+                      className="action-button primary"
+                      onClick={saveDocumentChanges}
+                    >
+                      <FaSave className="action-icon" />
+                      Save Changes
+                    </button>
+                    <button 
+                      className="action-button secondary"
+                      onClick={() => setIsEditingDocumentDetails(false)}
+                    >
+                      <FaTimes className="action-icon" />
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button 
+                      className="action-button primary"
+                      onClick={() => setIsEditingDocumentDetails(true)}
+                    >
+                      <FaEdit className="action-icon" />
+                      Edit Details
+                    </button>
+                    {selectedDocument.status === 'New' && (
+                      <button 
+                        className="action-button primary"
+                        onClick={() => markAsPrepared(selectedDocument.id)}
+                      >
+                        <FaCheck className="action-icon" />
+                        Mark as Prepared
+                      </button>
+                    )}
+                    {selectedDocument.status === 'Prepared' && (
+                      <button 
+                        className="action-button secondary"
+                        onClick={() => markAsUnprepared(selectedDocument.id)}
+                      >
+                        <FaTimes className="action-icon" />
+                        Mark as Unprepared
+                      </button>
+                    )}
+                    <button 
+                      className="action-button secondary"
+                      onClick={closeDocumentViewer}
+                    >
+                      <FaTimes className="action-icon" />
+                      Close
+                    </button>
+                  </>
                 )}
-                {selectedDocument.status === 'Prepared' && (
-                  <button 
-                    className="action-button secondary"
-                    onClick={() => markAsUnprepared(selectedDocument.id)}
-                  >
-                    <FaTimes className="action-icon" />
-                    Mark as Unprepared
-                  </button>
-                )}
-                <button 
-                  className="action-button secondary"
-                  onClick={closeDocumentViewer}
-                >
-                  <FaTimes className="action-icon" />
-                  Close
-                </button>
               </div>
             </div>
             <div className="document-viewer-content">

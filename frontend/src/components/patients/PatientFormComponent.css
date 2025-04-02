@@ -1,66 +1,57 @@
-:root {
-  --patient-form-primary: #6366f1;
-  --patient-form-primary-dark: #4f49c9;
-  --patient-form-primary-darker: #443ab6;
-  --patient-form-text-primary: #111827;
-  --patient-form-text-secondary: #4b5563;
-  --patient-form-bg-primary: #f8fafc;
-  --patient-form-bg-secondary: #ffffff;
-  --patient-form-border: #e2e8f0;
-  --patient-form-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --patient-form-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --patient-form-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .patient-form-container {
   font-family: 'Inter', sans-serif;
-  color: var(--patient-form-text-primary);
-  max-width: 100%;
+  width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  overflow: auto;
 }
 
 .patient-form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid var(--patient-form-border);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.patient-form-header h2 {
-  margin: 0;
-  color: var(--patient-form-text-primary);
-  font-size: 1.75rem;
+.patient-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.patient-form-title {
+  font-size: 22px;
   font-weight: 600;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, #4b5563, #1f2937);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .patient-form-button {
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, var(--patient-form-primary), var(--patient-form-primary-dark));
+  background: linear-gradient(135deg, #6366f1, #4f49c9);
   color: white;
+  padding: 10px 18px;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 550;
   cursor: pointer;
-  transition: var(--patient-form-transition);
-  box-shadow: var(--patient-form-shadow);
-  display: flex;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0;
+  margin-right: 0;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 150px;
-  margin: 0;
+  gap: 8px;
 }
 
 .patient-form-button:hover {
-  background: linear-gradient(135deg, var(--patient-form-primary-dark), var(--patient-form-primary-darker));
+  background: linear-gradient(135deg, #4f49c9, #443ab6);
   transform: translateY(-1px);
-  box-shadow: var(--patient-form-shadow-lg);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .patient-form-button:active {
@@ -78,89 +69,121 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background-color: var(--patient-form-bg-secondary);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  width: 80%;
-  max-width: 600px;
-  max-height: 85vh;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 85%;
+  max-width: 900px;
+  max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--patient-form-shadow-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalFadeIn 0.3s ease-out;
+  position: relative;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--patient-form-border);
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: var(--patient-form-text-primary);
-  font-size: 1.25rem;
+  color: #111827;
+  font-size: 20px;
   font-weight: 600;
+  letter-spacing: -0.3px;
+  padding-right: 40px;
 }
 
 .close-button {
   background: none;
   border: none;
-  color: var(--patient-form-text-secondary);
-  font-size: 1.5rem;
+  font-size: 24px;
   cursor: pointer;
-  transition: var(--patient-form-transition);
+  color: #6b7280;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
 }
 
 .close-button:hover {
-  color: var(--patient-form-primary);
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 24px;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-  color: var(--patient-form-text-secondary);
+  margin-bottom: 6px;
+  font-size: 14px;
   font-weight: 500;
+  color: #4b5563;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  color: var(--patient-form-text-primary);
-  transition: var(--patient-form-transition);
-  background-color: var(--patient-form-bg-secondary);
-}
-
-.form-group select {
-  background-color: var(--patient-form-bg-secondary);
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--patient-form-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  background-color: white;
 }
 
 .full-width {
@@ -169,128 +192,182 @@
 
 .form-actions {
   display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .submit-button {
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, var(--patient-form-primary), var(--patient-form-primary-dark));
+  background: linear-gradient(135deg, #6366f1, #4f49c9);
   color: white;
+  padding: 10px 18px;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 550;
   cursor: pointer;
-  transition: var(--patient-form-transition);
-  box-shadow: var(--patient-form-shadow);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .submit-button:hover {
-  background: linear-gradient(135deg, var(--patient-form-primary-dark), var(--patient-form-primary-darker));
+  background: linear-gradient(135deg, #4f49c9, #443ab6);
   transform: translateY(-1px);
-  box-shadow: var(--patient-form-shadow-lg);
-}
-
-.submit-button:active {
-  transform: translateY(0);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .close-button-text {
-  padding: 0.625rem 1.25rem;
-  background-color: var(--patient-form-bg-primary);
-  color: var(--patient-form-text-secondary);
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--patient-form-transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .close-button-text:hover {
-  background-color: #f1f5f9;
-  color: var(--patient-form-text-primary);
+  background-color: #e5e7eb;
+  color: #111827;
 }
 
-/* Table styling */
 .table-container {
-  margin-top: 1.5rem;
-  width: 100%;
-  border-radius: 0.75rem;
-  background-color: var(--patient-form-bg-secondary);
-  box-shadow: var(--patient-form-shadow-lg);
-  overflow: hidden;
+  margin-top: 24px;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .patient-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.875rem;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: white;
+}
+
+.patient-table th,
+.patient-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .patient-table th {
-  background-color: var(--patient-form-bg-primary);
-  color: var(--patient-form-text-secondary);
+  background-color: #f8fafc;
   font-weight: 600;
-  text-align: left;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--patient-form-border);
-}
-
-.patient-table td {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--patient-form-border);
-  color: var(--patient-form-text-primary);
-}
-
-.patient-table tr:last-child td {
-  border-bottom: none;
+  color: #4b5563;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .patient-table tbody tr {
-  transition: var(--patient-form-transition);
+  transition: background-color 0.2s;
 }
 
 .patient-table tbody tr:hover {
-  background-color: var(--patient-form-bg-primary);
+  background-color: #f1f5f9;
 }
 
-/* Action buttons */
+.patient-name-cell {
+  cursor: pointer;
+  color: #6366f1;
+  font-weight: 500;
+  position: relative;
+}
+
+.patient-name-cell:hover {
+  color: #4f49c9;
+  text-decoration: underline;
+}
+
+.patient-name-cell::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #6366f1;
+  transition: width 0.2s;
+}
+
+.patient-name-cell:hover::after {
+  width: 100%;
+}
+
+.status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badge.document-not-received {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.document-prepared {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.status-badge.document-signed {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.status-badge.document-billed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
 .action-button {
-  padding: 0.5rem 0.75rem;
+  padding: 6px 12px;
   border: none;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--patient-form-transition);
-  box-shadow: var(--patient-form-shadow);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .view-button {
-  background-color: var(--patient-form-primary);
-  color: white;
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
 .view-button:hover {
-  background-color: var(--patient-form-primary-dark);
+  background-color: #bfdbfe;
 }
 
 .edit-button {
-  background-color: #10b981;
-  color: white;
+  background-color: #d1fae5;
+  color: #047857;
 }
 
 .edit-button:hover {
-  background-color: #059669;
+  background-color: #a7f3d0;
 }
 
 .required {
   color: #ef4444;
-  margin-left: 0.125rem;
+  margin-left: 2px;
 }
 
 .error {
@@ -299,57 +376,20 @@
 
 .error-text {
   color: #ef4444;
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
+  font-size: 12px;
+  margin-top: 4px;
   display: block;
-}
-
-.filtered-results {
-  margin: 1.25rem 0;
-  padding: 1rem;
-  background-color: var(--patient-form-bg-secondary);
-  border-radius: 0.75rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--patient-form-shadow);
-}
-
-.filtered-results h3 {
-  margin: 0;
-  color: var(--patient-form-text-primary);
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.download-button {
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--patient-form-transition);
-  box-shadow: var(--patient-form-shadow);
-}
-
-.download-button:hover {
-  background: linear-gradient(135deg, #059669, #047857);
-  transform: translateY(-1px);
-  box-shadow: var(--patient-form-shadow-lg);
 }
 
 .code-input-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .code-input-row {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .code-input-row input {
@@ -357,161 +397,94 @@
 }
 
 .add-code-button {
-  padding: 0.5rem;
-  background-color: #10b981;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  font-size: 1rem;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 2.25rem;
-  transition: var(--patient-form-transition);
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .add-code-button:hover {
-  background-color: #059669;
+  background-color: #4f49c9;
 }
 
 .code-list {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .code-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.375rem 0.5rem;
-  background-color: var(--patient-form-bg-primary);
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
+  gap: 6px;
+  background-color: #eff6ff;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #1e40af;
 }
 
 .remove-code-button {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #6b7280;
+  font-size: 14px;
   cursor: pointer;
-  padding: 0 0.25rem;
-  font-size: 1rem;
-  transition: var(--patient-form-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
 }
 
 .remove-code-button:hover {
-  color: #dc2626;
+  color: #ef4444;
 }
 
-.searchable-dropdown {
-  position: relative;
-  width: 100%;
-}
-
-.searchable-dropdown input {
-  width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-}
-
-.searchable-dropdown .dropdown-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  max-height: 12.5rem;
-  overflow-y: auto;
-  background: var(--patient-form-bg-secondary);
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
-  box-shadow: var(--patient-form-shadow);
-  z-index: 10;
-}
-
-.searchable-dropdown .dropdown-option {
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  transition: var(--patient-form-transition);
-}
-
-.searchable-dropdown .dropdown-option:hover {
-  background-color: var(--patient-form-bg-primary);
-}
-
-.searchable-dropdown .selected-option {
-  padding: 0.625rem 0.75rem;
-  background-color: var(--patient-form-bg-primary);
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
+.filtered-results {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid #e2e8f0;
 }
 
-.searchable-dropdown .clear-option {
-  background: none;
+.filtered-results h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #111827;
+}
+
+.download-button {
+  background-color: #6366f1;
+  color: white;
+  padding: 8px 16px;
   border: none;
-  color: var(--patient-form-text-secondary);
+  border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 1rem;
-  padding: 0 0.25rem;
-  transition: var(--patient-form-transition);
-}
-
-.searchable-dropdown .clear-option:hover {
-  color: var(--patient-form-text-primary);
-}
-
-.patient-form-actions {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 6px;
 }
 
-.patient-form-button.select-button {
-  background: linear-gradient(135deg, #6574cd, #5661b3);
+.download-button:hover {
+  background-color: #4f49c9;
 }
 
-.patient-form-button.add-button {
-  background: linear-gradient(135deg, #38b2ac, #2c7a7b);
-}
-
-.patient-form-button.select-button:hover {
-  background: linear-gradient(135deg, #5661b3, #4a5568);
-}
-
-.patient-form-button.add-button:hover {
-  background: linear-gradient(135deg, #2c7a7b, #234e52);
-}
-
-/* Month Picker specific styles */
-.modal-content .form-group {
-  margin-bottom: 1.25rem;
-}
-
-.modal-content .form-group select {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid var(--patient-form-border);
-  border-radius: 0.375rem;
-  background-color: var(--patient-form-bg-secondary);
-}
-
-.modal-content .submit-button {
-  min-width: 180px;
-  justify-content: center;
-}
-
-.filtered-results-empty {
-  background-color: #fef2f2;
-  border: 1px solid #fee2e2;
-}
-
-.filtered-results-empty h3 {
-  color: #ef4444;
+.form-group textarea {
+  background-color: #ffffff;
+  color: #111827;
 }

@@ -2,21 +2,20 @@ import React, { useState } from 'react';
 import PatientDetailView from './PatientDetailView';
 import PatientFormComponent from '../patients/PatientFormComponent';
 import './PGServicesView.css';
+import '../patients/PatientFormComponent.css';
 
 const PGServicesView = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  // Handle patient selection
   const handlePatientSelect = (patient) => {
     setSelectedPatient(patient);
   };
 
-  // Handle returning to the main view
   const handleBackToMain = () => {
     setSelectedPatient(null);
   };
 
-  // If a patient is selected, show the patient detail view
+  // If a patient is selected, render the PatientDetailView
   if (selectedPatient) {
     return (
       <PatientDetailView 
@@ -26,7 +25,7 @@ const PGServicesView = () => {
     );
   }
 
-  // Otherwise show the main services view
+  // Otherwise, render the PatientFormComponent with improved UI
   return (
     <div className="pg-services-view">
       <header className="pg-services-header">
@@ -44,8 +43,8 @@ const PGServicesView = () => {
       </header>
       
       <main className="pg-services-main-content">
-        <div className="pg-services-patient-form-container full-height">
-          <PatientFormComponent />
+        <div className="pg-services-content-card">
+          <PatientFormComponent onPatientClick={handlePatientSelect} />
         </div>
       </main>
     </div>
