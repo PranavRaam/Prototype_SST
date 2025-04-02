@@ -192,6 +192,8 @@ function App() {
           
           <div className="dashboard-content">
             <Routes>
+              <Route path="/pg-services" element={<PgServiceView />} />
+              <Route path="/hhah-services" element={<HHAHServiceView />} />
               <Route path="/" element={
                 <>
                   {mapStatus.isLoading ? (
@@ -272,8 +274,6 @@ function App() {
                   )}
                 </>
               } />
-              <Route path="/pg-services" element={<PgServiceView />} />
-              <Route path="/hhah-services" element={<HHAHServiceView />} />
               <Route path="/pg-view/:pgName" element={<PGView />} />
             </Routes>
           </div>

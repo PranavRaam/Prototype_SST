@@ -244,7 +244,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
               loading="lazy"
               importance="high"
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
               style={{ width: '100%', height: '100%', border: 'none' }}
             />
           )}
