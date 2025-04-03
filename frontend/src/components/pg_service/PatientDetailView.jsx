@@ -946,20 +946,36 @@ const PatientDetailView = ({ patient, onBack }) => {
     }
   };
 
-  // Function to add new CPO document
+  // Update the addCpoDocument function to properly add a new document
   const addCpoDocument = () => {
-    const newCpoDoc = {
-      id: `CPO-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: 'New CPO Document',
-      creationDate: new Date().toISOString().split('T')[0],
-      minutes: 15,
-      status: 'In Progress',
-      provider: patientInfo.primaryPhysician
+    // Show document upload dialog or prompt for document details
+    const today = new Date();
+    const formattedDate = today.toISOString().slice(0, 10);
+    const documentTypes = ["CPO Assessment", "CPO Evaluation", "CPO Minutes", "CPO Plan"];
+    
+    // Create prompt with document type options
+    const promptMessage = `Select CPO document type:\n${documentTypes.map((type, index) => `${index + 1}. ${type}`).join('\n')}`;
+    const typeResponse = prompt(promptMessage, documentTypes[0]);
+    
+    if (!typeResponse) return; // User cancelled
+    
+    // Generate a unique ID for the document
+    const newDocId = `CPO_${Date.now().toString().slice(-6)}`;
+    
+    // Create the new document object
+    const newDocument = {
+      id: newDocId,
+      fileName: `${typeResponse.replace(/\s+/g, '_')}_${formattedDate}.pdf`,
+      type: typeResponse,
+      creationDate: formattedDate,
+      size: `${(Math.random() * 1 + 0.5).toFixed(1)} MB`
     };
     
-    setCpoDocuments(prev => [...prev, newCpoDoc]);
+    // Add the document to the cpoDocs state
+    setCpoDocs(prevDocs => [...prevDocs, newDocument]);
     
-    showNotification('success', 'CPO Document Created', 'New CPO document has been created');
+    // Show success notification
+    showNotification('success', 'CPO Document Added', `A new ${typeResponse} document has been added.`);
   };
 
   // Function to update CPO document status
@@ -1835,6 +1851,134 @@ Total documents: ${documents.length}
     // Call calculateCPOMinutes when component mounts or cpoDocs changes
     calculateCPOMinutes();
   }, [cpoDocs]);
+
+  // Add function to export CPO report
+  const exportCPOReport = () => {
+    showNotification('info', 'Generating CPO Report', 'Preparing CPO report for export...');
+    
+    setTimeout(() => {
+      try {
+        // Create report data
+        const reportData = {
+          patientInfo: {
+            id: patientInfo.id,
+            name: patientInfo.name,
+            dob: formatDate(patientInfo.dob),
+            provider: patientInfo.primaryPhysician || 'Not assigned'
+          },
+          cpoSummary: {
+            totalMinutes: patientInfo.cpoMinsCaptured,
+            documentsCount: cpoDocs.length,
+            calculationDate: new Date().toLocaleDateString()
+          },
+          documents: cpoDocs.map(doc => ({
+            id: doc.id,
+            fileName: doc.fileName,
+            type: doc.type,
+            creationDate: formatDate(doc.creationDate),
+            size: doc.size
+          })),
+          monthlyCPOData: monthlyCPOData
+        };
+        
+        // Convert to JSON
+        const jsonData = JSON.stringify(reportData, null, 2);
+        
+        // Create PDF-like content
+        const pdfContent = createCPOReportPDF(reportData);
+        
+        // Create a blob with the PDF data
+        const blob = new Blob([pdfContent], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary download link
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `patient_${patientInfo.id}_cpo_report_${new Date().toISOString().slice(0, 10)}.pdf`;
+        document.body.appendChild(link);
+        
+        // Click the link to trigger download
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          showNotification('success', 'CPO Report Generated', 'CPO report has been downloaded successfully!');
+        }, 100);
+      } catch (error) {
+        console.error("Error generating CPO report:", error);
+        showNotification('error', 'Report Generation Failed', 'Failed to generate CPO report. Please try again.');
+      }
+    }, 1000);
+  };
+
+  // Function to create a CPO report PDF
+  const createCPOReportPDF = (reportData) => {
+    // Create a simplified PDF structure similar to createPDFReport function
+    const pdfHeader = "%PDF-1.3\n";
+    
+    // Add metadata
+    let pdf = pdfHeader;
+    pdf += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+    pdf += "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
+    pdf += "3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 5 0 R >>\nendobj\n";
+    pdf += "4 0 obj\n<< /Font << /F1 6 0 R >> >>\nendobj\n";
+    
+    // Create the actual content
+    let content = "BT\n/F1 12 Tf\n72 720 Td\n(CPO REPORT) Tj\n";
+    content += "0 -20 Td\n(Patient: " + reportData.patientInfo.name + ") Tj\n";
+    content += "0 -20 Td\n(ID: " + reportData.patientInfo.id + ") Tj\n";
+    content += "0 -20 Td\n(Date of Birth: " + reportData.patientInfo.dob + ") Tj\n";
+    content += "0 -20 Td\n(Generated Date: " + new Date().toLocaleDateString() + ") Tj\n";
+    
+    // CPO Summary
+    content += "0 -40 Td\n(CPO SUMMARY) Tj\n";
+    content += "0 -20 Td\n(Total CPO Minutes: " + reportData.cpoSummary.totalMinutes + ") Tj\n";
+    content += "0 -20 Td\n(Documents Count: " + reportData.cpoSummary.documentsCount + ") Tj\n";
+    content += "0 -20 Td\n(Calculation Date: " + reportData.cpoSummary.calculationDate + ") Tj\n";
+    
+    // Document List
+    content += "0 -40 Td\n(CPO DOCUMENT LIST) Tj\n";
+    
+    let y = -20;
+    reportData.documents.forEach((doc, index) => {
+      content += "0 " + y + " Td\n(" + (index + 1) + ". " + doc.fileName + 
+                " - Created on " + doc.creationDate + " - " + doc.type + ") Tj\n";
+      y = -15;
+    });
+    
+    // Monthly CPO Data
+    content += "0 -40 Td\n(MONTHLY CPO DISTRIBUTION) Tj\n";
+    
+    y = -20;
+    reportData.monthlyCPOData.forEach((month) => {
+      if (month.minutes > 0) {
+        content += "0 " + y + " Td\n(" + month.month + ": " + month.minutes + " minutes) Tj\n";
+        y = -15;
+      }
+    });
+    
+    content += "ET\n";
+    
+    // Add content to PDF
+    pdf += "5 0 obj\n<< /Length " + content.length + " >>\nstream\n" + content + "endstream\nendobj\n";
+    
+    // Add font
+    pdf += "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
+    
+    // Add cross-reference table
+    const xrefOffset = pdf.length;
+    pdf += "xref\n0 7\n0000000000 65535 f\n";
+    
+    // Add trailer
+    pdf += "trailer\n<< /Size 7 /Root 1 0 R >>\n";
+    pdf += "startxref\n" + xrefOffset + "\n";
+    pdf += "%%EOF";
+    
+    return pdf;
+  };
 
   return (
     <div className="patient-detail-view">
@@ -3135,6 +3279,10 @@ Total documents: ${documents.length}
                   </span>
                   Generate Report
                 </button>
+                <button className="action-button secondary" onClick={exportCPOReport}>
+                  <span className="icon-wrapper"><FaDownload /></span>
+                  Export CPO Report
+                </button>
               </div>
             </div>
           </div>
@@ -3151,7 +3299,10 @@ Total documents: ${documents.length}
                 <h3>CPO Allocation</h3>
               </div>
               
-              <button className="action-button primary add-cpo-btn">
+              <button 
+                className="action-button primary add-cpo-btn"
+                onClick={addCpoDocument}
+              >
                 <span className="icon-wrapper"><FaPlus /></span>
                 Add CPO Document
               </button>
@@ -3193,92 +3344,51 @@ Total documents: ${documents.length}
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>
-                          <div className="document-name">
-                            <FaFilePdf className="file-icon pdf" />
-                            <span>CPO_Document_001.pdf</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="date-display">
-                            <FaCalendar className="date-icon" />
-                            <span>Apr 5, 2023</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <button
-                              className="action-icon-button"
-                              onClick={() => openDocumentViewer(cpoDocs[0])}
-                              title="View Document"
-                            >
-                              <FaEye />
-                            </button>
-                            <button 
-                              className="action-icon-button" 
-                              title="Download Document"
-                              onClick={() => handleDownloadDocument(cpoDocs[0])}
-                            >
-                              <FaDownload />
-                            </button>
-                            <button 
-                              className="action-icon-button" 
-                              title="Edit Document"
-                              onClick={() => {
-                                setSelectedDocument(cpoDocs[0]);
-                                setIsEditingDocumentDetails(true);
-                                setViewerOpen(true);
-                              }}
-                            >
-                              <FaEdit />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div className="document-name">
-                            <FaFilePdf className="file-icon pdf" />
-                            <span>CPO_Document_002.pdf</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="date-display">
-                            <FaCalendar className="date-icon" />
-                            <span>May 10, 2023</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <button
-                              className="action-icon-button"
-                              onClick={() => openDocumentViewer(cpoDocs[1])}
-                              title="View Document"
-                            >
-                              <FaEye />
-                            </button>
-                            <button 
-                              className="action-icon-button" 
-                              title="Download Document"
-                              onClick={() => handleDownloadDocument(cpoDocs[1])}
-                            >
-                              <FaDownload />
-                            </button>
-                            <button 
-                              className="action-icon-button" 
-                              title="Edit Document"
-                              onClick={() => {
-                                setSelectedDocument(cpoDocs[1]);
-                                setIsEditingDocumentDetails(true);
-                                setViewerOpen(true);
-                              }}
-                            >
-                              <FaEdit />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                      {cpoDocs.map((doc, index) => (
+                        <tr key={doc.id}>
+                          <td>
+                            <div className="document-name">
+                              <FaFilePdf className="file-icon pdf" />
+                              <span>{doc.fileName}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="date-display">
+                              <FaCalendar className="date-icon" />
+                              <span>{formatDate(doc.creationDate)}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="action-buttons">
+                              <button
+                                className="action-icon-button"
+                                onClick={() => openDocumentViewer(doc)}
+                                title="View Document"
+                              >
+                                <FaEye />
+                              </button>
+                              <button 
+                                className="action-icon-button" 
+                                title="Download Document"
+                                onClick={() => handleDownloadDocument(doc)}
+                              >
+                                <FaDownload />
+                              </button>
+                              <button 
+                                className="action-icon-button" 
+                                title="Edit Document"
+                                onClick={() => {
+                                  setSelectedDocument(doc);
+                                  setIsEditingDocumentDetails(true);
+                                  setViewerOpen(true);
+                                }}
+                              >
+                                <FaEdit />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -3287,7 +3397,7 @@ Total documents: ${documents.length}
                   <div className="document-count">
                     Total Documents: <span className="count">{cpoDocs.length}</span>
                   </div>
-                  <button className="action-button secondary">
+                  <button className="action-button secondary" onClick={exportCPOReport}>
                     <span className="icon-wrapper"><FaDownload /></span>
                     Export CPO Report
                   </button>
