@@ -10,7 +10,15 @@ from statistical_area_zoom import generate_statistical_area_map
 import re
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+# Enable CORS with specific options for production
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",  # Update this to specific domains in production
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "OPTIONS"]
+    }
+})
 
 # Configure logging
 logging.basicConfig(
@@ -103,8 +111,44 @@ def get_map():
         # Remove legend elements
         html_content = re.sub(r'<div class="info legend[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
         
-        # Return the modified HTML content with proper content type
-        return Response(html_content, mimetype='text/html')
+        # Add script to notify parent when map is loaded
+        notification_script = """
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notify parent window that map is loaded
+            try {
+                window.parent.postMessage({ type: 'mapLoaded', success: true }, '*');
+            } catch (e) {
+                console.error('Error posting message to parent:', e);
+            }
+            
+            // Fix map display issues that might occur in iframes
+            setTimeout(function() {
+                if (typeof L !== 'undefined' && L.map) {
+                    var maps = Object.values(L.DomUtil._leaflet_map_targets || {})
+                        .filter(function(m) { return m && m.invalidateSize; });
+                    
+                    if (maps.length > 0) {
+                        maps.forEach(function(map) {
+                            map.invalidateSize(true);
+                        });
+                        console.log('Map size updated');
+                    }
+                }
+            }, 1000);
+        });
+        </script>
+        """
+        
+        # Add the notification script just before the closing body tag
+        html_content = html_content.replace('</body>', notification_script + '</body>')
+        
+        # Set the appropriate headers for cross-origin iframe embedding
+        response = Response(html_content, mimetype='text/html')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        return response
     else:
         logger.warning("Map file not found")
         return jsonify({
