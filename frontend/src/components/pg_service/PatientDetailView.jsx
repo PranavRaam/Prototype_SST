@@ -343,6 +343,84 @@ const DocIdInput = ({ docId, onUpdate }) => {
   );
 };
 
+// Add this function to filter episodes by date range
+const filterEpisodesByDateRange = (episodes, startDate, endDate) => {
+  if (!startDate && !endDate) return episodes;
+  
+  const start = startDate ? new Date(startDate) : new Date(0);
+  const end = endDate ? new Date(endDate) : new Date();
+  
+  return episodes.filter(episode => {
+    const episodeStart = new Date(episode.startDate);
+    return episodeStart >= start && episodeStart <= end;
+  });
+};
+
+// Add function to format CPO minutes
+const formatCPOMinutes = (minutes) => {
+  if (!minutes) return '0 min';
+  return `${minutes} min`;
+};
+
+// Add function to calculate CPO percentage
+const calculateCPOPercentage = (captured, total) => {
+  if (!total) return 0;
+  const percentage = (captured / total) * 100;
+  return Math.min(100, percentage);
+};
+
+// Add function to create mock documents for episodes
+const createMockDocumentsForEpisode = (episodeId) => {
+  const documentTypes = ['Evaluation', 'Treatment Plan', 'Progress Report', 'Discharge Summary'];
+  const randomCount = Math.floor(Math.random() * 3) + 1; // 1-3 documents
+  const documents = [];
+
+  for (let i = 0; i < randomCount; i++) {
+    const type = documentTypes[Math.floor(Math.random() * documentTypes.length)];
+    const date = new Date();
+    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+    
+    documents.push({
+      id: `DOC-EP${episodeId}-${i + 1}`,
+      type: type,
+      fileName: `${type.toLowerCase().replace(/\s/g, '_')}_episode${episodeId}.pdf`,
+      createdDate: date.toISOString().split('T')[0],
+      size: `${(Math.random() * 2 + 0.5).toFixed(1)} MB`,
+      status: Math.random() > 0.5 ? 'Signed' : 'New'
+    });
+  }
+  
+  return documents;
+};
+
+// Add episode data structure
+const generateEpisodeData = () => {
+  return [
+    {
+      id: 1,
+      startDate: '2023-04-01',
+      socDate: '2023-04-03',
+      endDate: '2023-06-30',
+      status: 'complete',
+      diagnosis: 'Hypertension',
+      provider: 'Dr. Sarah Johnson',
+      notes: 'Patient completed first episode successfully.',
+      documents: createMockDocumentsForEpisode(1)
+    },
+    {
+      id: 2,
+      startDate: '2023-07-01',
+      socDate: '2023-07-05',
+      endDate: '2023-09-30',
+      status: 'active',
+      diagnosis: 'Type 2 Diabetes',
+      provider: 'Dr. Robert Chen',
+      notes: 'Patient is currently in this episode.',
+      documents: createMockDocumentsForEpisode(2)
+    }
+  ];
+};
+
 const PatientDetailView = ({ patient, onBack }) => {
   // State for active tab and document type select
   const [activeTab, setActiveTab] = useState('patientInfo');
@@ -379,6 +457,8 @@ const PatientDetailView = ({ patient, onBack }) => {
     pg: patient?.pg || 'Group A',
     hhah: patient?.hhah || 'Yes',
     admissionDate: patient?.patientSOC || '2023-04-01',
+    episodeFrom: patient?.patientEpisodeFrom || '2023-04-01',
+    episodeTo: patient?.patientEpisodeTo || '2023-06-01',
     dischargeDate: '',
     primaryDiagnosis: patient?.primaryDiagnosisCodes ? patient.primaryDiagnosisCodes.join(", ") : 'Hypertension',
     secondaryDiagnosis: patient?.secondaryDiagnosisCodes ? patient.secondaryDiagnosisCodes.join(", ") : 'Type 2 Diabetes',
@@ -391,6 +471,9 @@ const PatientDetailView = ({ patient, onBack }) => {
     cpoMinsCaptured: patient?.cpoMinsCaptured || 0,
     newDocs: patient?.newDocs || 0,
     newCPODocsCreated: patient?.newCpoDocsCreated || 0,
+    certStatus: patient?.certStatus || 'Document not received',
+    recertStatus: patient?.recertStatus || 'Document not received',
+    f2fEligibility: patient?.f2fEligibility || 'no',
     remarks: patient?.patientRemarks || patient?.remarks || '',
   });
   
@@ -705,7 +788,36 @@ const PatientDetailView = ({ patient, onBack }) => {
   
   // Calculate CPO minutes
   const calculateCPOMinutes = () => {
-    return totalCpoMinutes;
+    // Calculate CPO minutes based on documents count * 2
+    const documentCount = cpoDocs.length;
+    const cpoMinutes = documentCount * 2;
+    
+    // Update patient info with calculated CPO minutes
+    setPatientInfo(prev => ({
+      ...prev,
+      cpoMinsCaptured: cpoMinutes
+    }));
+    
+    // Update monthly CPO data
+    // This creates a simple distribution of CPO minutes across months
+    const updatedMonthlyCPOData = [...monthlyCPOData];
+    
+    // Reset all months to 0
+    updatedMonthlyCPOData.forEach(month => {
+      month.minutes = 0;
+    });
+    
+    // Distribute minutes across months with documents
+    if (documentCount > 0) {
+      const minutesPerDoc = 2;
+      cpoDocs.forEach(doc => {
+        const docDate = new Date(doc.creationDate);
+        const monthIndex = docDate.getMonth();
+        updatedMonthlyCPOData[monthIndex].minutes += minutesPerDoc;
+      });
+    }
+    
+    setMonthlyCPOData(updatedMonthlyCPOData);
   };
   
   // Function to update document type
@@ -771,23 +883,22 @@ const PatientDetailView = ({ patient, onBack }) => {
 
   // Save patient info changes
   const savePatientInfo = () => {
-    // Here you would typically make an API call to save the data
+    // Calculate total CPO minutes if not already done
+    if (!patientInfo.cpoMinsCaptured) {
+      const totalMinutes = cpoDocuments.reduce((sum, doc) => sum + doc.minutes, 0);
+      setPatientInfo(prev => ({
+        ...prev,
+        cpoMinsCaptured: totalMinutes
+      }));
+    }
+    
+    // Here you would typically save to backend
+    console.log('Saving patient info:', patientInfo);
+    
+    // For demo purposes, show success notification
+    showNotification('success', 'Patient Info Saved', 'Patient information has been successfully updated.');
+    
     setIsEditing(false);
-    
-    showNotification('success', 'Changes Saved', 'Patient information has been updated successfully');
-    
-    // Add to timeline if there were significant changes
-    const newTimelineEvent = {
-      id: timelineData.length + 1,
-      type: 'status',
-      title: 'Patient Information Updated',
-      date: new Date().toLocaleDateString(),
-      description: 'Patient information has been updated',
-      provider: 'Admin User',
-      tags: ['Information', 'Update']
-    };
-    
-    setTimelineData(prev => [newTimelineEvent, ...prev]);
   };
 
   // Auto dismiss notification after time
@@ -974,150 +1085,756 @@ const PatientDetailView = ({ patient, onBack }) => {
   
   // Function to generate a report
   const generateDocumentReport = () => {
-    setIsUploading(true); // Reuse the loading indicator
+    // Show loading spinner
+    showNotification('info', 'Generating Report', 'Preparing document report...');
     
-    // Simulate report generation delay
+    // Create a PDF report
     setTimeout(() => {
-      setIsUploading(false);
-      
-      // Show success notification
-      showNotification(
-        'success', 
-        'Report Generated', 
-        'Patient document report has been generated and downloaded'
-      );
-      
-      // Simulate downloading a file
-      const element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,');
-      element.setAttribute('download', `${patientInfo.name.replace(/\s+/g, '_')}_Document_Report.pdf`);
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      
-      // Add to timeline
-      const newTimelineEvent = {
-        id: timelineData.length + 1,
-        type: 'document',
-        title: 'Document Report Generated',
-        date: new Date().toLocaleDateString(),
-        description: 'Document report generated and downloaded',
-        provider: 'Admin User',
-        tags: ['Report', 'Document']
-      };
-      
-      setTimelineData(prev => [newTimelineEvent, ...prev]);
+      try {
+        // Create PDF content (simulating jsPDF usage)
+        const pdfContent = createPDFReport();
+        
+        // Convert the PDF content to a Blob
+        const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
+        
+        // Create URL for the blob
+        const url = URL.createObjectURL(pdfBlob);
+        
+        // Create a temporary download link
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `patient_${patientInfo.id}_report_${new Date().toISOString().slice(0, 10)}.pdf`;
+        document.body.appendChild(link);
+        
+        // Click the link to trigger download
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          showNotification('success', 'Report Generated', 'Document report has been downloaded successfully!');
+        }, 100);
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        showNotification('error', 'Report Generation Failed', 'Failed to generate PDF report. Please try again.');
+      }
     }, 1500);
   };
   
-  // Function to export documents
-  const exportDocuments = () => {
-    // Determine which documents to export based on active tab
-    const docsToExport = activeDocumentTab === 'newPrepared' 
-      ? filteredNewPreparedDocs
-      : filteredSignedDocs;
+  // Function to create PDF report content
+  const createPDFReport = () => {
+    // This function simulates creating a PDF using jsPDF
+    // In a real implementation, you would use jsPDF library
     
-    if (docsToExport.length === 0) {
-      showNotification(
-        'warning',
-        'No Documents to Export',
-        'There are no documents matching your current filters to export'
-      );
-      return;
+    // Create a binary representation of a simple PDF
+    // This is a simplified approach for simulation
+    const pdfHeader = "%PDF-1.3\n";
+    
+    // Add metadata
+    let pdf = pdfHeader;
+    pdf += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+    pdf += "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
+    pdf += "3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 5 0 R >>\nendobj\n";
+    pdf += "4 0 obj\n<< /Font << /F1 6 0 R >> >>\nendobj\n";
+    
+    // Create the actual content
+    let content = "BT\n/F1 12 Tf\n72 720 Td\n(PATIENT DOCUMENT REPORT) Tj\n";
+    content += "0 -20 Td\n(Patient: " + patientInfo.name + ") Tj\n";
+    content += "0 -20 Td\n(ID: " + patientInfo.id + ") Tj\n";
+    content += "0 -20 Td\n(Date of Birth: " + formatDate(patientInfo.dob) + ") Tj\n";
+    content += "0 -20 Td\n(Generated Date: " + new Date().toLocaleDateString() + ") Tj\n";
+    
+    // Document Summary
+    content += "0 -40 Td\n(DOCUMENT SUMMARY) Tj\n";
+    content += "0 -20 Td\n(Total Documents: " + (newPreparedDocs.length + signedDocs.length) + ") Tj\n";
+    content += "0 -20 Td\n(New Documents: " + newPreparedDocs.filter(d => d.status === 'New').length + ") Tj\n";
+    content += "0 -20 Td\n(Prepared Documents: " + newPreparedDocs.filter(d => d.status === 'Prepared').length + ") Tj\n";
+    content += "0 -20 Td\n(Signed Documents: " + signedDocs.length + ") Tj\n";
+    
+    // Document List
+    content += "0 -40 Td\n(DOCUMENT LIST) Tj\n";
+    
+    let y = -20;
+    // New & Prepared Documents
+    if (newPreparedDocs.length > 0) {
+      content += "0 " + y + " Td\n(New & Prepared Documents:) Tj\n";
+      y = -20;
+      
+      newPreparedDocs.forEach((doc, index) => {
+        content += "10 " + y + " Td\n(" + (index + 1) + ". " + (doc.type || "Unspecified") + 
+                  " - " + doc.fileName + " - " + doc.status + ") Tj\n";
+        y = -15;
+      });
+      
+      y = -20;
     }
     
-    setIsUploading(true); // Reuse the loading indicator
+    // Signed Documents
+    if (signedDocs.length > 0) {
+      content += "0 " + y + " Td\n(Signed Documents:) Tj\n";
+      y = -20;
+      
+      signedDocs.forEach((doc, index) => {
+        content += "10 " + y + " Td\n(" + (index + 1) + ". " + (doc.type || "Unspecified") + 
+                  " - " + doc.fileName + " - Signed on " + formatDate(doc.signedDate) + ") Tj\n";
+        y = -15;
+      });
+    }
     
-    // Simulate export delay
+    content += "ET\n";
+    
+    // Add content to PDF
+    pdf += "5 0 obj\n<< /Length " + content.length + " >>\nstream\n" + content + "endstream\nendobj\n";
+    
+    // Add font
+    pdf += "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
+    
+    // Add cross-reference table
+    const xrefOffset = pdf.length;
+    pdf += "xref\n0 7\n0000000000 65535 f\n";
+    
+    // Add trailer
+    pdf += "trailer\n<< /Size 7 /Root 1 0 R >>\n";
+    pdf += "startxref\n" + xrefOffset + "\n";
+    pdf += "%%EOF";
+    
+    return pdf;
+  };
+  
+  // Update the export documents function to create a ZIP
+  const exportDocuments = () => {
+    // Show loading spinner
+    showNotification('info', 'Exporting Documents', 'Preparing documents for export...');
+    
+    // Create a ZIP file with document content
     setTimeout(() => {
-      setIsUploading(false);
+      try {
+        // Create document data (using JSZip library simulation)
+        const mockDocuments = [
+          ...newPreparedDocs.map(doc => ({
+            id: doc.id,
+            fileName: doc.fileName,
+            type: doc.type || 'Unspecified',
+            status: doc.status,
+            content: generateMockDocumentContent(doc)
+          })),
+          ...signedDocs.map(doc => ({
+            id: doc.id,
+            fileName: doc.fileName,
+            type: doc.type || 'Unspecified',
+            status: 'Signed',
+            content: generateMockDocumentContent(doc)
+          }))
+        ];
+        
+        // Create a manifest file
+        const manifest = {
+          patientId: patientInfo.id,
+          patientName: patientInfo.name,
+          exportDate: new Date().toISOString(),
+          documents: mockDocuments.map(doc => ({
+            id: doc.id,
+            fileName: doc.fileName,
+            type: doc.type,
+            status: doc.status
+          }))
+        };
+        
+        // Convert manifest to JSON
+        const manifestJson = JSON.stringify(manifest, null, 2);
+        
+        // Create ZIP content (simulating JSZip usage)
+        const zipContent = createZIPArchive(mockDocuments, manifestJson);
+        
+        // Create a Blob for the ZIP
+        const zipBlob = new Blob([zipContent], { type: 'application/zip' });
+        const zipUrl = URL.createObjectURL(zipBlob);
+        
+        // Create a download link for the ZIP
+        const zipLink = document.createElement('a');
+        zipLink.href = zipUrl;
+        zipLink.download = `patient_${patientInfo.id}_documents_${new Date().toISOString().slice(0, 10)}.zip`;
+        document.body.appendChild(zipLink);
+        
+        // Click to download
+        zipLink.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(zipLink);
+          URL.revokeObjectURL(zipUrl);
+          
+          showNotification('success', 'Export Complete', 'Documents have been exported successfully!');
+        }, 1000);
+      } catch (error) {
+        console.error("Error exporting documents:", error);
+        showNotification('error', 'Export Failed', 'Failed to export documents. Please try again.');
+      }
+    }, 2000);
+  };
+  
+  // Function to create ZIP archive content
+  const createZIPArchive = (documents, manifestJson) => {
+    // This function simulates creating a ZIP using JSZip
+    // In a real implementation, you would use JSZip library
+    
+    // Create a binary representation of a simple ZIP
+    // This is a simplified approach for simulation - not a real ZIP format
+    
+    // ZIP signature and headers
+    const zipHeader = "PK\x03\x04";
+    
+    // Start with manifest.json
+    let zipContent = zipHeader + "manifest.json\n" + manifestJson + "\n";
+    
+    // Add each document to the ZIP
+    documents.forEach(doc => {
+      const fileName = doc.fileName.replace(/\s+/g, '_');
+      const fileExtension = fileName.split('.').pop().toLowerCase();
       
-      // Show success notification
-      showNotification(
-        'success', 
-        'Documents Exported', 
-        `Successfully exported ${docsToExport.length} document(s)`
-      );
+      if (fileExtension === 'pdf') {
+        // Add PDF file
+        zipContent += zipHeader + fileName + "\n" + createSimplePDF(doc.content) + "\n";
+      } else if (fileExtension === 'docx') {
+        // Add DOCX file
+        zipContent += zipHeader + fileName + "\n" + createSimpleDocx(doc.content) + "\n";
+      } else {
+        // Add text file
+        zipContent += zipHeader + fileName + "\n" + doc.content + "\n";
+      }
+    });
+    
+    // Add a readme file to explain the export
+    const readme = `PATIENT DOCUMENTS EXPORT
+    
+Patient: ${patientInfo.name}
+ID: ${patientInfo.id}
+Export Date: ${new Date().toLocaleDateString()}
+
+This ZIP archive contains the following:
+- manifest.json: A file with metadata about all documents
+- Document files: Each document exported from the patient's record
+
+Total documents: ${documents.length}
+`;
+    
+    zipContent += zipHeader + "README.txt\n" + readme + "\n";
+    
+    return zipContent;
+  };
+  
+  // Helper function to create a simple PDF representation
+  const createSimplePDF = (content) => {
+    // Create a simplified PDF structure
+    let pdf = "%PDF-1.3\n";
+    pdf += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+    pdf += "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
+    pdf += "3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 5 0 R >>\nendobj\n";
+    pdf += "4 0 obj\n<< /Font << /F1 6 0 R >> >>\nendobj\n";
+    
+    // Convert content to PDF format
+    const pdfContent = "BT\n/F1 12 Tf\n72 720 Td\n";
+    
+    // Split content into lines and add to PDF
+    const lines = content.split('\n');
+    let pdfLines = "";
+    let y = 0;
+    
+    lines.forEach((line, index) => {
+      if (index > 0) {
+        y -= 15;
+        pdfLines += "0 " + y + " Td\n";
+      }
+      pdfLines += "(" + line.replace(/[()\\]/g, '\\$&') + ") Tj\n";
+    });
+    
+    pdfLines += "ET\n";
+    
+    // Add content to PDF
+    pdf += "5 0 obj\n<< /Length " + pdfLines.length + " >>\nstream\n" + pdfLines + "endstream\nendobj\n";
+    
+    // Add font
+    pdf += "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
+    
+    // Add cross-reference table
+    pdf += "xref\n0 7\n0000000000 65535 f\n";
+    
+    // Add trailer
+    pdf += "trailer\n<< /Size 7 /Root 1 0 R >>\n";
+    pdf += "startxref\n100\n";
+    pdf += "%%EOF";
+    
+    return pdf;
+  };
+  
+  // Helper function to create a simple DOCX representation
+  const createSimpleDocx = (content) => {
+    // Create a simplified DOCX structure (just for simulation)
+    // In reality, DOCX is a ZIP file with XML content
+    let docx = "DOCX-SIMULATION\n";
+    docx += "Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document\n\n";
+    docx += content;
+    return docx;
+  };
+  
+  // Add helper function to generate mock document content
+  const generateMockDocumentContent = (doc) => {
+    let content = '';
+    
+    // Add document header
+    content += `Document ID: ${doc.id}\n`;
+    content += `Document Type: ${doc.type || 'Unspecified'}\n`;
+    content += `Status: ${doc.status}\n`;
+    content += `Date: ${formatDate(doc.signedDate || doc.receivedDate)}\n\n`;
+    
+    // Add mock content based on document type
+    if (doc.type && doc.type.toLowerCase().includes('evaluation')) {
+      content += `PATIENT EVALUATION REPORT\n\n`;
+      content += `Patient Name: ${patientInfo.name}\n`;
+      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
+      content += `Evaluation Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
+      content += `ASSESSMENT:\n`;
+      content += `Patient presents with ${patientInfo.primaryDiagnosis || 'primary diagnosis not specified'}. `;
+      content += `Secondary conditions include ${patientInfo.secondaryDiagnosis || 'none noted'}.\n\n`;
+      content += `RECOMMENDATIONS:\n`;
+      content += `1. Continue current medication regimen\n`;
+      content += `2. Schedule follow-up in 30 days\n`;
+      content += `3. Begin physical therapy 2x weekly\n\n`;
       
-      // Simulate downloading a zip file
-      const element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,');
-      element.setAttribute('download', `${patientInfo.name.replace(/\s+/g, '_')}_Documents.zip`);
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      if (doc.status === 'Signed') {
+        content += `SIGNED BY: ${doc.signedBy || 'Provider'}\n`;
+        content += `DATE: ${formatDate(doc.signedDate)}\n`;
+      }
+    } else if (doc.type && doc.type.toLowerCase().includes('order')) {
+      content += `PHYSICIAN ORDER\n\n`;
+      content += `Patient Name: ${patientInfo.name}\n`;
+      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
+      content += `Order Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
+      content += `ORDERS:\n`;
+      content += `1. Home health aide services 3x weekly\n`;
+      content += `2. Skilled nursing visit 1x weekly for wound care\n`;
+      content += `3. Occupational therapy evaluation and treatment\n\n`;
+      content += `Diagnosis: ${patientInfo.primaryDiagnosis || 'Not specified'}\n\n`;
       
-      // Add to timeline
-      const newTimelineEvent = {
-        id: timelineData.length + 1,
-        type: 'document',
-        title: 'Documents Exported',
-        date: new Date().toLocaleDateString(),
-        description: `${docsToExport.length} documents exported`,
-        provider: 'Admin User',
-        tags: ['Export', 'Documents']
-      };
+      if (doc.status === 'Signed') {
+        content += `SIGNED BY: ${doc.signedBy || 'Provider'}\n`;
+        content += `DATE: ${formatDate(doc.signedDate)}\n`;
+      }
+    } else if (doc.fileName && doc.fileName.toLowerCase().includes('lab')) {
+      content += `LABORATORY RESULTS\n\n`;
+      content += `Patient Name: ${patientInfo.name}\n`;
+      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
+      content += `Collection Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
+      content += `RESULTS:\n`;
+      content += `CBC:\n`;
+      content += `- WBC: 7.2 (normal range: 4.5-11.0)\n`;
+      content += `- RBC: 4.8 (normal range: 4.5-5.9)\n`;
+      content += `- Hemoglobin: 14.2 (normal range: 13.5-17.5)\n`;
+      content += `- Hematocrit: 42% (normal range: 41-50%)\n\n`;
+      content += `Chemistry:\n`;
+      content += `- Glucose: 98 (normal range: 70-99)\n`;
+      content += `- BUN: 15 (normal range: 7-20)\n`;
+      content += `- Creatinine: 0.9 (normal range: 0.6-1.2)\n\n`;
       
-      setTimelineData(prev => [newTimelineEvent, ...prev]);
-    }, 1500);
+      if (doc.status === 'Signed') {
+        content += `REVIEWED BY: ${doc.signedBy || 'Provider'}\n`;
+        content += `DATE: ${formatDate(doc.signedDate)}\n`;
+      }
+    } else {
+      // Generic document content
+      content += `This is a mock document for demonstration purposes.\n\n`;
+      content += `It contains example text related to patient ${patientInfo.name}.\n`;
+      content += `Generated for document ID ${doc.id}.\n\n`;
+      content += `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisi ut aliquam facilisis, nisl ipsum ultricies nunc, ut aliquam nisl nunc eu nisl. Sed euismod, nisl ut aliquam facilisis, nisl ipsum ultricies nunc, ut aliquam nisl nunc eu nisl.\n\n`;
+      
+      if (doc.status === 'Signed') {
+        content += `SIGNED BY: ${doc.signedBy || 'Provider'}\n`;
+        content += `DATE: ${formatDate(doc.signedDate)}\n`;
+      }
+    }
+    
+    return content;
   };
 
   // Add after calculateCPOMinutes function
   const [cpoDocs, setCpoDocs] = useState([
     {
-      id: 'CPO-001',
-      fileName: 'CPO_Document_001.pdf',
-      type: 'CPO Minutes',
-      receivedDate: '2023-04-05',
-      status: 'Completed',
-      size: '1.4 MB',
-      content: `This is a sample CPO document content for CPO-001.
-      
-Patient ID: ${patientInfo?.id || 'PT12345'}
-Patient Name: ${patientInfo?.name || 'John Doe'}
-Date of Assessment: April 5, 2023
-      
-CPO Meeting Minutes:
-- Patient's case was discussed with the multidisciplinary team
-- Treatment plan was developed and approved
-- Next follow-up scheduled for May 15, 2023
-      
-Recommendations:
-1. Continue physical therapy sessions twice weekly
-2. Schedule follow-up imaging in 4 weeks
-3. Monitor pain levels and adjust medication as needed`,
-      signedBy: 'Dr. Sarah Johnson',
-      signedDate: '2023-04-07'
+      id: "CPO_001",
+      fileName: "CPO_Document_001.pdf",
+      type: "CPO Assessment",
+      creationDate: "2023-04-05",
+      size: "1.2 MB"
     },
     {
-      id: 'CPO-002',
-      fileName: 'CPO_Document_002.pdf',
-      type: 'CPO Minutes',
-      receivedDate: '2023-05-10',
-      status: 'Completed',
-      size: '0.9 MB',
-      content: `This is a sample CPO document content for CPO-002.
-      
-Patient ID: ${patientInfo?.id || 'PT12345'}
-Patient Name: ${patientInfo?.name || 'John Doe'}
-Date of Assessment: May 10, 2023
-      
-CPO Meeting Minutes:
-- Review of patient progress since initial assessment
-- Adjustment to treatment plan based on response
-- Discussion of specialist referral options
-      
-Recommendations:
-1. Reduce physical therapy to once weekly
-2. Begin occupational therapy assessment
-3. Continue current medication regimen
-4. Schedule follow-up CPO meeting in 6 weeks`,
-      signedBy: 'Dr. Michael Chen',
-      signedDate: '2023-05-12'
+      id: "CPO_002",
+      fileName: "CPO_Document_002.pdf",
+      type: "CPO Evaluation",
+      creationDate: "2023-05-10",
+      size: "0.9 MB"
     }
   ]);
+
+  // New state for episodes, cpo data and document handling
+  const [episodes, setEpisodes] = useState(generateEpisodeData());
+  const [monthlyCPOData, setMonthlyCPOData] = useState(generateMonthlyCPOData());
+  const [activeEpisode, setActiveEpisode] = useState(null);
+  const [episodeFilterDates, setEpisodeFilterDates] = useState({ start: '', end: '' });
+  const [filteredEpisodes, setFilteredEpisodes] = useState([]);
+  const [expandedEpisode, setExpandedEpisode] = useState(null);
+  const [cpoMinutesEditing, setCpoMinutesEditing] = useState(null);
+  const [documentCategories, setDocumentCategories] = useState(['Evaluation', 'Treatment', 'Assessment', 'Plan of Care']);
+  const [showEpisodeModal, setShowEpisodeModal] = useState(false);
+  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+  const [currentEpisodeDocuments, setCurrentEpisodeDocuments] = useState([]);
+  const [editingEpisode, setEditingEpisode] = useState(null);
+  const [newEpisodeData, setNewEpisodeData] = useState({
+    startDate: '',
+    socDate: '',
+    endDate: '',
+    status: 'active',
+    diagnosis: '',
+    provider: '',
+    notes: ''
+  });
+  
+  // Initialize filtered episodes
+  useEffect(() => {
+    setFilteredEpisodes(episodes);
+    // Set the most recent episode as active by default
+    if (episodes.length > 0) {
+      setActiveEpisode(episodes[episodes.length - 1].id);
+    }
+  }, [episodes]);
+  
+  // Apply episode filters when date range changes
+  useEffect(() => {
+    const filtered = filterEpisodesByDateRange(episodes, episodeFilterDates.start, episodeFilterDates.end);
+    setFilteredEpisodes(filtered);
+  }, [episodeFilterDates, episodes]);
+  
+  // Updated filter function to properly filter by date
+  const handleEpisodeDateFilterChange = (field, value) => {
+    setEpisodeFilterDates(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  
+  // Add function to handle episode selection
+  const handleEpisodeSelect = (episodeId) => {
+    setActiveEpisode(episodeId);
+    
+    // If the episode is already expanded, collapse it
+    if (expandedEpisode === episodeId) {
+      setExpandedEpisode(null);
+    } else {
+      setExpandedEpisode(episodeId);
+    }
+  };
+  
+  // Add function to handle adding a new episode
+  const handleAddEpisode = () => {
+    // Reset form data
+    setNewEpisodeData({
+      startDate: new Date().toISOString().split('T')[0],
+      socDate: '',
+      endDate: '',
+      status: 'active',
+      diagnosis: '',
+      provider: '',
+      notes: ''
+    });
+    setEditingEpisode(null);
+    setShowEpisodeModal(true);
+  };
+  
+  // Add function to save a new episode
+  const handleSaveEpisode = () => {
+    if (editingEpisode) {
+      // Update existing episode
+      setEpisodes(episodes.map(ep => 
+        ep.id === editingEpisode.id 
+          ? { ...ep, ...newEpisodeData } 
+          : ep
+      ));
+      showNotification('success', 'Episode Updated', 'Episode has been updated successfully.');
+    } else {
+      // Create new episode
+      const newEpisode = {
+        ...newEpisodeData,
+        id: episodes.length > 0 ? Math.max(...episodes.map(e => e.id)) + 1 : 1,
+        documents: []
+      };
+      setEpisodes([...episodes, newEpisode]);
+      showNotification('success', 'Episode Added', 'A new episode has been added successfully.');
+    }
+    setShowEpisodeModal(false);
+  };
+  
+  // Add function to edit an episode
+  const handleEditEpisode = (episodeId) => {
+    const episode = episodes.find(ep => ep.id === episodeId);
+    if (!episode) return;
+    
+    setEditingEpisode(episode);
+    setNewEpisodeData({
+      startDate: episode.startDate,
+      socDate: episode.socDate,
+      endDate: episode.endDate,
+      status: episode.status,
+      diagnosis: episode.diagnosis,
+      provider: episode.provider,
+      notes: episode.notes || ''
+    });
+    setShowEpisodeModal(true);
+  };
+  
+  // Add function to handle input changes for episode form
+  const handleEpisodeInputChange = (field, value) => {
+    setNewEpisodeData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  
+  // Add function to view episode documents
+  const handleViewEpisodeDocuments = (episodeId) => {
+    const episode = episodes.find(ep => ep.id === episodeId);
+    if (!episode) return;
+    
+    setCurrentEpisodeDocuments(episode.documents || []);
+    setShowDocumentsModal(true);
+  };
+  
+  // Add function to add a document to an episode
+  const handleAddDocumentToEpisode = (episodeId, documentType) => {
+    const date = new Date();
+    const newDoc = {
+      id: `DOC-EP${episodeId}-${Date.now().toString().slice(-4)}`,
+      type: documentType,
+      fileName: `${documentType.toLowerCase().replace(/\s/g, '_')}_episode${episodeId}.pdf`,
+      createdDate: date.toISOString().split('T')[0],
+      size: `${(Math.random() * 2 + 0.5).toFixed(1)} MB`,
+      status: 'New'
+    };
+    
+    setEpisodes(episodes.map(ep => 
+      ep.id === episodeId 
+        ? { ...ep, documents: [...(ep.documents || []), newDoc] } 
+        : ep
+    ));
+    
+    if (episodeId === expandedEpisode) {
+      setCurrentEpisodeDocuments(prev => [...prev, newDoc]);
+    }
+    
+    showNotification('success', 'Document Added', `${documentType} document has been added to Episode ${episodeId}.`);
+  };
+  
+  // Add function to move document from newPrepared to signed
+  const handleSignDocument = (docId) => {
+    const docIndex = newPreparedDocs.findIndex(doc => doc.id === docId);
+    if (docIndex === -1) return;
+    
+    const doc = newPreparedDocs[docIndex];
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Add to signed docs
+    const signedDoc = {
+      ...doc,
+      signedDate: today,
+      signedBy: 'Current User'
+    };
+    
+    setSignedDocs(prev => [...prev, signedDoc]);
+    
+    // Remove from new/prepared docs
+    setNewPreparedDocs(prev => prev.filter(d => d.id !== docId));
+    
+    // Update notification
+    showNotification('success', 'Document Signed', `${doc.type || 'Document'} has been signed successfully.`);
+  };
+  
+  // Add function to update document type
+  const handleUpdateDocumentType = (docId, isNew, newType) => {
+    if (isNew) {
+      setNewPreparedDocs(prev => 
+        prev.map(doc => 
+          doc.id === docId ? { ...doc, type: newType } : doc
+        )
+      );
+    } else {
+      setSignedDocs(prev => 
+        prev.map(doc => 
+          doc.id === docId ? { ...doc, type: newType } : doc
+        )
+      );
+    }
+  };
+  
+  // Add function to filter documents by type
+  const handleFilterDocumentsByType = (type) => {
+    if (type === 'all') {
+      setNewPreparedDocs(newPreparedDocs);
+      setSignedDocs(signedDocs);
+      return;
+    }
+    
+    const filteredNewPrepared = newPreparedDocs.filter(doc => doc.type === type);
+    const filteredSigned = signedDocs.filter(doc => doc.type === type);
+    
+    setNewPreparedDocs(filteredNewPrepared);
+    setSignedDocs(filteredSigned);
+  };
+
+  // Add function to update CPO minutes for a month
+  const handleUpdateCPOMinutes = (monthIndex, newMinutes) => {
+    if (isNaN(newMinutes) || newMinutes < 0) return;
+    
+    const updatedCPOData = [...monthlyCPOData];
+    updatedCPOData[monthIndex] = {
+      ...updatedCPOData[monthIndex],
+      minutes: newMinutes
+    };
+    
+    setMonthlyCPOData(updatedCPOData);
+    setCpoMinutesEditing(null);
+    
+    // Update total CPO minutes in patient info
+    const totalMinutes = updatedCPOData.reduce((sum, month) => sum + month.minutes, 0);
+    setPatientInfo(prev => ({
+      ...prev,
+      cpoMinsCaptured: totalMinutes
+    }));
+  };
+  
+  // Add function to add new document to signed or unsigned list
+  const handleAddDocument = (category, isNew = true) => {
+    const today = new Date().toISOString().split('T')[0];
+    const newDoc = {
+      id: `DOC-${Date.now().toString().slice(-6)}`,
+      type: category,
+      status: isNew ? 'New' : 'Prepared',
+      receivedDate: today,
+      fileName: `${category.toLowerCase().replace(/\s/g, '_')}_${today}.pdf`,
+      size: '0.8 MB',
+      uploadedBy: 'Current User'
+    };
+    
+    setNewPreparedDocs(prev => [...prev, newDoc]);
+    
+    // Update notification
+    showNotification('success', 'Document Added', `New ${category} document has been added to the list.`);
+  };
+
+  // Add this function to handle document download
+  const handleDownloadDocument = (doc) => {
+    showNotification('info', 'Downloading Document', `Preparing ${doc.fileName} for download...`);
+    
+    setTimeout(() => {
+      try {
+        // Create document content
+        const content = generateMockDocumentContent(doc);
+        
+        // Determine file type and create appropriate blob
+        let mimeType = 'text/plain';
+        let fileContent = content;
+        
+        // Check file extension to determine type
+        const fileExt = doc.fileName.split('.').pop().toLowerCase();
+        if (fileExt === 'pdf') {
+          mimeType = 'application/pdf';
+          fileContent = createSimplePDF(content);
+        } else if (fileExt === 'docx') {
+          mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          fileContent = createSimpleDocx(content);
+        }
+        
+        // Create blob and download
+        const blob = new Blob([fileContent], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = doc.fileName;
+        document.body.appendChild(link);
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showNotification('success', 'Download Complete', `${doc.fileName} has been downloaded successfully!`);
+        }, 500);
+      } catch (error) {
+        console.error("Error downloading document:", error);
+        showNotification('error', 'Download Failed', 'Failed to download document. Please try again.');
+      }
+    }, 1000);
+  };
+
+  // Add this function to handle signed document uploads
+  const handleSignedDocumentUpload = (e) => {
+    const files = e.target.files;
+    if (files.length === 0) return;
+    
+    showNotification('info', 'Processing Signed Document', 'Preparing to upload signed documents...');
+    
+    setIsUploading(true);
+    
+    // Process each file
+    setTimeout(() => {
+      try {
+        const newSignedDocs = [];
+        
+        Array.from(files).forEach(file => {
+          const today = new Date().toISOString().split('T')[0];
+          const fileType = file.name.split('.').pop().toLowerCase();
+          let docType = 'General';
+          
+          // Determine document type based on filename
+          if (file.name.toLowerCase().includes('eval')) docType = 'Evaluation';
+          else if (file.name.toLowerCase().includes('order')) docType = 'Physician Order';
+          else if (file.name.toLowerCase().includes('lab')) docType = 'Lab Results';
+          else if (file.name.toLowerCase().includes('progress')) docType = 'Progress Note';
+          
+          // Create new signed document
+          const newDoc = {
+            id: `DOC-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 1000)}`,
+            fileName: file.name,
+            type: docType,
+            status: 'Signed',
+            signedDate: today,
+            signedBy: 'Current User',
+            size: `${(file.size / 1024).toFixed(1)} KB`
+          };
+          
+          newSignedDocs.push(newDoc);
+        });
+        
+        // Add to signed docs
+        setSignedDocs(prev => [...prev, ...newSignedDocs]);
+        
+        setIsUploading(false);
+        showNotification('success', 'Upload Complete', `${newSignedDocs.length} signed document(s) uploaded successfully.`);
+      } catch (error) {
+        console.error("Error uploading signed documents:", error);
+        setIsUploading(false);
+        showNotification('error', 'Upload Failed', 'Failed to upload signed documents. Please try again.');
+      }
+    }, 1500);
+    
+    // Reset the file input
+    e.target.value = '';
+  };
+
+  // Update calculateCPOMinutes function to call it when needed (like in useEffect)
+  useEffect(() => {
+    // Call calculateCPOMinutes when component mounts or cpoDocs changes
+    calculateCPOMinutes();
+  }, [cpoDocs]);
 
   return (
     <div className="patient-detail-view">
@@ -1233,204 +1950,14 @@ Recommendations:
             <div className="info-section">
               <h3>
                 <FaUser className="section-icon" />
-                Personal Information
-                <span className="section-badge">Basic Details</span>
+                Patient Details
+                <span className="section-badge">Basic Information</span>
               </h3>
               <div className="info-grid">
                 <div className="info-item">
                   <label>
-                    <FaUserCircle className="field-icon" />
-                    Patient Name:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.name} 
-                      onChange={(e) => handleInfoChange('name', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter patient name"
-                    />
-                  ) : (
-                    <span>{patientInfo.name}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaIdCard className="field-icon" />
-                    Patient ID:
-                  </label>
-                  <span className="id-display">{patientInfo.id}</span>
-                </div>
-                <div className="info-item">
-                  <label>
                     <FaCalendarAlt className="field-icon" />
-                    Date of Birth:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="date" 
-                      value={patientInfo.dob} 
-                      onChange={(e) => handleInfoChange('dob', e.target.value)}
-                      className="info-input"
-                    />
-                  ) : (
-                    <span>{formatDate(patientInfo.dob)}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaUser className="field-icon" />
-                    Gender:
-                  </label>
-                  {isEditing ? (
-                    <select 
-                      value={patientInfo.gender} 
-                      onChange={(e) => handleInfoChange('gender', e.target.value)}
-                      className="info-input"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                  ) : (
-                    <span>{patientInfo.gender}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaPhone className="field-icon" />
-                    Phone Number:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="tel" 
-                      value={patientInfo.phone} 
-                      onChange={(e) => handleInfoChange('phone', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter phone number"
-                    />
-                  ) : (
-                    <span>{patientInfo.phone}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaEnvelope className="field-icon" />
-                    Email:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="email" 
-                      value={patientInfo.email} 
-                      onChange={(e) => handleInfoChange('email', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter email address"
-                    />
-                  ) : (
-                    <span>{patientInfo.email}</span>
-                  )}
-                </div>
-                <div className="info-item full-width">
-                  <label>
-                    <FaMapMarkerAlt className="field-icon" />
-                    Address:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.address} 
-                      onChange={(e) => handleInfoChange('address', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter full address"
-                    />
-                  ) : (
-                    <span>{patientInfo.address}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="info-section">
-              <h3>
-                <FaBuilding className="section-icon" />
-                Insurance Information
-                <span className="section-badge">Coverage Details</span>
-              </h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <label>
-                    <FaBuilding className="field-icon" />
-                    Insurance Provider:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.insurance} 
-                      onChange={(e) => handleInfoChange('insurance', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter insurance provider"
-                    />
-                  ) : (
-                    <span>{patientInfo.insurance}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaIdCard className="field-icon" />
-                    Insurance ID:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.insuranceId} 
-                      onChange={(e) => handleInfoChange('insuranceId', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter insurance ID"
-                    />
-                  ) : (
-                    <span>{patientInfo.insuranceId}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaBuilding className="field-icon" />
-                    PG:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.pg} 
-                      onChange={(e) => handleInfoChange('pg', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter PG"
-                    />
-                  ) : (
-                    <span className="highlighted-value">{patientInfo.pg}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaUser className="field-icon" />
-                    HHAH:
-                  </label>
-                  {isEditing ? (
-                    <select 
-                      value={patientInfo.hhah} 
-                      onChange={(e) => handleInfoChange('hhah', e.target.value)}
-                      className="info-input"
-                    >
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  ) : (
-                    <span className="highlighted-value">{patientInfo.hhah}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaCalendarAlt className="field-icon" />
-                    Admission Date:
+                    SOC Date:
                   </label>
                   {isEditing ? (
                     <input 
@@ -1442,33 +1969,42 @@ Recommendations:
                   ) : (
                     <span>{formatDate(patientInfo.admissionDate)}</span>
                   )}
-                </div>
+            </div>
+            
                 <div className="info-item">
                   <label>
                     <FaCalendarAlt className="field-icon" />
-                    Discharge Date:
+                    From Date:
                   </label>
                   {isEditing ? (
                     <input 
                       type="date" 
-                      value={patientInfo.dischargeDate} 
-                      onChange={(e) => handleInfoChange('dischargeDate', e.target.value)}
+                      value={patientInfo.episodeFrom} 
+                      onChange={(e) => handleInfoChange('episodeFrom', e.target.value)}
                       className="info-input"
                     />
                   ) : (
-                    <span>{patientInfo.dischargeDate ? formatDate(patientInfo.dischargeDate) : 'Not discharged'}</span>
+                    <span>{formatDate(patientInfo.episodeFrom)}</span>
                   )}
                 </div>
-              </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaCalendarAlt className="field-icon" />
+                    To Date:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="date" 
+                      value={patientInfo.episodeTo} 
+                      onChange={(e) => handleInfoChange('episodeTo', e.target.value)}
+                      className="info-input"
+                    />
+                  ) : (
+                    <span>{formatDate(patientInfo.episodeTo)}</span>
+                  )}
             </div>
             
-            <div className="info-section">
-              <h3>
-                <FaHeartbeat className="section-icon" />
-                Medical Information
-                <span className="section-badge">Health Details</span>
-              </h3>
-              <div className="info-grid">
                 <div className="info-item">
                   <label>
                     <FaHeartbeat className="field-icon" />
@@ -1486,6 +2022,7 @@ Recommendations:
                     <span className="diagnosis primary">{patientInfo.primaryDiagnosis}</span>
                   )}
                 </div>
+                
                 <div className="info-item">
                   <label>
                     <FaHeartbeat className="field-icon" />
@@ -1503,230 +2040,197 @@ Recommendations:
                     <span className="diagnosis secondary">{patientInfo.secondaryDiagnosis}</span>
                   )}
                 </div>
-                <div className="info-item">
-                  <label>
-                    <FaUserMd className="field-icon" />
-                    Primary Physician:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.primaryPhysician} 
-                      onChange={(e) => handleInfoChange('primaryPhysician', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter primary physician"
-                    />
-                  ) : (
-                    <span className="physician">{patientInfo.primaryPhysician}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaUserMd className="field-icon" />
-                    Specialist:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.specialist} 
-                      onChange={(e) => handleInfoChange('specialist', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter specialist"
-                    />
-                  ) : (
-                    <span className="physician">{patientInfo.specialist}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaAllergies className="field-icon" />
-                    Allergies:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.allergies} 
-                      onChange={(e) => handleInfoChange('allergies', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter allergies (comma separated)"
-                    />
-                  ) : (
-                    <div className="tag-list">
-                      {patientInfo.allergies && patientInfo.allergies.split(',').map((allergy, index) => (
-                        <span key={index} className="medical-tag allergy">
-                          <FaAllergies className="tag-icon" />
-                          {allergy.trim()}
-                        </span>
-                      ))}
-                      {!patientInfo.allergies && <span>No known allergies</span>}
-                    </div>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaPills className="field-icon" />
-                    Current Medications:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.medications} 
-                      onChange={(e) => handleInfoChange('medications', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter medications (comma separated)"
-                    />
-                  ) : (
-                    <div className="tag-list">
-                      {patientInfo.medications && patientInfo.medications.split(',').map((medication, index) => (
-                        <span key={index} className="medical-tag medication">
-                          <FaPills className="tag-icon" />
-                          {medication.trim()}
-                        </span>
-                      ))}
-                      {!patientInfo.medications && <span>No medications</span>}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="info-section">
-              <h3>
-                <FaClipboardList className="section-icon" />
-                Patient Status
-                <span className="section-badge">Status Details</span>
-              </h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <label>
-                    <FaUserCheck className="field-icon" />
-                    Current Status:
-                  </label>
-                  {isEditing ? (
-                    <select 
-                      value={patientInfo.status} 
-                      onChange={(e) => handleInfoChange('status', e.target.value)}
-                      className="info-select"
-                    >
-                      <option value="active">Active</option>
-                      <option value="discharged">Discharged</option>
-                      <option value="on-hold">On Hold</option>
-                      <option value="evaluation">Evaluation</option>
-                    </select>
-                  ) : (
-                    <span className={`status-badge ${patientInfo.status}`}>
-                      {getStatusIcon(patientInfo.status)}
-                      {patientInfo.status.charAt(0).toUpperCase() + patientInfo.status.slice(1)}
-                    </span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaCalendarAlt className="field-icon" />
-                    Admission Date:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="date" 
-                      value={patientInfo.admissionDate} 
-                      onChange={(e) => handleInfoChange('admissionDate', e.target.value)}
-                      className="info-input"
-                    />
-                  ) : (
-                    <span>{formatDate(patientInfo.admissionDate)}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaCalendarAlt className="field-icon" />
-                    Discharge Date:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="date" 
-                      value={patientInfo.dischargeDate} 
-                      onChange={(e) => handleInfoChange('dischargeDate', e.target.value)}
-                      className="info-input"
-                    />
-                  ) : (
-                    <span>{patientInfo.dischargeDate ? formatDate(patientInfo.dischargeDate) : 'N/A'}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaUserMd className="field-icon" />
-                    Primary Physician:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.primaryPhysician} 
-                      onChange={(e) => handleInfoChange('primaryPhysician', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter primary physician"
-                    />
-                  ) : (
-                    <span>{patientInfo.primaryPhysician}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaUserMd className="field-icon" />
-                    Specialist:
-                  </label>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={patientInfo.specialist} 
-                      onChange={(e) => handleInfoChange('specialist', e.target.value)}
-                      className="info-input"
-                      placeholder="Enter specialist"
-                    />
-                  ) : (
-                    <span>{patientInfo.specialist}</span>
-                  )}
-                </div>
-                <div className="info-item">
-                  <label>
-                    <FaHospital className="field-icon" />
-                    HHAH:
-                  </label>
-                  {isEditing ? (
-                    <select 
-                      value={patientInfo.hhah} 
-                      onChange={(e) => handleInfoChange('hhah', e.target.value)}
-                      className="info-select"
-                    >
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  ) : (
-                    <span>{patientInfo.hhah}</span>
-                  )}
-                </div>
+                
                 <div className="info-item">
                   <label>
                     <FaBuilding className="field-icon" />
-                    PG Name:
+                    Insurance:
                   </label>
                   {isEditing ? (
                     <input 
                       type="text" 
-                      value={patientInfo.pg} 
-                      onChange={(e) => handleInfoChange('pg', e.target.value)}
+                      value={patientInfo.insurance} 
+                      onChange={(e) => handleInfoChange('insurance', e.target.value)}
                       className="info-input"
-                      placeholder="Enter PG name"
+                      placeholder="Enter insurance"
                     />
                   ) : (
-                    <span>{patientInfo.pg}</span>
+                    <span>{patientInfo.insurance}</span>
                   )}
                 </div>
+                
                 <div className="info-item">
                   <label>
-                    <FaInfoCircle className="field-icon" />
-                    Status Message:
+                    <FaFileSignature className="field-icon" />
+                    Cert Document Status:
                   </label>
-                  <span>{getStatusMessage(patientInfo.status)}</span>
+                  {isEditing ? (
+                    <select 
+                      value={patientInfo.certStatus} 
+                      onChange={(e) => handleInfoChange('certStatus', e.target.value)}
+                      className="info-select"
+                    >
+                      <option value="Document not received">Document not received</option>
+                      <option value="Document Prepared">Document Prepared</option>
+                      <option value="Document Signed">Document Signed</option>
+                      <option value="Document Billed">Document Billed</option>
+                    </select>
+                  ) : (
+                    <span className={`status-badge ${patientInfo.certStatus === 'Document Signed' || patientInfo.certStatus === 'Document Billed' ? 'signed' : 'unsigned'}`}>
+                      {patientInfo.certStatus === 'Document Signed' || patientInfo.certStatus === 'Document Billed' ? 
+                        <FaCheckCircle className="status-icon" /> : 
+                        <FaTimesCircle className="status-icon" />
+                      }
+                      {patientInfo.certStatus}
+                        </span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaFileSignature className="field-icon" />
+                    Recert Document Status:
+                  </label>
+                  {isEditing ? (
+                    <select 
+                      value={patientInfo.recertStatus} 
+                      onChange={(e) => handleInfoChange('recertStatus', e.target.value)}
+                      className="info-select"
+                    >
+                      <option value="Document not received">Document not received</option>
+                      <option value="Document Prepared">Document Prepared</option>
+                      <option value="Document Signed">Document Signed</option>
+                      <option value="Document Billed">Document Billed</option>
+                    </select>
+                  ) : (
+                    <span className={`status-badge ${patientInfo.recertStatus === 'Document Signed' || patientInfo.recertStatus === 'Document Billed' ? 'signed' : 'unsigned'}`}>
+                      {patientInfo.recertStatus === 'Document Signed' || patientInfo.recertStatus === 'Document Billed' ? 
+                        <FaCheckCircle className="status-icon" /> : 
+                        <FaTimesCircle className="status-icon" />
+                      }
+                      {patientInfo.recertStatus}
+                        </span>
+                  )}
+            </div>
+            
+                <div className="info-item">
+                  <label>
+                    <FaUserCheck className="field-icon" />
+                    F2F Eligibility:
+                  </label>
+                  {isEditing ? (
+                    <select 
+                      value={patientInfo.f2fEligibility} 
+                      onChange={(e) => handleInfoChange('f2fEligibility', e.target.value)}
+                      className="info-select"
+                    >
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  ) : (
+                    <span>{patientInfo.f2fEligibility === 'yes' ? 'Yes' : 'No'}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaFileMedicalAlt className="field-icon" />
+                    Present in EHR:
+                  </label>
+                  {isEditing ? (
+                    <select 
+                      value={patientInfo.hasEHR ? 'yes' : 'no'} 
+                      onChange={(e) => handleInfoChange('hasEHR', e.target.value === 'yes')}
+                      className="info-select"
+                    >
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  ) : (
+                    <span>{patientInfo.hasEHR ? 'Yes' : 'No'}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaUserMd className="field-icon" />
+                    Rendering Provider:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      value={patientInfo.renderingPractitioner} 
+                      onChange={(e) => handleInfoChange('renderingPractitioner', e.target.value)}
+                      className="info-input"
+                      placeholder="Enter rendering provider"
+                    />
+                  ) : (
+                    <span>{patientInfo.renderingPractitioner}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaClock className="field-icon" />
+                    CPO Minutes:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="number" 
+                      value={patientInfo.cpoMinsCaptured} 
+                      onChange={(e) => handleInfoChange('cpoMinsCaptured', parseInt(e.target.value) || 0)}
+                      className="info-input"
+                      placeholder="Enter CPO minutes"
+                      min="0"
+                    />
+                  ) : (
+                    <div className="cpo-minutes-display">
+                      <span>{patientInfo.cpoMinsCaptured} minutes</span>
+                      <div className="cpo-progress-bar">
+                        <div 
+                          className="cpo-progress-fill" 
+                          style={{width: `${calculateCPOPercentage(patientInfo.cpoMinsCaptured, 300)}%`}}
+                        ></div>
+                      </div>
+                      <span className="cpo-target">Target: 300 min</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="info-item full-width">
+                  <label>
+                    <FaMapMarkerAlt className="field-icon" />
+                    Patient Address:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      value={patientInfo.address} 
+                      onChange={(e) => handleInfoChange('address', e.target.value)}
+                      className="info-input"
+                      placeholder="Enter patient address"
+                    />
+                  ) : (
+                    <span>{patientInfo.address}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaPhone className="field-icon" />
+                    Patient Contact:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="tel" 
+                      value={patientInfo.phone} 
+                      onChange={(e) => handleInfoChange('phone', e.target.value)}
+                      className="info-input"
+                      placeholder="Enter phone number"
+                    />
+                  ) : (
+                    <span>{patientInfo.phone}</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -1734,7 +2238,7 @@ Recommendations:
         </div>
       )}
       
-      {/* Patient Timeline Tab */}
+      {/* Patient Timeline Tab with enhanced functionality */}
       {activeTab === 'timeline' && (
         <div className="tab-content animate-fade-in">
           <div className="timeline-container">
@@ -1742,382 +2246,387 @@ Recommendations:
               <h3>
                 <FaHistory className="section-icon" />
                 Patient Timeline
-                <span className="section-badge">Event History</span>
               </h3>
               
+              {/* Add episode filter controls */}
               <div className="timeline-filters">
-                <div className="timeline-period-selector">
-                  <span className="period-label">View period:</span>
-                  <div className="period-options">
+                <div className="date-filter">
+                  <label>Filter episodes:</label>
+                  <div className="filter-inputs">
+                    <input 
+                      type="date" 
+                      value={episodeFilterDates.start}
+                      onChange={(e) => handleEpisodeDateFilterChange('start', e.target.value)}
+                      placeholder="Start date"
+                      className="date-input"
+                    />
+                    <span className="date-separator">to</span>
+                    <input 
+                      type="date" 
+                      value={episodeFilterDates.end}
+                      onChange={(e) => handleEpisodeDateFilterChange('end', e.target.value)}
+                      placeholder="End date"
+                      className="date-input"
+                    />
                     <button 
-                      className={`period-option ${timelinePeriod === 'all' ? 'active' : ''}`}
-                      onClick={() => setTimelinePeriod('all')}
+                      className="filter-reset-button"
+                      onClick={() => setEpisodeFilterDates({ start: '', end: '' })}
                     >
-                      All Time
-                    </button>
-                    <button 
-                      className={`period-option ${timelinePeriod === 'month' ? 'active' : ''}`}
-                      onClick={() => setTimelinePeriod('month')}
-                    >
-                      Last Month
-                    </button>
-                    <button 
-                      className={`period-option ${timelinePeriod === 'week' ? 'active' : ''}`}
-                      onClick={() => setTimelinePeriod('week')}
-                    >
-                      Last Week
+                      <FaTimes className="reset-icon" />
+                      Reset
                     </button>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="timeline-content-container">
-              <div className="timeline-sidebar">
-                <div className="timeline-summary">
-                  <h4>Timeline Summary</h4>
-                  <div className="timeline-stats">
-                    <div className="timeline-stat">
-                      <div className="stat-icon admission">
-                        <FaHospital />
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-value">1</div>
-                        <div className="stat-label">Admission</div>
-                      </div>
-                    </div>
-                    
-                    <div className="timeline-stat">
-                      <div className="stat-icon evaluation">
-                        <FaClipboardCheck />
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-value">2</div>
-                        <div className="stat-label">Evaluations</div>
-                      </div>
-                    </div>
-                    
-                    <div className="timeline-stat">
-                      <div className="stat-icon document">
-                        <FaFileAlt />
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-value">2</div>
-                        <div className="stat-label">Documents</div>
-                      </div>
-                    </div>
-                    
-                    <div className="timeline-stat">
-                      <div className="stat-icon treatment">
-                        <FaStethoscope />
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-value">1</div>
-                        <div className="stat-label">Treatments</div>
-                      </div>
-                    </div>
-                    
-                    <div className="timeline-stat">
-                      <div className="stat-icon status">
-                        <FaUserCheck />
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-value">1</div>
-                        <div className="stat-label">Status Updates</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="timeline-event-filters">
-                  <h4>Filter Events</h4>
-                  <div className="event-filter-options">
-                    <label className="event-filter">
-                      <input 
-                        type="checkbox" 
-                        checked={true}
-                        onChange={() => {}}
-                      />
-                      <div className="filter-color admission"></div>
-                      <span>Admissions</span>
-                    </label>
-                    
-                    <label className="event-filter">
-                      <input 
-                        type="checkbox" 
-                        checked={true}
-                        onChange={() => {}}
-                      />
-                      <div className="filter-color evaluation"></div>
-                      <span>Evaluations</span>
-                    </label>
-                    
-                    <label className="event-filter">
-                      <input 
-                        type="checkbox" 
-                        checked={true}
-                        onChange={() => {}}
-                      />
-                      <div className="filter-color document"></div>
-                      <span>Documents</span>
-                    </label>
-                    
-                    <label className="event-filter">
-                      <input 
-                        type="checkbox" 
-                        checked={true}
-                        onChange={() => {}}
-                      />
-                      <div className="filter-color treatment"></div>
-                      <span>Treatments</span>
-                    </label>
-                    
-                    <label className="event-filter">
-                      <input 
-                        type="checkbox" 
-                        checked={true}
-                        onChange={() => {}}
-                      />
-                      <div className="filter-color status"></div>
-                      <span>Status Updates</span>
-                    </label>
-                  </div>
-                </div>
-                
-                <div className="timeline-actions">
-                  <button className="action-button primary">
-                    <span className="icon-wrapper"><FaFileAlt /></span>
-                    Export Timeline
-                  </button>
-                  <button className="action-button secondary">
-                    <span className="icon-wrapper"><FaPrint /></span>
-                    Print Timeline
-                  </button>
-                </div>
+            {/* Episode Timeline Section with expandable episodes */}
+            <div className="timeline-section">
+              <div className="section-header">
+                <h4 className="timeline-section-title">
+                  <FaCalendar className="section-icon" />
+                  Episode Timeline
+                </h4>
+                <button 
+                  className="action-button secondary small"
+                  onClick={handleAddEpisode}
+                >
+                  <FaPlus className="action-icon" />
+                  Add Episode
+                </button>
               </div>
               
-              <div className="timeline-events">
-                <div className="timeline-year">
-                  <div className="year-label">2023</div>
-                  <div className="year-events">
-                    <div className="timeline-month">
-                      <div className="month-label">April</div>
-                      <div className="month-events">
-                        <div className="timeline-event admission">
-                          <div className="event-date">
-                            <span className="date-number">1</span>
-                            <span className="date-month">Apr</span>
-                          </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaHospital />
+              <div className="episode-timeline">
+                {filteredEpisodes.length > 0 ? (
+                  filteredEpisodes.map((episode) => (
+                    <div 
+                      key={episode.id}
+                      className={`timeline-episode ${activeEpisode === episode.id ? 'active' : ''} ${expandedEpisode === episode.id ? 'expanded' : ''}`}
+                      onClick={() => handleEpisodeSelect(episode.id)}
+                    >
+                      <div className="episode-header">
+                        <div className="episode-title">
+                          <h5>Episode {episode.id}</h5>
+                          <span className={`episode-status ${episode.status}`}>{episode.status}</span>
+                        </div>
+                        <div className="episode-expand-icon">
+                          {expandedEpisode === episode.id ? 
+                            <FaChevronDown className="expand-icon" /> : 
+                            <FaChevronRight className="expand-icon" />
+                          }
+                        </div>
+                      </div>
+                      
+                      <div className="episode-date">
+                        <div className="episode-marker start">
+                          <FaCircle className="marker-icon" />
+                          <div className="marker-label">Start</div>
+                        </div>
+                        <div className="episode-line"></div>
+                        <div className="episode-marker soc">
+                          <FaCircle className="marker-icon soc" />
+                          <div className="marker-label">SOC</div>
+                        </div>
+                        <div className="episode-line"></div>
+                        <div className="episode-marker end">
+                          <FaCircle className="marker-icon" />
+                          <div className="marker-label">End</div>
+                        </div>
+                      </div>
+                      
+                      <div className="episode-details">
+                        <div className="episode-date-label">{formatDate(episode.startDate)}</div>
+                        <div className="episode-date-label">{formatDate(episode.socDate)}</div>
+                        <div className="episode-date-label">{formatDate(episode.endDate)}</div>
+                      </div>
+                      
+                      {/* Additional episode details visible when expanded */}
+                      {expandedEpisode === episode.id && (
+                        <div className="episode-expanded-info">
+                          <div className="episode-info-grid">
+                            <div className="episode-info-item">
+                              <label>Duration:</label>
+                              <span>{calculateDuration(episode.startDate, episode.endDate)} days</span>
                             </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Patient Admitted</h5>
-                              <p className="event-description">Initial admission to care program</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Dr. Sarah Johnson
-                                </span>
-                                <span className="event-location">
-                                  <FaHospital className="meta-icon" />
-                                  General Ward
-                                </span>
+                            <div className="episode-info-item">
+                              <label>Primary Diagnosis:</label>
+                              <span>{episode.diagnosis}</span>
+                            </div>
+                            <div className="episode-info-item">
+                              <label>Provider:</label>
+                              <span>{episode.provider}</span>
+                            </div>
+                            {episode.notes && (
+                              <div className="episode-info-item full-width">
+                                <label>Notes:</label>
+                                <span>{episode.notes}</span>
                               </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Admission</span>
-                                <span className="event-tag">Initial Assessment</span>
-                              </div>
+                            )}
+                            <div className="episode-info-item">
+                              <label>Documents:</label>
+                              <span>{episode.documents ? episode.documents.length : 0} document(s)</span>
                             </div>
                           </div>
+                          
+                          <div className="episode-actions">
+                            <button 
+                              className="episode-action-button edit"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditEpisode(episode.id);
+                              }}
+                            >
+                              <FaEdit className="action-icon" />
+                              Edit Episode
+                            </button>
+                            <button 
+                              className="episode-action-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewEpisodeDocuments(episode.id);
+                              }}
+                            >
+                              <FaFileMedicalAlt className="action-icon" />
+                              View Documents
+                            </button>
+                            <button 
+                              className="episode-action-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = prompt('Enter document type:', 'Evaluation');
+                                if (type) {
+                                  handleAddDocumentToEpisode(episode.id, type);
+                                }
+                              }}
+                            >
+                              <FaPlus className="action-icon" />
+                              Add Document
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-episodes">
+                    <p>No episodes found for the selected date range.</p>
+                    <button 
+                      className="action-button primary"
+                      onClick={() => setEpisodeFilterDates({ start: '', end: '' })}
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* PG Services Timeline Section with editable CPO minutes */}
+            <div className="timeline-section">
+              <div className="section-header">
+                <h4 className="timeline-section-title">
+                  <FaFileMedical className="section-icon" />
+                  PG Services
+                </h4>
+                <div className="cpo-total">
+                  <span>Total CPO: {formatCPOMinutes(patientInfo.cpoMinsCaptured)}</span>
+                            </div>
+                          </div>
+              
+              <div className="pg-services-timeline">
+                <div className="monthly-cpo-container">
+                  {monthlyCPOData.map((month, index) => (
+                    <div key={index} className="monthly-cpo-item">
+                      <div className="month-label">{month.month}</div>
+                      <div className="cpo-minutes-bar" onClick={() => setCpoMinutesEditing(index)}>
+                        <div 
+                          className="cpo-minutes-fill" 
+                          style={{width: `${Math.min(100, (month.minutes / 150) * 100)}%`}}
+                        ></div>
                         </div>
 
-                        <div className="timeline-event evaluation">
-                          <div className="event-date">
-                            <span className="date-number">3</span>
-                            <span className="date-month">Apr</span>
+                      {cpoMinutesEditing === index ? (
+                        <div className="cpo-minutes-edit">
+                          <input 
+                            type="number" 
+                            value={month.minutes}
+                            onChange={(e) => handleUpdateCPOMinutes(index, parseInt(e.target.value) || 0)}
+                            className="cpo-minutes-input"
+                            min="0"
+                            max="300"
+                            autoFocus
+                            onBlur={() => setCpoMinutesEditing(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleUpdateCPOMinutes(index, parseInt(e.target.value) || 0);
+                              } else if (e.key === 'Escape') {
+                                setCpoMinutesEditing(null);
+                              }
+                            }}
+                          />
+                          <span className="cpo-minutes-label">min</span>
                           </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaClipboardCheck />
+                      ) : (
+                        <div className="cpo-minutes-value" onClick={() => setCpoMinutesEditing(index)}>
+                          {month.minutes} min
+                          <FaEdit className="edit-icon" />
                             </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Initial Evaluation</h5>
-                              <p className="event-description">Full physical evaluation completed</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Dr. Robert Chen
-                                </span>
+                      )}
                               </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Evaluation</span>
-                                <span className="event-tag">Completed</span>
+                  ))}
                               </div>
                             </div>
                           </div>
+            
+            {/* HHAH Services Timeline Section with document management */}
+            <div className="timeline-section">
+              <div className="section-header">
+                <h4 className="timeline-section-title">
+                  <FaFileAlt className="section-icon" />
+                  HHAH Services
+                </h4>
+                <div className="document-actions">
+                  <div className="document-filter">
+                    <select 
+                      className="document-type-filter"
+                      onChange={(e) => handleFilterDocumentsByType(e.target.value)}
+                    >
+                      <option value="all">All Document Types</option>
+                      {documentCategories.map((category, index) => (
+                        <option key={index} value={category}>{category}</option>
+                      ))}
+                    </select>
                         </div>
+                  <button 
+                    className="action-button secondary small"
+                    onClick={() => {
+                      // Show dropdown of document categories
+                      const category = prompt('Select document category:', documentCategories.join(', '));
+                      if (category && documentCategories.includes(category)) {
+                        handleAddDocument(category);
+                      }
+                    }}
+                  >
+                    <FaPlus className="action-icon" />
+                    Add Document
+                  </button>
                       </div>
                     </div>
                     
-                    <div className="timeline-month">
-                      <div className="month-label">May</div>
-                      <div className="month-events">
-                        <div className="timeline-event document">
-                          <div className="event-date">
-                            <span className="date-number">5</span>
-                            <span className="date-month">May</span>
+              <div className="hhah-services-timeline">
+                <div className="hhah-documents">
+                  <div className="document-status-container">
+                    <h5>Signed Documents</h5>
+                    {signedDocs.length > 0 ? (
+                      signedDocs.map((doc, index) => (
+                        <div key={index} className="document-status-item signed">
+                          <div className="document-status-icon">
+                            <FaCheckCircle className="status-icon signed" />
                           </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaFileAlt />
-                            </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Care Plan Created</h5>
-                              <p className="event-description">Initial care plan documented and approved</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Care Team
-                                </span>
-                              </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Care Plan</span>
-                                <span className="event-tag">Documentation</span>
-                              </div>
-                              <button className="event-action">
+                          <div className="document-info">
+                            <div className="document-name">
+                              {doc.type || 'Unspecified Document'}
+                              <div className="document-actions">
+                                <button 
+                                  className="document-action-button"
+                                  title="View Document"
+                                  onClick={() => openDocumentViewer(doc)}
+                                >
                                 <FaEye className="action-icon" />
-                                View Document
+                                </button>
+                                <button 
+                                  className="document-action-button"
+                                  title="Download Document"
+                                  onClick={() => handleDownloadDocument(doc)}
+                                >
+                                  <FaDownload className="action-icon" />
                               </button>
                             </div>
                           </div>
+                            <div className="document-date">Signed on: {formatDate(doc.signedDate)}</div>
+                            <div className="document-meta">
+                              <span className="document-id">{doc.id}</span>
+                              <span className="document-size">{doc.size}</span>
                         </div>
-                        
-                        <div className="timeline-event treatment">
-                          <div className="event-date">
-                            <span className="date-number">7</span>
-                            <span className="date-month">May</span>
                           </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaStethoscope />
                             </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Treatment Started</h5>
-                              <p className="event-description">Treatment regimen initiated</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Dr. Sarah Johnson
-                                </span>
+                      ))
+                    ) : (
+                      <div className="no-documents">
+                        <p>No signed documents available.</p>
                               </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Treatment</span>
-                                <span className="event-tag">Medication</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    )}
                 </div>
                 
-                <div className="timeline-year">
-                  <div className="year-label">2025</div>
-                  <div className="year-events">
-                    <div className="timeline-month">
-                      <div className="month-label">February</div>
-                      <div className="month-events">
-                        <div className="timeline-event evaluation">
-                          <div className="event-date">
-                            <span className="date-number">27</span>
-                            <span className="date-month">Feb</span>
+                  <div className="document-status-container">
+                    <h5>New & Prepared Documents</h5>
+                    {newPreparedDocs.length > 0 ? (
+                      newPreparedDocs.map((doc, index) => (
+                        <div key={index} className="document-status-item unsigned">
+                          <div className="document-status-icon">
+                            <FaTimesCircle className="status-icon unsigned" />
                           </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaClipboardCheck />
-                            </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Follow-up Evaluation</h5>
-                              <p className="event-description">Regular follow-up evaluation</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Dr. Robert Chen
-                                </span>
-                              </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Evaluation</span>
-                                <span className="event-tag">Follow-up</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="timeline-month">
-                      <div className="month-label">March</div>
-                      <div className="month-events">
-                        <div className="timeline-event status">
-                          <div className="event-date">
-                            <span className="date-number">2</span>
-                            <span className="date-month">Mar</span>
-                          </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaUserCheck />
-                            </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Status Updated to Active</h5>
-                              <p className="event-description">Treatment plan approved and initiated</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Dr. Sarah Johnson
-                                </span>
-                              </div>
-                              <div className="event-tags">
-                                <span className="event-tag status-active">Active</span>
-                                <span className="event-tag">Status Change</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="timeline-event document">
-                          <div className="event-date">
-                            <span className="date-number">27</span>
-                            <span className="date-month">Mar</span>
-                          </div>
-                          <div className="event-content">
-                            <div className="event-icon">
-                              <FaFileAlt />
-                            </div>
-                            <div className="event-details">
-                              <h5 className="event-title">Progress Report Filed</h5>
-                              <p className="event-description">Monthly progress report completed</p>
-                              <div className="event-meta">
-                                <span className="event-provider">
-                                  <FaUserMd className="meta-icon" />
-                                  Care Team
-                                </span>
-                              </div>
-                              <div className="event-tags">
-                                <span className="event-tag">Progress Report</span>
-                                <span className="event-tag">Documentation</span>
-                              </div>
-                              <button className="event-action">
+                          <div className="document-info">
+                            <div className="document-name">
+                              <select 
+                                value={doc.type || ''}
+                                onChange={(e) => handleUpdateDocumentType(doc.id, true, e.target.value)}
+                                className="document-type-select"
+                              >
+                                <option value="">Select Document Type</option>
+                                {documentCategories.map((category, idx) => (
+                                  <option key={idx} value={category}>{category}</option>
+                                ))}
+                              </select>
+                              <div className="document-actions">
+                                <button 
+                                  className="document-action-button"
+                                  title="View Document"
+                                  onClick={() => openDocumentViewer(doc)}
+                                >
                                 <FaEye className="action-icon" />
-                                View Document
+                                </button>
+                                <button 
+                                  className="document-action-button"
+                                  title="Download Document"
+                                  onClick={() => handleDownloadDocument(doc)}
+                                >
+                                  <FaDownload className="action-icon" />
+                                </button>
+                                <button 
+                                  className="document-action-button"
+                                  title="Sign Document"
+                                  onClick={() => handleSignDocument(doc.id)}
+                                >
+                                  <FaSignature className="action-icon" />
+                                </button>
+                                <button 
+                                  className="document-action-button"
+                                  title="Delete Document"
+                                  onClick={() => {
+                                    if (window.confirm('Are you sure you want to delete this document?')) {
+                                      setNewPreparedDocs(prev => prev.filter(d => d.id !== doc.id));
+                                    }
+                                  }}
+                                >
+                                  <FaTrash className="action-icon" />
                               </button>
                             </div>
                           </div>
+                            <div className="document-date">Received on: {formatDate(doc.receivedDate)}</div>
+                            <div className="document-meta">
+                              <span className="document-status">{doc.status}</span>
+                              <span className="document-id">{doc.id}</span>
+                              <span className="document-size">{doc.size}</span>
                         </div>
                       </div>
                     </div>
+                      ))
+                    ) : (
+                      <div className="no-documents">
+                        <p>No new or prepared documents available.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2322,16 +2831,18 @@ Recommendations:
             <div className="document-tabs-container">
               <div className="document-tabs">
                 <button 
-                  className={`doc-tab-button ${activeDocumentTab === 'newPrepared' ? 'active' : ''}`}
+                  className={`document-tab ${activeDocumentTab === 'newPrepared' ? 'active' : ''}`}
                   onClick={() => setActiveDocumentTab('newPrepared')}
                 >
+                  <FaFileAlt className="tab-icon" />
                   <span className="tab-label">New & Prepared</span>
                   <span className="tab-count">{documentCounts.new + documentCounts.prepared}</span>
                 </button>
                 <button 
-                  className={`doc-tab-button ${activeDocumentTab === 'signed' ? 'active' : ''}`}
+                  className={`document-tab ${activeDocumentTab === 'signed' ? 'active' : ''}`}
                   onClick={() => setActiveDocumentTab('signed')}
                 >
+                  <FaFileSignature className="tab-icon" />
                   <span className="tab-label">Signed Documents</span>
                   <span className="tab-count">{documentCounts.signed}</span>
                 </button>
@@ -2460,6 +2971,7 @@ Recommendations:
                               <button 
                                 className="action-icon-button" 
                                 title="Download Document"
+                                onClick={() => handleDownloadDocument(doc)}
                               >
                                 <FaDownload />
                               </button>
@@ -2484,69 +2996,89 @@ Recommendations:
                     </button>
                   </div>
                 ) : (
-                  <table className="document-table">
-                    <thead>
-                      <tr>
-                        <th>Document Type</th>
-                        <th>Document ID</th>
-                        <th>File Name</th>
-                        <th>Date Signed</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredSignedDocs.map(doc => (
-                        <tr key={doc.id} className="status-signed">
-                          <td>
-                            <div className="cell-with-icon">
-                              <FaFileAlt className="cell-icon" />
-                              {doc.type}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="cell-with-icon">
-                              <DocIdInput docId={doc.id} onUpdate={updateDocId} />
-                            </div>
-                          </td>
-                          <td>
-                            <div className="cell-with-icon">
-                              {getFileIconByName(doc.fileName)}
-                              <span 
-                                className="file-name" 
-                                onClick={() => openDocumentViewer(doc)} 
-                                style={{ cursor: 'pointer' }}
-                              >
-                                {doc.fileName || 'Document File'}
-                              </span>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="cell-with-icon">
-                              <FaCalendar className="cell-icon" />
-                              {formatDate(doc.signedDate)}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="actions-cell">
-                              <button 
-                                className="action-icon-button"
-                                title="View Document"
-                                onClick={() => openDocumentViewer(doc)}
-                              >
-                                <FaEye />
-                              </button>
-                              <button 
-                                className="action-icon-button" 
-                                title="Download Document"
-                              >
-                                <FaDownload />
-                              </button>
-                            </div>
-                          </td>
+                  <>
+                    <div className="signed-document-actions">
+                      <button 
+                        className="action-button secondary small"
+                        onClick={() => document.getElementById('signed-file-input').click()}
+                      >
+                        <FaFileUpload className="action-icon" />
+                        Upload Signed Document
+                      </button>
+                      <input 
+                        type="file" 
+                        id="signed-file-input"
+                        className="hidden-file-input"
+                        onChange={handleSignedDocumentUpload}
+                        multiple
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      />
+                    </div>
+                    <table className="document-table">
+                      <thead>
+                        <tr>
+                          <th>Document Type</th>
+                          <th>Document ID</th>
+                          <th>File Name</th>
+                          <th>Date Signed</th>
+                          <th>Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {filteredSignedDocs.map(doc => (
+                          <tr key={doc.id} className="status-signed">
+                            <td>
+                              <div className="cell-with-icon">
+                                <FaFileAlt className="cell-icon" />
+                                {doc.type}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="cell-with-icon">
+                                <DocIdInput docId={doc.id} onUpdate={updateDocId} />
+                              </div>
+                            </td>
+                            <td>
+                              <div className="cell-with-icon">
+                                {getFileIconByName(doc.fileName)}
+                                <span 
+                                  className="file-name" 
+                                  onClick={() => openDocumentViewer(doc)} 
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  {doc.fileName || 'Document File'}
+                                </span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="cell-with-icon">
+                                <FaCalendar className="cell-icon" />
+                                {formatDate(doc.signedDate)}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="actions-cell">
+                                <button 
+                                  className="action-icon-button"
+                                  title="View Document"
+                                  onClick={() => openDocumentViewer(doc)}
+                                >
+                                  <FaEye />
+                                </button>
+                                <button 
+                                  className="action-icon-button" 
+                                  title="Download Document"
+                                  onClick={() => handleDownloadDocument(doc)}
+                                >
+                                  <FaDownload />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
                 )
               )}
             </div>
@@ -2635,17 +3167,12 @@ Recommendations:
                 <div className="summary-content">
                   <div className="summary-item">
                     <div className="summary-label">Total CPO Minutes</div>
-                    <div className="summary-value">{calculateCPOMinutes()}</div>
+                    <div className="summary-value">{patientInfo.cpoMinsCaptured}</div>
                   </div>
                   
                   <div className="summary-item">
                     <div className="summary-label">Documents Created</div>
-                    <div className="summary-value">{patient?.newCPODocsCreated || '15'}</div>
-                  </div>
-                  
-                  <div className="summary-item">
-                    <div className="summary-label">Next Review</div>
-                    <div className="summary-value">{getNextReviewDate()}</div>
+                    <div className="summary-value">{cpoDocs.length}</div>
                   </div>
                 </div>
               </div>
@@ -2688,10 +3215,22 @@ Recommendations:
                             >
                               <FaEye />
                             </button>
-                            <button className="action-icon-button" title="Download Document">
+                            <button 
+                              className="action-icon-button" 
+                              title="Download Document"
+                              onClick={() => handleDownloadDocument(cpoDocs[0])}
+                            >
                               <FaDownload />
                             </button>
-                            <button className="action-icon-button" title="Edit Document">
+                            <button 
+                              className="action-icon-button" 
+                              title="Edit Document"
+                              onClick={() => {
+                                setSelectedDocument(cpoDocs[0]);
+                                setIsEditingDocumentDetails(true);
+                                setViewerOpen(true);
+                              }}
+                            >
                               <FaEdit />
                             </button>
                           </div>
@@ -2719,10 +3258,22 @@ Recommendations:
                             >
                               <FaEye />
                             </button>
-                            <button className="action-icon-button" title="Download Document">
+                            <button 
+                              className="action-icon-button" 
+                              title="Download Document"
+                              onClick={() => handleDownloadDocument(cpoDocs[1])}
+                            >
                               <FaDownload />
                             </button>
-                            <button className="action-icon-button" title="Edit Document">
+                            <button 
+                              className="action-icon-button" 
+                              title="Edit Document"
+                              onClick={() => {
+                                setSelectedDocument(cpoDocs[1]);
+                                setIsEditingDocumentDetails(true);
+                                setViewerOpen(true);
+                              }}
+                            >
                               <FaEdit />
                             </button>
                           </div>
@@ -2734,7 +3285,7 @@ Recommendations:
                 
                 <div className="documents-footer">
                   <div className="document-count">
-                    Total Documents: <span className="count">4</span>
+                    Total Documents: <span className="count">{cpoDocs.length}</span>
                   </div>
                   <button className="action-button secondary">
                     <span className="icon-wrapper"><FaDownload /></span>
@@ -3013,8 +3564,246 @@ Recommendations:
           </div>
         </div>
       )}
+      
+      {/* Episode Modal for Add/Edit */}
+      {showEpisodeModal && (
+        <div className="modal-overlay">
+          <div className="modal-content episode-modal">
+            <div className="modal-header">
+              <h3>{editingEpisode ? 'Edit Episode' : 'Add New Episode'}</h3>
+              <button className="modal-close" onClick={() => setShowEpisodeModal(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Start Date <span className="required">*</span></label>
+                  <input 
+                    type="date" 
+                    value={newEpisodeData.startDate}
+                    onChange={(e) => handleEpisodeInputChange('startDate', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>SOC Date <span className="required">*</span></label>
+                  <input 
+                    type="date" 
+                    value={newEpisodeData.socDate}
+                    onChange={(e) => handleEpisodeInputChange('socDate', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>End Date</label>
+                  <input 
+                    type="date" 
+                    value={newEpisodeData.endDate}
+                    onChange={(e) => handleEpisodeInputChange('endDate', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Status <span className="required">*</span></label>
+                  <select 
+                    value={newEpisodeData.status}
+                    onChange={(e) => handleEpisodeInputChange('status', e.target.value)}
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="complete">Complete</option>
+                    <option value="planned">Planned</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Primary Diagnosis <span className="required">*</span></label>
+                  <input 
+                    type="text" 
+                    value={newEpisodeData.diagnosis}
+                    onChange={(e) => handleEpisodeInputChange('diagnosis', e.target.value)}
+                    placeholder="Enter primary diagnosis"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Provider <span className="required">*</span></label>
+                  <input 
+                    type="text" 
+                    value={newEpisodeData.provider}
+                    onChange={(e) => handleEpisodeInputChange('provider', e.target.value)}
+                    placeholder="Enter provider name"
+                    required
+                  />
+                </div>
+                <div className="form-group full-width">
+                  <label>Notes</label>
+                  <textarea 
+                    value={newEpisodeData.notes}
+                    onChange={(e) => handleEpisodeInputChange('notes', e.target.value)}
+                    placeholder="Enter any notes for this episode"
+                    rows={3}
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="action-button secondary"
+                onClick={() => setShowEpisodeModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="action-button primary"
+                onClick={handleSaveEpisode}
+              >
+                {editingEpisode ? 'Update Episode' : 'Add Episode'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Documents Modal */}
+      {showDocumentsModal && (
+        <div className="modal-overlay">
+          <div className="modal-content documents-modal">
+            <div className="modal-header">
+              <h3>Episode Documents</h3>
+              <button className="modal-close" onClick={() => setShowDocumentsModal(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className="modal-body">
+              {currentEpisodeDocuments.length > 0 ? (
+                <table className="documents-table">
+                  <thead>
+                    <tr>
+                      <th>Document ID</th>
+                      <th>Type</th>
+                      <th>Created Date</th>
+                      <th>Status</th>
+                      <th>Size</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentEpisodeDocuments.map((doc, index) => (
+                      <tr key={index}>
+                        <td>{doc.id}</td>
+                        <td>{doc.type}</td>
+                        <td>{formatDate(doc.createdDate)}</td>
+                        <td>
+                          <span className={`status-badge ${doc.status === 'Signed' ? 'signed' : 'unsigned'}`}>
+                            {doc.status === 'Signed' ? 
+                              <FaCheckCircle className="status-icon" /> : 
+                              <FaTimesCircle className="status-icon" />
+                            }
+                            {doc.status}
+                          </span>
+                        </td>
+                        <td>{doc.size}</td>
+                        <td className="actions-cell">
+                          <button className="action-icon-button view" title="View Document">
+                            <FaEye />
+                          </button>
+                          <button className="action-icon-button download" title="Download Document">
+                            <FaDownload />
+                          </button>
+                          {doc.status !== 'Signed' && (
+                            <button 
+                              className="action-icon-button sign" 
+                              title="Sign Document"
+                              onClick={() => {
+                                // Mark as signed
+                                const updatedDocs = currentEpisodeDocuments.map(d => 
+                                  d.id === doc.id ? { ...d, status: 'Signed' } : d
+                                );
+                                setCurrentEpisodeDocuments(updatedDocs);
+                                
+                                // Update in episodes array
+                                setEpisodes(episodes.map(ep => {
+                                  if (ep.documents && ep.documents.find(d => d.id === doc.id)) {
+                                    return {
+                                      ...ep,
+                                      documents: ep.documents.map(d => 
+                                        d.id === doc.id ? { ...d, status: 'Signed' } : d
+                                      )
+                                    };
+                                  }
+                                  return ep;
+                                }));
+                                
+                                showNotification('success', 'Document Signed', `${doc.type} has been signed successfully.`);
+                              }}
+                            >
+                              <FaSignature />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="no-documents">
+                  <p>No documents found for this episode.</p>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="action-button secondary"
+                onClick={() => setShowDocumentsModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+// Add these utility functions
+function calculateDuration(startDate, endDate) {
+  if (!startDate || !endDate) return 0;
+  
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  // Calculate the difference in days
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+}
+
+function generateMonthlyCPOData() {
+  // Generate sample data for monthly CPO minutes
+  // In a real implementation, this would pull from actual patient data
+  const currentDate = new Date();
+  const months = [];
+  
+  // Generate 6 months of data, with the current month as the last entry
+  for (let i = 5; i >= 0; i--) {
+    const monthDate = new Date(currentDate);
+    monthDate.setMonth(currentDate.getMonth() - i);
+    
+    const monthName = monthDate.toLocaleString('default', { month: 'short', year: '2-digit' });
+    
+    // Random minutes between 30 and 150
+    const minutes = i === 0 ? 120 : Math.floor(Math.random() * 120) + 30;
+    
+    months.push({
+      month: monthName,
+      minutes: minutes
+    });
+  }
+  
+  return months;
+}
 
 export default React.memo(PatientDetailView); 

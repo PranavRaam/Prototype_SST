@@ -3572,3 +3572,967 @@
   text-overflow: ellipsis;
   max-width: 250px;
 }
+
+/* Timeline Section Styling */
+.timeline-section {
+  margin-bottom: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.timeline-section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.timeline-section-title .section-icon {
+  margin-right: 10px;
+  color: #4a6fa5;
+}
+
+/* Episode Timeline */
+.episode-timeline {
+  padding: 15px 0;
+}
+
+.timeline-episode {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+}
+
+.episode-date {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.episode-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.episode-marker .marker-icon {
+  font-size: 14px;
+  color: #4a6fa5;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #4a6fa5;
+  padding: 2px;
+}
+
+.episode-marker.soc .marker-icon {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.episode-marker .marker-label {
+  font-size: 0.8rem;
+  margin-top: 5px;
+  color: #666;
+}
+
+.episode-line {
+  flex: 1;
+  height: 2px;
+  background-color: #ddd;
+  margin: 0 5px;
+  position: relative;
+  z-index: 1;
+}
+
+.episode-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.episode-date-label {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  width: 33%;
+}
+
+.episode-info {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px 15px;
+}
+
+.episode-info h5 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.episode-duration {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* PG Services Timeline */
+.pg-services-timeline {
+  padding: 10px 0;
+}
+
+.monthly-cpo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monthly-cpo-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.month-label {
+  width: 80px;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.cpo-minutes-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  margin: 0 15px;
+  overflow: hidden;
+}
+
+.cpo-minutes-fill {
+  height: 100%;
+  background-color: #4a6fa5;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.cpo-minutes-value {
+  width: 60px;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: right;
+}
+
+/* HHAH Services Timeline */
+.hhah-services-timeline {
+  padding: 10px 0;
+}
+
+.hhah-documents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.document-status-container {
+  flex: 1;
+  min-width: 300px;
+}
+
+.document-status-container h5 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.document-status-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+}
+
+.document-status-icon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon.signed {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.status-icon.unsigned {
+  color: #dc3545;
+  font-size: 1.2rem;
+}
+
+.document-info {
+  flex: 1;
+}
+
+.document-name {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.document-date {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.document-status {
+  font-size: 0.85rem;
+  color: #555;
+  font-style: italic;
+}
+
+.status-badge.signed {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.status-badge.unsigned {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* CPO Minutes Display in Patient Info */
+.cpo-minutes-display {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.cpo-progress-bar {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+
+.cpo-progress-fill {
+  height: 100%;
+  background-color: #4a6fa5;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cpo-target {
+  font-size: 0.8rem;
+  color: #666;
+  align-self: flex-end;
+}
+
+/* Episode Filtering Controls */
+.timeline-filters {
+  display: flex;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.date-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-filter label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.filter-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-input {
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.date-separator {
+  color: #666;
+}
+
+.filter-reset-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-reset-button:hover {
+  background-color: #f0f0f0;
+}
+
+.reset-icon {
+  font-size: 0.8rem;
+}
+
+/* Section Header with Actions */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.action-button.small {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+/* Enhanced Episode Timeline */
+.timeline-episode {
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.timeline-episode.active {
+  border-color: #4a6fa5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-episode.expanded {
+  background-color: #f8f9fa;
+}
+
+.episode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.episode-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.episode-title h5 {
+  margin: 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.episode-status {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.episode-status.active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.episode-status.complete {
+  background-color: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+}
+
+.episode-expand-icon {
+  color: #aaa;
+  transition: transform 0.3s ease;
+}
+
+.timeline-episode.expanded .episode-expand-icon {
+  transform: rotate(180deg);
+}
+
+.episode-expanded-info {
+  padding: 15px;
+  border-top: 1px solid #eaeaea;
+  background-color: #fff;
+}
+
+.episode-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.episode-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.episode-info-item label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.episode-info-item span {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.episode-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.episode-action-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background-color: white;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.episode-action-button:hover {
+  background-color: #f8f9fa;
+}
+
+.episode-action-button.edit {
+  color: #4a6fa5;
+  border-color: #4a6fa5;
+}
+
+.episode-action-button.edit:hover {
+  background-color: rgba(74, 111, 165, 0.1);
+}
+
+.no-episodes {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+/* Enhanced CPO Minutes Editing */
+.monthly-cpo-item {
+  position: relative;
+}
+
+.cpo-minutes-value {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.cpo-minutes-value .edit-icon {
+  opacity: 0;
+  font-size: 0.8rem;
+  color: #4a6fa5;
+  transition: opacity 0.2s;
+}
+
+.cpo-minutes-value:hover .edit-icon {
+  opacity: 1;
+}
+
+.cpo-minutes-edit {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cpo-minutes-input {
+  width: 50px;
+  padding: 3px 6px;
+  border: 1px solid #4a6fa5;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.cpo-minutes-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cpo-total {
+  padding: 5px 10px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Document Management */
+.document-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.document-filter {
+  min-width: 180px;
+}
+
+.document-type-filter {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.document-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.document-type-select {
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  color: #333;
+  max-width: 200px;
+}
+
+.document-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.document-action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 3px;
+  border-radius: 3px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.document-action-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.document-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.document-id {
+  font-family: monospace;
+}
+
+.document-size {
+  color: #888;
+}
+
+.no-documents {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+/* Modal Styling for Episode and Documents */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s ease;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Episode Form Styling */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group .required {
+  color: #dc3545;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4a6fa5;
+  box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.25);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Documents Table Styling */
+.documents-modal .modal-content {
+  max-width: 800px;
+}
+
+.documents-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.documents-table th,
+.documents-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.documents-table th {
+  background-color: #f8f9fa;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.documents-table tr:hover td {
+  background-color: #f8f9fa;
+}
+
+.documents-table .actions-cell {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.action-icon-button {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.action-icon-button:hover {
+  background-color: #f0f0f0;
+}
+
+.action-icon-button.view:hover {
+  color: #4a6fa5;
+}
+
+.action-icon-button.download:hover {
+  color: #28a745;
+}
+
+.action-icon-button.sign:hover {
+  color: #fd7e14;
+}
+
+.document-action-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background-color: white;
+  color: #555;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.document-action-button:hover {
+  background-color: #f8f9fa;
+}
+
+/* Enhanced style for episode actions */
+.episode-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.episode-action-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background-color: white;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.episode-action-button:hover {
+  background-color: #f8f9fa;
+}
+
+.episode-action-button.edit {
+  color: #4a6fa5;
+  border-color: #4a6fa5;
+}
+
+.episode-action-button.edit:hover {
+  background-color: rgba(74, 111, 165, 0.1);
+}
+
+/* Styles for signed document upload section */
+.signed-document-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+  background-color: #f7f9fc;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.signed-document-actions .action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #d0d5dd;
+  color: #344054;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signed-document-actions .action-button:hover {
+  background-color: #f0f5ff;
+  border-color: #a4bcfd;
+  color: #4a63c7;
+}
+
+.signed-document-actions .action-icon {
+  font-size: 0.9rem;
+  color: #667085;
+}
+
+.signed-document-actions .action-button:hover .action-icon {
+  color: #4a63c7;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+/* Document tabs styling */
+.document-tabs {
+  display: flex;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.document-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  margin-right: 4px;
+  position: relative;
+}
+
+.document-tab:hover {
+  background-color: #f0f0f0;
+  color: #444;
+}
+
+.document-tab.active {
+  background-color: #fff;
+  color: #4a63c7;
+  border-bottom: 1px solid #fff;
+  margin-bottom: -1px;
+}
+
+.document-tab .tab-icon {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.document-tab.active .tab-icon {
+  color: #4a63c7;
+}
+
+.document-tab .tab-label {
+  font-weight: 500;
+}
+
+.document-tab .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.4rem;
+  background-color: #e0e0e0;
+  color: #555;
+  font-size: 0.75rem;
+  border-radius: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.document-tab.active .tab-count {
+  background-color: #4a63c7;
+  color: #fff;
+}
+
+/* You can remove or update the old doc-tab-button styles if they're no longer needed */

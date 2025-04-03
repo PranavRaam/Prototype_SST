@@ -779,7 +779,7 @@ const PatientFormComponent = ({ onPatientClick }) => {
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
-    // Convert date to MM-DD-YYYY format
+    // Convert date to MM-DD-YYYY format (American style)
     const date = new Date(value);
     const formattedDate = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
     setFormData({ ...formData, [name]: formattedDate });
@@ -1074,9 +1074,22 @@ const PatientFormComponent = ({ onPatientClick }) => {
                     <input
                       type="date"
                       name="patientDOB"
-                      value={editingPatient ? editingPatient.patientDOB : formData.patientDOB}
+                      value={editingPatient 
+                        ? (editingPatient.patientDOB 
+                            ? (() => {
+                                const parts = editingPatient.patientDOB.split('-');
+                                return `${parts[2]}-${parts[0]}-${parts[1]}`;
+                              })() 
+                            : '') 
+                        : (formData.patientDOB 
+                            ? (() => {
+                                const parts = formData.patientDOB.split('-');
+                                return parts.length === 3 ? `${parts[2]}-${parts[0]}-${parts[1]}` : '';
+                              })() 
+                            : '')}
                       onChange={handleDateChange}
                       className={errors.patientDOB ? 'error' : ''}
+                      placeholder="MM-DD-YYYY"
                     />
                     {errors.patientDOB && <span className="error-text">{errors.patientDOB}</span>}
                   </div>
