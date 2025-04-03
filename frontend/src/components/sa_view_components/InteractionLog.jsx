@@ -33,7 +33,7 @@ const InteractionLog = () => {
       contact: '+1123456789',
       designation: 'Pediatrician',
       medium: 'Video Call',
-      summary: 'Consulted on child's symptoms',
+      summary: "Consulted on child's symptoms",
       action: 'Prescribe medication',
       actionTaken: 'Prescription sent to pharmacy',
       reactiveOutcomeNo: 'RO-003',

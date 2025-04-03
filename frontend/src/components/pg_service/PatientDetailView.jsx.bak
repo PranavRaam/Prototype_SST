@@ -439,10 +439,6 @@ const PatientDetailView = ({ patient, onBack }) => {
   const [fileTypes, setFileTypes] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  
-  // Create refs
-  const fileInputRef = useRef(null);
   
   // State for editable patient info
   const [isEditing, setIsEditing] = useState(false);
@@ -789,6 +785,10 @@ const PatientDetailView = ({ patient, onBack }) => {
   }, [newPreparedDocs, timelineData, showNotification]);
   
   // Function to show notification
+  const showNotification = useCallback((type, title, message) => {
+    setNotification({ type, title, message });
+  }, []);
+  
   // Function to close notification
   const closeNotification = useCallback(() => {
     setNotification(null);
@@ -1474,6 +1474,25 @@ Total documents: ${documents.length}
     
     return content;
   };
+
+  // Add after calculateCPOMinutes function
+  // Remove this duplicate state declaration
+  // const [cpoDocs, setCpoDocs] = useState([
+  //   {
+  //     id: "CPO_001",
+  //     fileName: "CPO_Document_001.pdf",
+  //     type: "CPO Assessment",
+  //     creationDate: "2023-04-05",
+  //     size: "1.2 MB"
+  //   },
+  //   {
+  //     id: "CPO_002",
+  //     fileName: "CPO_Document_002.pdf",
+  //     type: "CPO Evaluation",
+  //     creationDate: "2023-05-10",
+  //     size: "0.9 MB"
+  //   }
+  // ]);
 
   // New state for episodes, cpo data and document handling
   const [episodes, setEpisodes] = useState(generateEpisodeData());
