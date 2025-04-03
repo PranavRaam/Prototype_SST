@@ -84,6 +84,7 @@
   margin-top: 1rem;
   border: 1px solid var(--il-border);
   box-shadow: var(--il-shadow);
+  width: 100%;
 }
 
 .il_table_container::-webkit-scrollbar {
@@ -106,15 +107,64 @@
   border-spacing: 0;
   background: var(--il-bg-secondary);
   border-radius: 0.75rem;
+  table-layout: fixed;
 }
 
 .il_interaction_table th,
 .il_interaction_table td {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 0.5rem;
   text-align: center;
   border-bottom: 1px solid var(--il-border);
   transition: var(--il-transition);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Adjust column widths */
+.il_interaction_table th:nth-child(1), 
+.il_interaction_table td:nth-child(1) { /* User */
+  width: 12%;
+}
+
+.il_interaction_table th:nth-child(2), 
+.il_interaction_table td:nth-child(2) { /* Contact */
+  width: 9%;
+}
+
+.il_interaction_table th:nth-child(3), 
+.il_interaction_table td:nth-child(3) { /* Designation */
+  width: 10%;
+}
+
+.il_interaction_table th:nth-child(4), 
+.il_interaction_table td:nth-child(4) { /* Medium */
+  width: 7%;
+}
+
+.il_interaction_table th:nth-child(5), 
+.il_interaction_table td:nth-child(5) { /* Summary */
+  width: 14%;
+}
+
+.il_interaction_table th:nth-child(6), 
+.il_interaction_table td:nth-child(6) { /* Action */
+  width: 12%;
+}
+
+.il_interaction_table th:nth-child(7), 
+.il_interaction_table td:nth-child(7) { /* Action Taken */
+  width: 12%;
+}
+
+.il_interaction_table th:nth-child(8), 
+.il_interaction_table td:nth-child(8) { /* Reactive Outcome No */
+  width: 10%;
+}
+
+.il_interaction_table th:nth-child(9), 
+.il_interaction_table td:nth-child(9) { /* Date and Time */
+  width: 14%;
 }
 
 .il_interaction_table th {
@@ -200,7 +250,8 @@
 }
 
 .il_form_input,
-.il_form_textarea {
+.il_form_textarea,
+.il_form_select {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--il-border);
@@ -212,7 +263,8 @@
 }
 
 .il_form_input:focus,
-.il_form_textarea:focus {
+.il_form_textarea:focus,
+.il_form_select:focus {
   outline: none;
   border-color: var(--il-primary);
   box-shadow: 0 0 0 2px rgba(87, 79, 237, 0.1);
@@ -222,6 +274,16 @@
 .il_form_textarea {
   min-height: 80px;
   resize: vertical;
+}
+
+.il_form_select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 }
 
 .il_modal_buttons {
@@ -266,13 +328,14 @@
 /* Responsive design */
 @media (max-width: 1024px) {
   .il_table_container {
-    height: 450px;
-    padding: 0.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
   }
-
+  
   .il_interaction_table th,
   .il_interaction_table td {
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
   }
 }
 

@@ -11,6 +11,8 @@ const InteractionLog = () => {
       medium: 'Email',
       summary: 'Reviewed patient test results',
       action: 'Schedule follow-up consultation',
+      actionTaken: 'Consultation scheduled for next week',
+      reactiveOutcomeNo: 'RO-001',
       dateTime: '2024-03-27T10:00:00'
     },
     {
@@ -21,6 +23,8 @@ const InteractionLog = () => {
       medium: 'Phone',
       summary: 'Discussed patient discharge plans',
       action: 'Coordinate with family',
+      actionTaken: 'Called family and arranged transportation',
+      reactiveOutcomeNo: 'RO-002',
       dateTime: '2024-03-28T14:30:00'
     },
     {
@@ -29,8 +33,10 @@ const InteractionLog = () => {
       contact: '+1123456789',
       designation: 'Pediatrician',
       medium: 'Video Call',
-      summary: 'Consulted on child’s symptoms',
+      summary: 'Consulted on child's symptoms',
       action: 'Prescribe medication',
+      actionTaken: 'Prescription sent to pharmacy',
+      reactiveOutcomeNo: 'RO-003',
       dateTime: '2024-03-29T09:15:00'
     },
     {
@@ -41,6 +47,8 @@ const InteractionLog = () => {
       medium: 'Chat',
       summary: 'Updated patient on treatment plan',
       action: 'Arrange next chemo session',
+      actionTaken: 'Scheduled for next Tuesday',
+      reactiveOutcomeNo: 'RO-004',
       dateTime: '2024-03-30T11:45:00'
     },
     {
@@ -51,6 +59,8 @@ const InteractionLog = () => {
       medium: 'Email',
       summary: 'Shared recovery exercises',
       action: 'Schedule next session',
+      actionTaken: 'Session booked for Friday',
+      reactiveOutcomeNo: 'RO-005',
       dateTime: '2024-03-31T16:00:00'
     },
     {
@@ -61,6 +71,8 @@ const InteractionLog = () => {
       medium: 'Phone',
       summary: 'Discussed MRI findings',
       action: 'Prepare detailed report',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-01T13:20:00'
     },
     {
@@ -71,6 +83,8 @@ const InteractionLog = () => {
       medium: 'In-Person',
       summary: 'Reviewed medication stock',
       action: 'Order new supplies',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-02T10:00:00'
     },
     {
@@ -81,6 +95,8 @@ const InteractionLog = () => {
       medium: 'Email',
       summary: 'Reviewed hospital policies',
       action: 'Draft policy update',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-03T15:45:00'
     },
     {
@@ -91,6 +107,8 @@ const InteractionLog = () => {
       medium: 'Video Call',
       summary: 'Discussed surgical procedures',
       action: 'Confirm OR availability',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-04T11:30:00'
     },
     {
@@ -101,6 +119,8 @@ const InteractionLog = () => {
       medium: 'Phone',
       summary: 'Reported patient vitals',
       action: 'Alert physician on changes',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-05T09:45:00'
     },
     {
@@ -111,6 +131,8 @@ const InteractionLog = () => {
       medium: 'Email',
       summary: 'Reviewed EEG results',
       action: 'Refer patient to specialist',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-06T14:20:00'
     },
     {
@@ -121,6 +143,8 @@ const InteractionLog = () => {
       medium: 'In-Person',
       summary: 'Performed diagnostic tests',
       action: 'Send results to doctor',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-07T16:10:00'
     },
     {
@@ -131,6 +155,8 @@ const InteractionLog = () => {
       medium: 'Phone',
       summary: 'Consulted on respiratory issues',
       action: 'Recommend breathing exercises',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-08T12:00:00'
     },
     {
@@ -141,6 +167,8 @@ const InteractionLog = () => {
       medium: 'Email',
       summary: 'Shared patient meal plans',
       action: 'Adjust diet recommendations',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-09T10:30:00'
     },
     {
@@ -151,6 +179,8 @@ const InteractionLog = () => {
       medium: 'Video Call',
       summary: 'Pre-op consultation',
       action: 'Confirm surgery schedule',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-10T14:50:00'
     },
     {
@@ -161,6 +191,8 @@ const InteractionLog = () => {
       medium: 'In-Person',
       summary: 'Registered new patients',
       action: 'Update patient records',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: '2024-04-11T11:00:00'
     }
 
@@ -175,8 +207,17 @@ const InteractionLog = () => {
     medium: '',
     summary: '',
     action: '',
+    actionTaken: '',
+    reactiveOutcomeNo: '',
     dateTime: new Date().toISOString().slice(0, 16)
   });
+
+  // Sample reactive outcome numbers for dropdown
+  const reactiveOutcomeOptions = [
+    'RO-001', 'RO-002', 'RO-003', 'RO-004', 'RO-005', 
+    'RO-006', 'RO-007', 'RO-008', 'RO-009', 'RO-010',
+    'RO-011', 'RO-012', 'RO-013', 'RO-014', 'RO-015'
+  ];
 
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -224,6 +265,8 @@ const InteractionLog = () => {
       medium: '',
       summary: '',
       action: '',
+      actionTaken: '',
+      reactiveOutcomeNo: '',
       dateTime: new Date().toISOString().slice(0, 16)
     });
   };
@@ -264,6 +307,8 @@ const InteractionLog = () => {
               <th>Medium</th>
               <th>Summary</th>
               <th>Action</th>
+              <th>Action Taken</th>
+              <th>Reactive Outcome No</th>
               <th>Date and Time</th>
             </tr>
           </thead>
@@ -276,6 +321,8 @@ const InteractionLog = () => {
                 <td>{interaction.medium}</td>
                 <td>{interaction.summary}</td>
                 <td>{interaction.action}</td>
+                <td>{interaction.actionTaken}</td>
+                <td>{interaction.reactiveOutcomeNo}</td>
                 <td>{formatDateTime(interaction.dateTime)}</td>
               </tr>
             ))}
@@ -352,6 +399,35 @@ const InteractionLog = () => {
                   required
                   className="il_form_input"
                 />
+              </div>
+              <div className="il_form_group">
+                <label className="il_form_label">Action Taken:</label>
+                <input
+                  type="text"
+                  name="actionTaken"
+                  value={newInteraction.actionTaken}
+                  onChange={handleInputChange}
+                  required
+                  className="il_form_input"
+                />
+              </div>
+              <div className="il_form_group">
+                <label className="il_form_label">Reactive Outcome No:</label>
+                <div className="il_form_input_container">
+                  <select
+                    name="reactiveOutcomeNo"
+                    value={newInteraction.reactiveOutcomeNo}
+                    onChange={handleInputChange}
+                    className="il_form_select"
+                  >
+                    <option value="">Select a Reactive Outcome</option>
+                    {reactiveOutcomeOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="il_modal_buttons">
                 <button type="submit" className="il_submit_button">Submit</button>

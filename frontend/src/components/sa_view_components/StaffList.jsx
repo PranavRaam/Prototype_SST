@@ -11,6 +11,7 @@ const StaffList = ({ pgData, setPgData }) => {
     name: '',
     npi: '',
     specialty: '',
+    status: 'Active',
     position: '',
     department: ''
   });
@@ -35,9 +36,16 @@ const StaffList = ({ pgData, setPgData }) => {
     ]
   });
 
+  useEffect(() => {
+    // Log staff data to debug
+    console.log("Staff Data:", staffData);
+    console.log("NPP Data:", staffData.npp);
+  }, [staffData]);
+
   // Sync with pgData if it's provided
   useEffect(() => {
     if (pgData) {
+      console.log("pgData NPP:", pgData.npp);
       setStaffData({
         physicians: pgData.physicians || [],
         npp: pgData.npp || [],
@@ -129,6 +137,7 @@ const StaffList = ({ pgData, setPgData }) => {
       name: '',
       npi: '',
       specialty: '',
+      status: 'Active',
       position: '',
       department: ''
     });
@@ -235,6 +244,20 @@ const StaffList = ({ pgData, setPgData }) => {
                 placeholder="Enter specialty"
               />
             </div>
+            {activeTab === 'physicians' && (
+              <div className="form-group">
+                <label>Status:</label>
+                <select 
+                  name="status" 
+                  value={newStaffMember.status || "Active"}
+                  onChange={handleInputChange}
+                >
+                  <option value="Active">Active</option>
+                  <option value="On Leave">On Leave</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+            )}
           </>
         )}
         
@@ -337,6 +360,7 @@ const StaffList = ({ pgData, setPgData }) => {
                 <>
                   <th>NPI Number</th>
                   <th>Specialty</th>
+                  {activeTab === 'physicians' && <th>Status</th>}
                 </>
               ) : (
                 <>
@@ -376,8 +400,9 @@ const StaffList = ({ pgData, setPgData }) => {
                 </td>
                 {(activeTab === 'physicians' || activeTab === 'npp') ? (
                   <>
-                    <td>{staff.npi}</td>
+                    <td>{staff.npi || "N/A"}</td>
                     <td>{staff.specialty}</td>
+                    {activeTab === 'physicians' && <td>{staff.status || 'Active'}</td>}
                   </>
                 ) : (
                   <>

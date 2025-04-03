@@ -133,17 +133,22 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
-  table-layout: auto;
+  table-layout: fixed;
+}
+
+.ro-table tr {
+  height: 70px;
 }
 
 .ro-table th {
   background-color: #f8fafc;
   padding: 1rem;
-  text-align: left;
+  text-align: center;
   color: #1e293b;
   font-weight: 600;
   border-bottom: 2px solid #e2e8f0;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .ro-table td {
@@ -152,16 +157,55 @@
   color: #334155;
   line-height: 1.5;
   word-wrap: break-word;
-  min-width: 150px;
+  vertical-align: middle;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
-/* Set specific widths for some columns */
-.ro-table th:nth-child(1), .ro-table td:nth-child(1) { width: 15%; } /* Number */
-.ro-table th:nth-child(2), .ro-table td:nth-child(2) { width: 10%; } /* Date */
-.ro-table th:nth-child(3), .ro-table td:nth-child(3) { width: 10%; } /* Status */
-.ro-table th:nth-child(4), .ro-table td:nth-child(4) { width: 25%; } /* Description */
-.ro-table th:nth-child(5), .ro-table td:nth-child(5) { width: 20%; } /* Analysis */
-.ro-table th:nth-child(6), .ro-table td:nth-child(6) { width: 20%; } /* Next Steps */
+/* Set specific widths for some columns and align them properly */
+.ro-table th:nth-child(1), .ro-table td:nth-child(1) { 
+  width: 15%; 
+  text-align: center;
+} /* Number */
+
+.ro-table th:nth-child(2), .ro-table td:nth-child(2) { 
+  width: 10%; 
+  text-align: center;
+} /* Date */
+
+.ro-table th:nth-child(3), .ro-table td:nth-child(3) { 
+  width: 10%; 
+  text-align: center; 
+} /* Status */
+
+.ro-table th:nth-child(4), .ro-table td:nth-child(4) { 
+  width: 20%; 
+  text-align: left; 
+} /* Description */
+
+.ro-table th:nth-child(5), .ro-table td:nth-child(5) { 
+  width: 15%; 
+  text-align: left;
+} /* Analysis */
+
+.ro-table th:nth-child(6), .ro-table td:nth-child(6) { 
+  width: 15%; 
+  text-align: left;
+} /* Next Steps */
+
+.ro-table th:nth-child(7), .ro-table td:nth-child(7) { 
+  width: 15%; 
+  text-align: center;
+} /* Actions */
+
+/* Make sure the Description, Analysis, and Next Steps columns wrap text properly */
+.ro-table td:nth-child(4),
+.ro-table td:nth-child(5),
+.ro-table td:nth-child(6) {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
 
 .ro-table tr:hover {
   background-color: #f8fafc;
@@ -271,6 +315,10 @@
   transition: all 0.2s ease-in-out;
 }
 
+.ro-detail-item:nth-child(odd) {
+  background-color: #f0f4f8;
+}
+
 .ro-detail-item:hover {
   background-color: #eef6ff;
   transform: translateX(2px);
@@ -280,13 +328,51 @@
   color: #4f49c9;
   font-size: 0.875rem;
   font-weight: 600;
-  min-width: 120px;
+  min-width: 140px;
+  text-align: right;
+  padding-right: 10px;
 }
 
 .ro-detail-value {
   color: #111827;
   font-size: 1rem;
   font-weight: 400;
+  flex: 1;
+}
+
+/* Style specific detail items */
+.ro-detail-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.ro-detail-item:nth-child(odd) {
+  background-color: #f0f4f8;
+}
+
+.ro-detail-item:hover {
+  background-color: #eef6ff;
+  transform: translateX(2px);
+}
+
+/* Styling for HHAH Map section */
+.ro-detail-item .ro-detail-label.hhah-label {
+  color: #4338ca;
+}
+
+/* Styling for Interaction Log section */
+.ro-detail-item .ro-detail-label.interaction-label {
+  color: #4338ca;
+}
+
+.ro-detail-item .ro-detail-value.interaction-value {
+  font-style: italic;
 }
 
 /* Make the grid responsive */
@@ -455,6 +541,8 @@
   font-size: 12px;
   font-weight: bold;
   text-transform: capitalize;
+  text-align: center;
+  min-width: 90px;
 }
 
 .status-badge.open {
@@ -470,4 +558,44 @@
 .status-badge.analysed {
   background-color: #fff3cd;
   color: #664d03;
+}
+
+.status-badge.catalysed {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Action buttons styles */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action-icon {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-icon.edit {
+  background-color: #4f49c9;
+  color: white;
+}
+
+.action-icon.edit:hover {
+  background-color: #3d3a9c;
+}
+
+.action-icon.delete {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.action-icon.delete:hover {
+  background-color: #c53030;
 } 

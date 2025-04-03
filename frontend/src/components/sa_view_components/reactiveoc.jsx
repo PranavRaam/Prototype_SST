@@ -22,6 +22,7 @@ const ReactiveOC = () => {
     actionTaken: '',
     interactionLog: ''
   });
+  const [editingOutcome, setEditingOutcome] = useState(null);
 
   // Initial data
   const initialData = [
@@ -302,6 +303,23 @@ const ReactiveOC = () => {
     );
   };
 
+  // Handle edit reactive outcome
+  const handleEditOutcome = (e, id) => {
+    e.stopPropagation(); // Prevent row click event
+    const outcomeToEdit = data.find(item => item.id === id);
+    setEditingOutcome(outcomeToEdit);
+    setNewOutcome(outcomeToEdit);
+    setShowAddForm(true);
+  };
+
+  // Handle delete reactive outcome
+  const handleDeleteOutcome = (e, id) => {
+    e.stopPropagation(); // Prevent row click event
+    if (window.confirm("Are you sure you want to delete this reactive outcome?")) {
+      setData(prevData => prevData.filter(item => item.id !== id));
+    }
+  };
+
   // Filter the data based on search term and status
   const filteredData = data.filter(item => {
     const searchLower = searchTerm.toLowerCase();
@@ -325,23 +343,33 @@ const ReactiveOC = () => {
       return;
     }
 
-    // Add new outcome with generated ID
-    const newId = data.length > 0 
-      ? Math.max(...data.map(item => item.id)) + 1 
-      : 1;
-    
-    const currentDate = new Date();
-    const formattedDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`;
-    const formattedTime = currentDate.toLocaleTimeString('en-US', { hour12: true });
+    if (editingOutcome) {
+      // Update existing outcome
+      setData(prevData => 
+        prevData.map(item => 
+          item.id === editingOutcome.id ? { ...item, ...newOutcome } : item
+        )
+      );
+      setEditingOutcome(null);
+    } else {
+      // Add new outcome with generated ID
+      const newId = data.length > 0 
+        ? Math.max(...data.map(item => item.id)) + 1 
+        : 1;
+      
+      const currentDate = new Date();
+      const formattedDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`;
+      const formattedTime = currentDate.toLocaleTimeString('en-US', { hour12: true });
 
-    const outcomeWithDefaults = {
-      ...newOutcome,
-      id: newId,
-      date: newOutcome.date || formattedDate,
-      timestamp: newOutcome.timestamp || formattedTime
-    };
+      const outcomeWithDefaults = {
+        ...newOutcome,
+        id: newId,
+        date: newOutcome.date || formattedDate,
+        timestamp: newOutcome.timestamp || formattedTime
+      };
 
-    setData([...data, outcomeWithDefaults]);
+      setData([...data, outcomeWithDefaults]);
+    }
     
     // Reset form and hide it
     setNewOutcome({
@@ -399,7 +427,7 @@ const ReactiveOC = () => {
               <span className="ro-detail-value">{selectedItem.user}</span>
             </div>
             <div className="ro-detail-item">
-              <span className="ro-detail-label">HAHH Map:</span>
+              <span className="ro-detail-label hhah-label">HHAH Map:</span>
               <span className="ro-detail-value">{selectedItem.hahhMap}</span>
             </div>
             <div className="ro-detail-item">
@@ -423,8 +451,8 @@ const ReactiveOC = () => {
               <span className="ro-detail-value">{selectedItem.actionTaken}</span>
             </div>
             <div className="ro-detail-item">
-              <span className="ro-detail-label">Interaction Log:</span>
-              <span className="ro-detail-value">{selectedItem.interactionLog}</span>
+              <span className="ro-detail-label interaction-label">Interaction Log:</span>
+              <span className="ro-detail-value interaction-value">{selectedItem.interactionLog}</span>
             </div>
             <div className="ro-detail-item">
               <span className="ro-detail-label">Analysis:</span>
@@ -481,7 +509,7 @@ const ReactiveOC = () => {
 
           {showAddForm && (
             <div className="form-container">
-              <h4>Add New Reactive Outcome</h4>
+              <h4>{editingOutcome ? 'Edit Reactive Outcome' : 'Add New Reactive Outcome'}</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label htmlFor="number">Number*</label>
@@ -611,8 +639,29 @@ const ReactiveOC = () => {
                 </div>
               </div>
               <div className="form-actions">
-                <button onClick={handleAddOutcome} className="submit-button">Add Outcome</button>
-                <button onClick={() => setShowAddForm(false)} className="cancel-button">Cancel</button>
+                <button onClick={handleAddOutcome} className="submit-button">
+                  {editingOutcome ? 'Update Outcome' : 'Add Outcome'}
+                </button>
+                <button onClick={() => {
+                  setShowAddForm(false);
+                  setEditingOutcome(null);
+                  setNewOutcome({
+                    number: '',
+                    date: '',
+                    status: 'open',
+                    description: '',
+                    analysis: '',
+                    nextSteps: '',
+                    timestamp: '',
+                    receivedOn: '',
+                    user: '',
+                    hahhMap: '',
+                    poc: '',
+                    contactDetails: '',
+                    actionTaken: '',
+                    interactionLog: ''
+                  });
+                }} className="cancel-button">Cancel</button>
               </div>
             </div>
           )}
@@ -627,6 +676,7 @@ const ReactiveOC = () => {
                   <th>Description</th>
                   <th>Analysis</th>
                   <th>Next Steps</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -642,6 +692,22 @@ const ReactiveOC = () => {
                     <td>{item.description}</td>
                     <td>{item.analysis}</td>
                     <td>{item.nextSteps}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <div className="action-buttons">
+                        <button 
+                          className="action-icon edit" 
+                          onClick={(e) => handleEditOutcome(e, item.id)}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          className="action-icon delete" 
+                          onClick={(e) => handleDeleteOutcome(e, item.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

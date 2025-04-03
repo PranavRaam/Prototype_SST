@@ -67,6 +67,8 @@ const PGView = () => {
   const [showPhysicianForm, setShowPhysicianForm] = useState(false);
   const [showHHAForm, setShowHHAForm] = useState(false);
   const [showReactiveOutcomeForm, setShowReactiveOutcomeForm] = useState(false);
+  const [editingPhysician, setEditingPhysician] = useState(null);
+  const [editingHHA, setEditingHHA] = useState(null);
   
   // Mock data - in a real app, this would come from an API
   const [pgData, setPgData] = useState({
@@ -131,8 +133,8 @@ const PGView = () => {
       { id: 3, name: "Mark Davis", position: "Medical Assistant", department: "Clinical" }
     ],
     npp: [
-      { id: 1, name: "Nancy White", position: "Nurse Practitioner", specialty: "Primary Care" },
-      { id: 2, name: "Tom Brown", position: "Physician Assistant", specialty: "Orthopedics" }
+      { id: 1, name: "Nancy White", position: "Nurse Practitioner", specialty: "Primary Care", npi: "7654321098" },
+      { id: 2, name: "Tom Brown", position: "Physician Assistant", specialty: "Orthopedics", npi: "8765432109" }
     ],
     hhahs: [
       { id: 1, name: "HomeHealth Plus", location: "Los Angeles, CA", contact: "(555) 111-2222", onboarded: true },
@@ -625,7 +627,7 @@ const PGView = () => {
           
           {showPhysicianForm && (
             <div className="form-container">
-              <h4>Add New Physician</h4>
+              <h4>{editingPhysician ? 'Edit Physician' : 'Add New Physician'}</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label>Name:</label>
@@ -685,32 +687,67 @@ const PGView = () => {
                     return;
                   }
 
-                  const newPhysicianObj = {
-                    id: pgData.physicians.length + 1,
-                    ...newPhysician,
-                    onboarded: true // Set to true by default when added directly here
-                  };
+                  if (editingPhysician) {
+                    // Update existing physician
+                    setPgData(prev => {
+                      // Update in physicians array
+                      const updatedPhysicians = prev.physicians.map(p => 
+                        p.id === editingPhysician.id ? { ...p, ...newPhysician } : p
+                      );
+                      
+                      // Update in proactiveOutcomes array
+                      const updatedOutcomes = prev.proactiveOutcomes.map(outcome => {
+                        if (outcome.id === editingPhysician.id && outcome.type === 'physician') {
+                          return {
+                            ...outcome,
+                            name: newPhysician.name,
+                            npi: newPhysician.npi,
+                            specialty: newPhysician.specialty,
+                            status: newPhysician.status,
+                            onboarded: newPhysician.onboarded
+                          };
+                        }
+                        return outcome;
+                      });
+                      
+                      return {
+                        ...prev,
+                        physicians: updatedPhysicians,
+                        proactiveOutcomes: updatedOutcomes
+                      };
+                    });
+                    
+                    // Reset editing state
+                    setEditingPhysician(null);
+                  } else {
+                    // Add new physician
+                    const newPhysicianObj = {
+                      id: pgData.physicians.length + 1,
+                      ...newPhysician,
+                      onboarded: true // Set to true by default when added directly here
+                    };
 
-                  setPgData(prev => ({
-                    ...prev,
-                    physicians: [
-                      ...prev.physicians,
-                      newPhysicianObj
-                    ],
-                    // Also add to proactiveOutcomes
-                    proactiveOutcomes: [
-                      ...prev.proactiveOutcomes,
-                      {
-                        id: newPhysicianObj.id,
-                        name: newPhysicianObj.name,
-                        npi: newPhysicianObj.npi,
-                        specialty: newPhysicianObj.specialty,
-                        onboarded: true,
-                        type: 'physician', // Ensure type is specified
-                        dateAdded: new Date().toISOString()
-                      }
-                    ]
-                  }));
+                    setPgData(prev => ({
+                      ...prev,
+                      physicians: [
+                        ...prev.physicians,
+                        newPhysicianObj
+                      ],
+                      // Also add to proactiveOutcomes
+                      proactiveOutcomes: [
+                        ...prev.proactiveOutcomes,
+                        {
+                          id: newPhysicianObj.id,
+                          name: newPhysicianObj.name,
+                          npi: newPhysicianObj.npi,
+                          specialty: newPhysicianObj.specialty,
+                          onboarded: true,
+                          type: 'physician', // Ensure type is specified
+                          dateAdded: new Date().toISOString()
+                        }
+                      ]
+                    }));
+                  }
 
                   // Reset the form
                   setNewPhysician({
@@ -721,8 +758,18 @@ const PGView = () => {
                     onboarded: false
                   });
                   setShowPhysicianForm(false);
-                }}>Add Physician</button>
-                <button className="cancel-button" onClick={() => setShowPhysicianForm(false)}>Cancel</button>
+                }}>{editingPhysician ? 'Update Physician' : 'Add Physician'}</button>
+                <button className="cancel-button" onClick={() => {
+                  setShowPhysicianForm(false);
+                  setEditingPhysician(null);
+                  setNewPhysician({
+                    name: "",
+                    npi: "",
+                    specialty: "",
+                    status: "Active",
+                    onboarded: false
+                  });
+                }}>Cancel</button>
               </div>
             </div>
           )}
@@ -764,8 +811,8 @@ const PGView = () => {
                         </td>
                         <td>
                           <div className="row-actions">
-                            <button className="action-icon edit">Edit</button>
-                            <button className="action-icon delete">Delete</button>
+                            <button className="action-icon edit" onClick={() => handleEditPhysician(physician)}>Edit</button>
+                            <button className="action-icon delete" onClick={() => handleDeletePhysician(physician.id)}>Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -797,7 +844,7 @@ const PGView = () => {
           
           {showHHAForm && (
             <div className="form-container">
-              <h4>Add New HHAH</h4>
+              <h4>{editingHHA ? 'Edit HHAH' : 'Add New HHAH'}</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label>Name:</label>
@@ -846,16 +893,30 @@ const PGView = () => {
                     return;
                   }
 
-                  setPgData(prev => ({
-                    ...prev,
-                    hhahs: [
-                      ...prev.hhahs,
-                      {
-                        id: prev.hhahs.length + 1,
-                        ...newHHA
-                      }
-                    ]
-                  }));
+                  if (editingHHA) {
+                    // Update existing HHAH
+                    setPgData(prev => ({
+                      ...prev,
+                      hhahs: prev.hhahs.map(h => 
+                        h.id === editingHHA.id ? { ...h, ...newHHA } : h
+                      )
+                    }));
+                    
+                    // Reset editing state
+                    setEditingHHA(null);
+                  } else {
+                    // Add new HHAH
+                    setPgData(prev => ({
+                      ...prev,
+                      hhahs: [
+                        ...prev.hhahs,
+                        {
+                          id: prev.hhahs.length + 1,
+                          ...newHHA
+                        }
+                      ]
+                    }));
+                  }
 
                   // Reset the form
                   setNewHHA({
@@ -865,8 +926,17 @@ const PGView = () => {
                     onboarded: false
                   });
                   setShowHHAForm(false);
-                }}>Add HHAH</button>
-                <button className="cancel-button" onClick={() => setShowHHAForm(false)}>Cancel</button>
+                }}>{editingHHA ? 'Update HHAH' : 'Add HHAH'}</button>
+                <button className="cancel-button" onClick={() => {
+                  setShowHHAForm(false);
+                  setEditingHHA(null);
+                  setNewHHA({
+                    name: "",
+                    location: "",
+                    contact: "",
+                    onboarded: false
+                  });
+                }}>Cancel</button>
               </div>
             </div>
           )}
@@ -900,8 +970,8 @@ const PGView = () => {
                     </td>
                     <td>
                       <div className="row-actions">
-                        <button className="action-icon edit">Edit</button>
-                        <button className="action-icon delete">Delete</button>
+                        <button className="action-icon edit" onClick={() => handleEditHHA(hhah)}>Edit</button>
+                        <button className="action-icon delete" onClick={() => handleDeleteHHA(hhah.id)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -1490,11 +1560,6 @@ const PGView = () => {
   };
 
   // Value Communication Handlers
-  const validateRapportScore = (score) => {
-    const numScore = parseFloat(score);
-    return !isNaN(numScore) && numScore >= 0 && numScore <= 10;
-  };
-
   const handleAddInteraction = () => {
     if (!valueCommunicationState.newInteraction.trim()) return;
 
@@ -1514,10 +1579,12 @@ const PGView = () => {
   };
 
   const handleDeleteReport = (reportId) => {
-    setValueCommunicationState(prev => ({
-      ...prev,
-      reports: prev.reports.filter(report => report.id !== reportId)
-    }));
+    if (window.confirm("Are you sure you want to delete this report?")) {
+      setValueCommunicationState(prev => ({
+        ...prev,
+        reports: prev.reports.filter(report => report.id !== reportId)
+      }));
+    }
   };
 
   const handleEditReport = (report) => {
@@ -1770,6 +1837,11 @@ Operations Team
     }, 3000);
   };
 
+  const validateRapportScore = (score) => {
+    const numScore = parseFloat(score);
+    return !isNaN(numScore) && numScore >= 0 && numScore <= 10;
+  };
+
   const handleRapportSearch = (e) => {
     setRapportState(prev => ({
       ...prev,
@@ -1815,6 +1887,16 @@ Operations Team
     });
 
     showNotification('Rapport record added successfully');
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setRapportState(prev => ({
+      ...prev,
+      notification: { message, type }
+    }));
+    setTimeout(() => {
+      setRapportState(prev => ({ ...prev, notification: null }));
+    }, 3000);
   };
 
   const calculateAverageScore = () => {
@@ -1915,16 +1997,6 @@ Operations Team
     });
 
     return filteredRecords;
-  };
-
-  const showNotification = (message, type = 'success') => {
-    setRapportState(prev => ({
-      ...prev,
-      notification: { message, type }
-    }));
-    setTimeout(() => {
-      setRapportState(prev => ({ ...prev, notification: null }));
-    }, 3000);
   };
 
   const handleRapportSort = (key) => {
@@ -2185,6 +2257,54 @@ Operations Team
       </button>
     </div>
   );
+
+  // Add functions to handle editing and deleting proactive outcomes
+  const handleEditPhysician = (physician) => {
+    // Find the full physician data from pgData.physicians
+    const physicianData = pgData.physicians.find(p => p.id === physician.id) || physician;
+    
+    setEditingPhysician(physician);
+    setNewPhysician({
+      name: physician.name,
+      npi: physician.npi,
+      specialty: physician.specialty,
+      status: physicianData.status || "Active",
+      onboarded: physician.onboarded
+    });
+    setShowPhysicianForm(true);
+  };
+
+  const handleDeletePhysician = (id) => {
+    if (window.confirm("Are you sure you want to delete this physician?")) {
+      setPgData(prev => ({
+        ...prev,
+        physicians: prev.physicians.filter(physician => physician.id !== id),
+        proactiveOutcomes: prev.proactiveOutcomes.filter(
+          outcome => !(outcome.id === id && outcome.type === 'physician')
+        )
+      }));
+    }
+  };
+
+  const handleEditHHA = (hhah) => {
+    setEditingHHA(hhah);
+    setNewHHA({
+      name: hhah.name,
+      location: hhah.location,
+      contact: hhah.contact,
+      onboarded: hhah.onboarded
+    });
+    setShowHHAForm(true);
+  };
+
+  const handleDeleteHHA = (id) => {
+    if (window.confirm("Are you sure you want to delete this HHAH?")) {
+      setPgData(prev => ({
+        ...prev,
+        hhahs: prev.hhahs.filter(hhah => hhah.id !== id)
+      }));
+    }
+  };
 
   return (
     <div className="pg-view-container">
