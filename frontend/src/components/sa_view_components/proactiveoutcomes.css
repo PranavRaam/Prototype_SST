@@ -433,4 +433,24 @@
 
 .table-container::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+.onboarding-status {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.onboarding-status.onboarded {
+  color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.onboarding-status.not-onboarded {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
 } 

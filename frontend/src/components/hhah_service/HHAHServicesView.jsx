@@ -3,6 +3,7 @@ import SearchBar from './SearchBar';
 import ServicesTable from './ServicesTable';
 import * as XLSX from 'xlsx';  // Import XLSX library for Excel export
 import './HHAHServicesView.css';
+import { formatDate } from '../../utils/dateUtils';
 
 const dummyData = [
   {
@@ -300,20 +301,14 @@ const HHAHServicesView = () => {
     setData(filtered);
   };
 
-  const formatToUSDate = (dateStr) => {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    return date.toLocaleDateString('en-US');
-  };
-
   const getFormattedData = () => {
     return data.map(item => ({
       ...item,
-      dob: formatToUSDate(item.dob),
-      soc: formatToUSDate(item.soc),
+      dob: formatDate(item.dob),
+      soc: formatDate(item.soc),
       fromToDate: item.fromToDate
         .split(' - ')
-        .map(formatToUSDate)
+        .map(formatDate)
         .join(' - ')
     }));
   };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './InteractionLog.css';
+import { formatDateTime, getCurrentDateTime } from '../../utils/dateUtils';
+import { formatDate } from '../../utils/dateUtils';
 
 const InteractionLog = () => {
   const [interactions, setInteractions] = useState([
@@ -209,7 +211,7 @@ const InteractionLog = () => {
     action: '',
     actionTaken: '',
     reactiveOutcomeNo: '',
-    dateTime: new Date().toISOString().slice(0, 16)
+    dateTime: getCurrentDateTime().isoString
   });
 
   // Sample reactive outcome numbers for dropdown
@@ -218,26 +220,6 @@ const InteractionLog = () => {
     'RO-006', 'RO-007', 'RO-008', 'RO-009', 'RO-010',
     'RO-011', 'RO-012', 'RO-013', 'RO-014', 'RO-015'
   ];
-
-  const formatDateTime = (dateTimeString) => {
-    const date = new Date(dateTimeString);
-    const cstDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
-
-    const formattedDate = cstDate.toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric'
-    });
-
-    const formattedTime = cstDate.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: 'America/Chicago'
-    });
-
-    return `${formattedDate} ${formattedTime} CST`;
-  };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -251,8 +233,7 @@ const InteractionLog = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleAddInteraction = () => {
     setInteractions(prev => [...prev, {
       ...newInteraction,
       id: prev.length + 1
@@ -267,7 +248,7 @@ const InteractionLog = () => {
       action: '',
       actionTaken: '',
       reactiveOutcomeNo: '',
-      dateTime: new Date().toISOString().slice(0, 16)
+      dateTime: getCurrentDateTime().isoString
     });
   };
 
@@ -276,6 +257,28 @@ const InteractionLog = () => {
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newInteraction = {
+      user: formData.get('user'),
+      contact: formData.get('contact'),
+      designation: formData.get('designation'),
+      medium: formData.get('medium'),
+      summary: formData.get('summary'),
+      action: formData.get('action'),
+      actionTaken: formData.get('actionTaken'),
+      reactiveOutcomeNo: formData.get('reactiveOutcomeNo'),
+      dateAndTime: new Date(formData.get('dateAndTime')).toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+      })
+    };
+    handleAddInteraction(newInteraction);
+    setShowModal(false);
+  };
 
   return (
     <div className="il_interaction_log_container">
@@ -323,7 +326,9 @@ const InteractionLog = () => {
                 <td>{interaction.action}</td>
                 <td>{interaction.actionTaken}</td>
                 <td>{interaction.reactiveOutcomeNo}</td>
-                <td>{formatDateTime(interaction.dateTime)}</td>
+                <td className="il_date_cell">
+                  {formatDateTime(interaction.dateTime)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -428,6 +433,43 @@ const InteractionLog = () => {
                     ))}
                   </select>
                 </div>
+              </div>
+              <div className="il_form_group">
+                <label className="il_form_label">Date and Time</label>
+                <input
+                  type="text"
+                  name="dateAndTime"
+                  className="il_form_input"
+                  value={formatDate(newInteraction.dateTime.split('T')[0])}
+                  onChange={(e) => {
+                    const inputDate = e.target.value;
+                    // Validate and parse mm/dd/yyyy format
+                    if (/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/.test(inputDate)) {
+                      const [month, day, year] = inputDate.split('/');
+                      const isoDate = `${year}-${month}-${day}`;
+                      const time = newInteraction.dateTime.split('T')[1] || '00:00';
+                      setNewInteraction({ 
+                        ...newInteraction, 
+                        dateTime: `${isoDate}T${time}` 
+                      });
+                    }
+                  }}
+                  placeholder="mm/dd/yyyy"
+                />
+                <input
+                  type="time"
+                  name="timeAndDate"
+                  className="il_form_input"
+                  value={newInteraction.dateTime.split('T')[1] || ''}
+                  onChange={(e) => {
+                    const date = newInteraction.dateTime.split('T')[0];
+                    const time = e.target.value;
+                    setNewInteraction({ 
+                      ...newInteraction, 
+                      dateTime: `${date}T${time}` 
+                    });
+                  }}
+                />
               </div>
               <div className="il_modal_buttons">
                 <button type="submit" className="il_submit_button">Submit</button>

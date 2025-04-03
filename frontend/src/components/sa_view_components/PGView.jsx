@@ -50,7 +50,6 @@ const PGView = () => {
     name: "",
     npi: "",
     specialty: "",
-    status: "Active",
     onboarded: false
   });
   const [newHHA, setNewHHA] = useState({
@@ -121,11 +120,14 @@ const PGView = () => {
       }
     ],
     physicians: [
-      { id: 1, name: "Dr. Sarah Johnson", npi: "1234567890", specialty: "Primary Care", status: "Active", onboarded: true },
-      { id: 2, name: "Dr. Robert Chen", npi: "2345678901", specialty: "Cardiology", status: "Active", onboarded: false },
-      { id: 3, name: "Dr. Maria Garcia", npi: "3456789012", specialty: "Neurology", status: "On Leave", onboarded: true },
-      { id: 4, name: "Dr. James Wilson", npi: "4567890123", specialty: "Oncology", status: "Active", onboarded: false },
-      { id: 5, name: "Dr. Emily Brown", npi: "5678901234", specialty: "Pediatrics", status: "Active", onboarded: true }
+      { id: 1, name: "Dr. Sarah Johnson", npi: "1234567890", specialty: "Primary Care", onboarded: true },
+      { id: 2, name: "Dr. Robert Chen", npi: "2345678901", specialty: "Cardiology", onboarded: false },
+      { id: 3, name: "Dr. Maria Garcia", npi: "3456789012", specialty: "Neurology", onboarded: true },
+      { id: 4, name: "Dr. James Wilson", npi: "4567890123", specialty: "Oncology", onboarded: false },
+      { id: 5, name: "Dr. Emily Brown", npi: "5678901234", specialty: "Pediatrics", onboarded: true },
+      { id: 6, name: "Dr. Michael Lee", npi: "6789012345", specialty: "Orthopedics", onboarded: false },
+      { id: 7, name: "Dr. Lisa Patel", npi: "7890123456", specialty: "Dermatology", onboarded: true },
+      { id: 8, name: "Dr. David Kim", npi: "8901234567", specialty: "Endocrinology", onboarded: false }
     ],
     staff: [
       { id: 1, name: "John Smith", position: "Office Manager", department: "Administration" },
@@ -178,19 +180,19 @@ const PGView = () => {
 
   const [valueCommunicationState, setValueCommunicationState] = useState({
     reports: [
-      { id: 1, fileName: "March_2024_Communication.pdf", notes: "Monthly communication summary", date: "2024-03-15" },
-      { id: 2, fileName: "Weekly_Update_12.pdf", notes: "Weekly progress report", date: "2024-03-10" },
-      { id: 3, fileName: "Patient_Feedback_Q1.pdf", notes: "Quarterly patient feedback", date: "2024-03-05" }
+      { id: 1, fileName: "March_2024_Communication.pdf", notes: "Monthly communication summary", date: "03/15/2024" },
+      { id: 2, fileName: "Weekly_Update_12.pdf", notes: "Weekly progress report", date: "03/10/2024" },
+      { id: 3, fileName: "Patient_Feedback_Q1.pdf", notes: "Quarterly patient feedback", date: "03/05/2024" }
     ],
     interactions: [
-      { id: 1, summary: "Discussed patient engagement strategies with Dr. Johnson", date: "2024-03-15", author: "Admin" },
-      { id: 2, summary: "Review of care quality metrics with staff", date: "2024-03-10", author: "Manager" },
-      { id: 3, summary: "Team meeting about response time improvement", date: "2024-03-05", author: "Coordinator" }
+      { id: 1, summary: "Discussed patient engagement strategies with Dr. Johnson", date: "03/15/2024", author: "Admin" },
+      { id: 2, summary: "Review of care quality metrics with staff", date: "03/10/2024", author: "Manager" },
+      { id: 3, summary: "Team meeting about response time improvement", date: "03/05/2024", author: "Coordinator" }
     ],
     mdrTasks: [
-      { id: 1, task: "Prepare monthly data analysis", completed: true, dueDate: "2024-03-20" },
-      { id: 2, task: "Collect physician feedback", completed: false, dueDate: "2024-03-18" },
-      { id: 3, task: "Update patient satisfaction metrics", completed: false, dueDate: "2024-03-25" }
+      { id: 1, task: "Prepare monthly data analysis", completed: true, dueDate: "03/20/2024" },
+      { id: 2, task: "Collect physician feedback", completed: false, dueDate: "03/18/2024" },
+      { id: 3, task: "Update patient satisfaction metrics", completed: false, dueDate: "03/25/2024" }
     ],
     mbrsDone: 12,
     mbrsUpcoming: 5,
@@ -209,21 +211,22 @@ const PGView = () => {
 
   const [rapportState, setRapportState] = useState({
     records: [
-      { id: 1, name: "Check Name", designation: "Designation Check", score: 10, understanding: "Excellent understanding of all processes", date: "2024-03-15" },
-      { id: 2, name: "Test Name", designation: "Designation Test", score: 3, understanding: "Needs significant improvement", date: "2024-03-10" },
-      { id: 3, name: "Person1", designation: "Designation Check", score: 2, understanding: "Limited understanding of core processes", date: "2024-03-05" }
+      { id: 1, name: "John Smith", designation: "Physician", score: "9", understanding: "Excellent understanding of processes", date: "03/15/2024" },
+      { id: 2, name: "Sarah Johnson", designation: "Nurse Practitioner", score: "7", understanding: "Good grasp of core concepts", date: "03/14/2024" },
+      { id: 3, name: "Michael Brown", designation: "Physician Assistant", score: "8", understanding: "Strong clinical knowledge", date: "03/13/2024" },
+      { id: 4, name: "Emily Davis", designation: "Registered Nurse", score: "6", understanding: "Basic understanding, needs more training", date: "03/12/2024" },
+      { id: 5, name: "David Wilson", designation: "Medical Director", score: "10", understanding: "Expert level understanding", date: "03/11/2024" }
     ],
+    searchTerm: "",
+    sortConfig: { key: "date", direction: "desc" },
+    showAnalytics: false,
     newRecord: {
       name: "",
       designation: "",
       score: "",
       understanding: ""
     },
-    searchTerm: "",
-    sortConfig: { key: "date", direction: "desc" },
-    editingRecord: null,
-    showAnalytics: false,
-    notification: null
+    showForm: false
   });
 
   // Add a useEffect to check for physician updates from StaffList
@@ -669,14 +672,13 @@ const PGView = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Status:</label>
-                  <select name="status" value={newPhysician.status} onChange={(e) => setNewPhysician(prev => ({
+                  <label>Onboarded:</label>
+                  <select name="onboarded" value={newPhysician.onboarded} onChange={(e) => setNewPhysician(prev => ({
                     ...prev,
-                    status: e.target.value
+                    onboarded: e.target.value === 'true'
                   }))} >
-                    <option value="Active">Active</option>
-                    <option value="On Leave">On Leave</option>
-                    <option value="Pending">Pending</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                   </select>
                 </div>
               </div>
@@ -703,7 +705,6 @@ const PGView = () => {
                             name: newPhysician.name,
                             npi: newPhysician.npi,
                             specialty: newPhysician.specialty,
-                            status: newPhysician.status,
                             onboarded: newPhysician.onboarded
                           };
                         }
@@ -723,8 +724,7 @@ const PGView = () => {
                     // Add new physician
                     const newPhysicianObj = {
                       id: pgData.physicians.length + 1,
-                      ...newPhysician,
-                      onboarded: true // Set to true by default when added directly here
+                      ...newPhysician
                     };
 
                     setPgData(prev => ({
@@ -741,8 +741,8 @@ const PGView = () => {
                           name: newPhysicianObj.name,
                           npi: newPhysicianObj.npi,
                           specialty: newPhysicianObj.specialty,
-                          onboarded: true,
-                          type: 'physician', // Ensure type is specified
+                          onboarded: newPhysicianObj.onboarded,
+                          type: 'physician',
                           dateAdded: new Date().toISOString()
                         }
                       ]
@@ -754,7 +754,6 @@ const PGView = () => {
                     name: "",
                     npi: "",
                     specialty: "",
-                    status: "Active",
                     onboarded: false
                   });
                   setShowPhysicianForm(false);
@@ -766,7 +765,6 @@ const PGView = () => {
                     name: "",
                     npi: "",
                     specialty: "",
-                    status: "Active",
                     onboarded: false
                   });
                 }}>Cancel</button>
@@ -781,7 +779,6 @@ const PGView = () => {
                   <th>Physician Name</th>
                   <th>NPI</th>
                   <th>Specialty</th>
-                  <th>Analysis</th>
                   <th>Onboarded</th>
                   <th>Actions</th>
                 </tr>
@@ -800,7 +797,6 @@ const PGView = () => {
                         </td>
                         <td>{physician.npi}</td>
                         <td>{physician.specialty}</td>
-                        <td>{physician.analysis || "Pending analysis"}</td>
                         <td>
                           <button 
                             className={`onboarding-toggle ${physician.onboarded ? 'onboarded' : 'not-onboarded'}`}
@@ -811,8 +807,32 @@ const PGView = () => {
                         </td>
                         <td>
                           <div className="row-actions">
-                            <button className="action-icon edit" onClick={() => handleEditPhysician(physician)}>Edit</button>
-                            <button className="action-icon delete" onClick={() => handleDeletePhysician(physician.id)}>Delete</button>
+                            <button 
+                              className="action-icon edit"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingPhysician(physician);
+                                setNewPhysician(physician);
+                                setShowPhysicianForm(true);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              className="action-icon delete"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Are you sure you want to remove ${physician.name}?`)) {
+                                  setPgData(prev => ({
+                                    ...prev,
+                                    physicians: prev.physicians.filter(p => p.id !== physician.id),
+                                    proactiveOutcomes: prev.proactiveOutcomes.filter(p => p.id !== physician.id)
+                                  }));
+                                }
+                              }}
+                            >
+                              Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -1013,7 +1033,6 @@ const PGView = () => {
     <div className="value-communication-section">
       <div className="section-header">
         <h2>Value Communication</h2>
-        <p className="section-description">Manage communications, reports, and interactions</p>
       </div>
 
       <div className="value-comm-grid">
@@ -1204,10 +1223,6 @@ const PGView = () => {
               <div key={interaction.id} className="interaction-card">
                 <div className="interaction-content">
                   <p className="interaction-text">{interaction.summary}</p>
-                  <div className="interaction-meta">
-                    <span className="interaction-author">{interaction.author}</span>
-                    <span className="interaction-date">{interaction.date}</span>
-                  </div>
                 </div>
               </div>
             ))}
@@ -1284,13 +1299,29 @@ const PGView = () => {
               }))}
             />
             <input
-              type="date"
+              type="text"
               className="task-date-input"
               value={valueCommunicationState.newMBRTaskDate || ''}
               onChange={(e) => setValueCommunicationState(prev => ({
                 ...prev,
                 newMBRTaskDate: e.target.value
               }))}
+              placeholder="MM/DD/YYYY"
+              onFocus={(e) => {
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.style.display = 'none';
+                document.body.appendChild(dateInput);
+                dateInput.click();
+                dateInput.addEventListener('change', (event) => {
+                  setValueCommunicationState(prev => ({
+                    ...prev,
+                    newMBRTaskDate: event.target.value
+                  }));
+                  document.body.removeChild(dateInput);
+                });
+                e.preventDefault();
+              }}
             />
             <button 
               className="submit-button"
@@ -1371,13 +1402,29 @@ const PGView = () => {
               }))}
             />
             <input
-              type="date"
+              type="text"
               className="task-date-input"
               value={valueCommunicationState.newWeeklyTaskDate || ''}
               onChange={(e) => setValueCommunicationState(prev => ({
                 ...prev,
                 newWeeklyTaskDate: e.target.value
               }))}
+              placeholder="MM/DD/YYYY"
+              onFocus={(e) => {
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.style.display = 'none';
+                document.body.appendChild(dateInput);
+                dateInput.click();
+                dateInput.addEventListener('change', (event) => {
+                  setValueCommunicationState(prev => ({
+                    ...prev,
+                    newWeeklyTaskDate: event.target.value
+                  }));
+                  document.body.removeChild(dateInput);
+                });
+                e.preventDefault();
+              }}
             />
             <button 
               className="submit-button"
@@ -1409,7 +1456,7 @@ const PGView = () => {
     return (
       <div className="rapport-section">
         <div className="rapport-header">
-          <h2 className="rapport-title">Rapport Management</h2>
+          <h2 className="rapport-title">Rapport Summary</h2>
           <div className="rapport-actions">
             <div className="rapport-search">
               <input
@@ -1457,95 +1504,104 @@ const PGView = () => {
           </div>
         )}
 
-        <div className="add-rapport-form">
-          <div className="rapport-form-group">
-            <label>Person Name</label>
-            <input 
-              type="text" 
-              placeholder="Enter name" 
-              name="name"
-              value={rapportState.newRecord.name}
-              onChange={(e) => handleNewRapportChange(e)}
-            />
+        <button 
+          className="add-rapport-btn"
+          onClick={() => setRapportState(prev => ({ ...prev, showForm: !prev.showForm }))}
+        >
+          {rapportState.showForm ? "Cancel" : "Add Rapport"}
+        </button>
+
+        {rapportState.showForm && (
+          <div className="add-rapport-form">
+            <div className="rapport-form-group">
+              <label>Person Name</label>
+              <input 
+                type="text" 
+                placeholder="Enter name" 
+                name="name"
+                value={rapportState.newRecord.name}
+                onChange={(e) => handleNewRapportChange(e)}
+              />
+            </div>
+            <div className="rapport-form-group">
+              <label>Designation</label>
+              <input 
+                type="text" 
+                placeholder="Enter designation" 
+                name="designation"
+                value={rapportState.newRecord.designation}
+                onChange={(e) => handleNewRapportChange(e)}
+              />
+            </div>
+            <div className="rapport-form-group">
+              <label>Score (0-10)</label>
+              <input 
+                type="number" 
+                min="0" 
+                max="10" 
+                placeholder="Enter score" 
+                name="score"
+                value={rapportState.newRecord.score}
+                onChange={(e) => handleNewRapportChange(e)}
+              />
+            </div>
+            <div className="rapport-form-group">
+              <label>Understanding/Feedback</label>
+              <textarea 
+                placeholder="Enter feedback" 
+                name="understanding"
+                value={rapportState.newRecord.understanding}
+                onChange={(e) => handleNewRapportChange(e)}
+              ></textarea>
+            </div>
+            <button className="add-record-btn" onClick={handleSubmitRapport}>Add Record</button>
           </div>
-          <div className="rapport-form-group">
-            <label>Designation</label>
-            <input 
-              type="text" 
-              placeholder="Enter designation" 
-              name="designation"
-              value={rapportState.newRecord.designation}
-              onChange={(e) => handleNewRapportChange(e)}
-            />
-          </div>
-          <div className="rapport-form-group">
-            <label>Score (0-10)</label>
-            <input 
-              type="number" 
-              min="0" 
-              max="10" 
-              placeholder="Enter score" 
-              name="score"
-              value={rapportState.newRecord.score}
-              onChange={(e) => handleNewRapportChange(e)}
-            />
-          </div>
-          <div className="rapport-form-group">
-            <label>Understanding/Feedback</label>
-            <textarea 
-              placeholder="Enter feedback" 
-              name="understanding"
-              value={rapportState.newRecord.understanding}
-              onChange={(e) => handleNewRapportChange(e)}
-            ></textarea>
-          </div>
-          <button className="add-record-btn" onClick={handleSubmitRapport}>Add Record</button>
-        </div>
+        )}
 
         <table className="rapport-table">
           <thead>
             <tr>
-              <th onClick={() => handleRapportSort('name')}>
-                PERSON NAME
+              <th onClick={() => handleRapportSort('name')} style={{ textAlign: 'left' }}>
+                PERSONA NAME
                 {rapportState.sortConfig.key === 'name' && (
                   <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
                 )}
               </th>
-              <th onClick={() => handleRapportSort('designation')}>
+              <th onClick={() => handleRapportSort('designation')} style={{ textAlign: 'left' }}>
                 DESIGNATION
                 {rapportState.sortConfig.key === 'designation' && (
                   <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
                 )}
               </th>
-              <th onClick={() => handleRapportSort('score')}>
+              <th onClick={() => handleRapportSort('score')} style={{ textAlign: 'left' }}>
                 SCORE
                 {rapportState.sortConfig.key === 'score' && (
                   <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
                 )}
               </th>
-              <th>UNDERSTANDING</th>
-              <th onClick={() => handleRapportSort('date')}>
+              <th style={{ textAlign: 'left' }}>ANALYSIS</th>
+              <th onClick={() => handleRapportSort('date')} style={{ textAlign: 'left' }}>
                 DATE
                 {rapportState.sortConfig.key === 'date' && (
                   <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
                 )}
               </th>
-              <th>ACTIONS</th>
+              <th style={{ textAlign: 'left' }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {getFilteredAndSortedRapportRecords().map(record => (
               <tr key={`rapport-${record.id}`}>
-                <td>{record.name}</td>
-                <td>{record.designation}</td>
-                <td>
+                <td style={{ textAlign: 'left' }}>{record.name}</td>
+                <td style={{ textAlign: 'left' }}>{record.designation}</td>
+                <td style={{ textAlign: 'left' }}>
                   <span className={`rapport-score-badge ${parseFloat(record.score) >= 8 ? 'high' : parseFloat(record.score) >= 5 ? 'medium' : 'low'}`}>
                     {record.score}/10
                   </span>
                 </td>
-                <td>{record.understanding}</td>
-                <td>{record.date}</td>
-                <td>
+                <td style={{ textAlign: 'left' }}>{record.understanding}</td>
+                <td style={{ textAlign: 'left' }}>{formatDate(record.date)}</td>
+                <td style={{ textAlign: 'left' }}>
                   <div className="rapport-action-buttons">
                     <button className="rapport-edit-btn" onClick={() => handleEditRapportRecord(record.id)}>Edit</button>
                     <button className="rapport-delete-btn" onClick={() => handleDeleteRapportRecord(record.id)}>Delete</button>
@@ -2099,9 +2155,9 @@ Operations Team
             <span className="summary-icon">📊</span>
           </div>
           <div className="summary-content">
-            <p className="summary-stat">179 Total Claims</p>
-            <p className="summary-stat">180 Pending</p>
-            <p className="summary-stat">$181 Total Value</p>
+            <p className="summary-stat">Total number of 179 claims: 3</p>
+            <p className="summary-stat">Total number of 180 claims: 2</p>
+            <p className="summary-stat">Total number of 181 claims: 2</p>
           </div>
           <div className="summary-footer">
             <span className="view-more">View Details →</span>
@@ -2268,7 +2324,6 @@ Operations Team
       name: physician.name,
       npi: physician.npi,
       specialty: physician.specialty,
-      status: physicianData.status || "Active",
       onboarded: physician.onboarded
     });
     setShowPhysicianForm(true);
@@ -2304,6 +2359,14 @@ Operations Team
         hhahs: prev.hhahs.filter(hhah => hhah.id !== id)
       }));
     }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
   };
 
   return (

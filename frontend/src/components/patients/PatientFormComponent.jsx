@@ -1004,8 +1004,6 @@ const PatientFormComponent = ({ onPatientClick }) => {
             Select Month/Year
           </button>
         </div>
-
-        <h2 className="patient-form-title">Patient Management</h2>
       </div>
 
       {showModal && (

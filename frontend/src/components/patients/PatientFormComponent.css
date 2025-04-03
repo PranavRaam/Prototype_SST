@@ -70,6 +70,7 @@
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -77,6 +78,8 @@
   border-radius: 12px;
   padding: 24px;
   width: 85%;
+  height: 85%;
+  margin-top: 3.5%;
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
