@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import './PatientFormComponent.css';
 import * as XLSX from 'xlsx';
 
@@ -676,12 +678,26 @@ const PatientFormComponent = ({ onPatientClick }) => {
     }
   ]);
   const [searchTerm, setSearchTerm] = useState({
+    physicianName: '',
     pg: '',
     hhah: '',
     renderingPractitioner: ''
   });
 
   // Sample data for dropdowns
+  const physicianOptions = [
+    'Dr. Sarah Johnson',
+    'Dr. Michael Chen',
+    'Dr. Emily Rodriguez',
+    'Dr. James Wilson',
+    'Dr. Lisa Thompson',
+    'Dr. Robert Martinez',
+    'Dr. Jennifer Lee',
+    'Dr. David Brown',
+    'Dr. Patricia Davis',
+    'Dr. William Taylor'
+  ];
+
   const pgOptions = [
     'ABC Medical Group',
     'XYZ Healthcare',
@@ -722,6 +738,11 @@ const PatientFormComponent = ({ onPatientClick }) => {
   ];
 
   // Filtered options based on search term
+  const filteredPhysicianOptions = useMemo(() => 
+    physicianOptions.filter(option => 
+      option.toLowerCase().includes(searchTerm.physicianName.toLowerCase())
+    ), [searchTerm.physicianName]);
+
   const filteredPgOptions = useMemo(() => 
     pgOptions.filter(option => 
       option.toLowerCase().includes(searchTerm.pg.toLowerCase())
@@ -772,21 +793,31 @@ const PatientFormComponent = ({ onPatientClick }) => {
   const [selectedYear, setSelectedYear] = useState('');
   const [filteredPatients, setFilteredPatients] = useState([]);
 
+  const [datePickerState, setDatePickerState] = useState({
+    patientDOB: null,
+    patientSOC: null,
+    patientEpisodeFrom: null,
+    patientEpisodeTo: null
+  });
+
+  const handleDatePickerChange = (date, field) => {
+    setDatePickerState(prev => ({ ...prev, [field]: date }));
+    if (date) {
+      const formattedDate = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
+      setFormData(prev => ({ ...prev, [field]: formattedDate }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    // Convert date to MM-DD-YYYY format (American style)
-    const date = new Date(value);
-    const formattedDate = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
-    setFormData({ ...formData, [name]: formattedDate });
-  };
-
   const handleSearchChange = (field, value) => {
     setSearchTerm(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSelectOption = (field, value) => {
@@ -1069,78 +1100,68 @@ const PatientFormComponent = ({ onPatientClick }) => {
 
                   <div className="form-group">
                     <label>Date of Birth <span className="required">*</span></label>
-                    <input
-                      type="date"
-                      name="patientDOB"
-                      value={editingPatient 
-                        ? (editingPatient.patientDOB 
-                            ? (() => {
-                                const parts = editingPatient.patientDOB.split('-');
-                                return `${parts[2]}-${parts[0]}-${parts[1]}`;
-                              })() 
-                            : '') 
-                        : (formData.patientDOB 
-                            ? (() => {
-                                const parts = formData.patientDOB.split('-');
-                                return parts.length === 3 ? `${parts[2]}-${parts[0]}-${parts[1]}` : '';
-                              })() 
-                            : '')}
-                      onChange={handleDateChange}
-                      className={errors.patientDOB ? 'error' : ''}
-                      placeholder="MM-DD-YYYY"
+                    <DatePicker
+                      selected={datePickerState.patientDOB}
+                      onChange={(date) => handleDatePickerChange(date, 'patientDOB')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className={`form-control ${errors.patientDOB ? 'error' : ''}`}
+                      isClearable
                     />
                     {errors.patientDOB && <span className="error-text">{errors.patientDOB}</span>}
                   </div>
 
                   <div className="form-group">
                     <label>Physician Name <span className="required">*</span></label>
-                    <input
-                      type="text"
-                      name="physicianName"
-                      value={editingPatient ? editingPatient.physicianName : formData.physicianName}
-                      onChange={handleChange}
-                      className={errors.physicianName ? 'error' : ''}
-                    />
+                    <div className="searchable-dropdown">
+                      <input
+                        type="text"
+                        value={editingPatient ? editingPatient.physicianName : formData.physicianName}
+                        onChange={(e) => handleSearchChange('physicianName', e.target.value)}
+                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, physicianName: e.target.value }))}
+                        placeholder="Search or type physician name..."
+                        className={errors.physicianName ? 'error' : ''}
+                      />
+                      {searchTerm.physicianName && filteredPhysicianOptions.length > 0 && (
+                        <div className="dropdown-options">
+                          {filteredPhysicianOptions.map(option => (
+                            <div
+                              key={option}
+                              className="dropdown-option"
+                              onClick={() => handleSelectOption('physicianName', option)}
+                            >
+                              {option}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     {errors.physicianName && <span className="error-text">{errors.physicianName}</span>}
                   </div>
 
                   <div className="form-group">
                     <label>PG <span className="required">*</span></label>
                     <div className="searchable-dropdown">
-                      {editingPatient ? (
-                        <div className="selected-option">
-                          {editingPatient.pg}
-                          <button
-                            type="button"
-                            className="clear-option"
-                            onClick={() => handleClearOption('pg')}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <input
-                            type="text"
-                            value={searchTerm.pg}
-                            onChange={(e) => handleSearchChange('pg', e.target.value)}
-                            placeholder="Search PG..."
-                            className={errors.pg ? 'error' : ''}
-                          />
-                          {searchTerm.pg && (
-                            <div className="dropdown-options">
-                              {filteredPgOptions.map(option => (
-                                <div
-                                  key={option}
-                                  className="dropdown-option"
-                                  onClick={() => handleSelectOption('pg', option)}
-                                >
-                                  {option}
-                                </div>
-                              ))}
+                      <input
+                        type="text"
+                        value={editingPatient ? editingPatient.pg : formData.pg}
+                        onChange={(e) => handleSearchChange('pg', e.target.value)}
+                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, pg: e.target.value }))}
+                        placeholder="Search or type PG name..."
+                        className={errors.pg ? 'error' : ''}
+                      />
+                      {searchTerm.pg && filteredPgOptions.length > 0 && (
+                        <div className="dropdown-options">
+                          {filteredPgOptions.map(option => (
+                            <div
+                              key={option}
+                              className="dropdown-option"
+                              onClick={() => handleSelectOption('pg', option)}
+                            >
+                              {option}
                             </div>
-                          )}
-                        </>
+                          ))}
+                        </div>
                       )}
                     </div>
                     {errors.pg && <span className="error-text">{errors.pg}</span>}
@@ -1149,40 +1170,26 @@ const PatientFormComponent = ({ onPatientClick }) => {
                   <div className="form-group">
                     <label>HHAH <span className="required">*</span></label>
                     <div className="searchable-dropdown">
-                      {editingPatient ? (
-                        <div className="selected-option">
-                          {editingPatient.hhah}
-                          <button
-                            type="button"
-                            className="clear-option"
-                            onClick={() => handleClearOption('hhah')}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <input
-                            type="text"
-                            value={searchTerm.hhah}
-                            onChange={(e) => handleSearchChange('hhah', e.target.value)}
-                            placeholder="Search HHAH..."
-                            className={errors.hhah ? 'error' : ''}
-                          />
-                          {searchTerm.hhah && (
-                            <div className="dropdown-options">
-                              {filteredHhahOptions.map(option => (
-                                <div
-                                  key={option}
-                                  className="dropdown-option"
-                                  onClick={() => handleSelectOption('hhah', option)}
-                                >
-                                  {option}
-                                </div>
-                              ))}
+                      <input
+                        type="text"
+                        value={editingPatient ? editingPatient.hhah : formData.hhah}
+                        onChange={(e) => handleSearchChange('hhah', e.target.value)}
+                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, hhah: e.target.value }))}
+                        placeholder="Search or type HHAH name..."
+                        className={errors.hhah ? 'error' : ''}
+                      />
+                      {searchTerm.hhah && filteredHhahOptions.length > 0 && (
+                        <div className="dropdown-options">
+                          {filteredHhahOptions.map(option => (
+                            <div
+                              key={option}
+                              className="dropdown-option"
+                              onClick={() => handleSelectOption('hhah', option)}
+                            >
+                              {option}
                             </div>
-                          )}
-                        </>
+                          ))}
+                        </div>
                       )}
                     </div>
                     {errors.hhah && <span className="error-text">{errors.hhah}</span>}
@@ -1230,70 +1237,62 @@ const PatientFormComponent = ({ onPatientClick }) => {
 
                   <div className="form-group">
                     <label>Patient SOC</label>
-                    <input
-                      type="date"
-                      name="patientSOC"
-                      value={editingPatient ? editingPatient.patientSOC : formData.patientSOC}
-                      onChange={handleDateChange}
+                    <DatePicker
+                      selected={datePickerState.patientSOC}
+                      onChange={(date) => handleDatePickerChange(date, 'patientSOC')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
                     />
                   </div>
 
                   <div className="form-group">
                     <label>Patient Episode From</label>
-                    <input
-                      type="date"
-                      name="patientEpisodeFrom"
-                      value={editingPatient ? editingPatient.patientEpisodeFrom : formData.patientEpisodeFrom}
-                      onChange={handleDateChange}
+                    <DatePicker
+                      selected={datePickerState.patientEpisodeFrom}
+                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeFrom')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
                     />
                   </div>
 
                   <div className="form-group">
                     <label>Patient Episode To</label>
-                    <input
-                      type="date"
-                      name="patientEpisodeTo"
-                      value={editingPatient ? editingPatient.patientEpisodeTo : formData.patientEpisodeTo}
-                      onChange={handleDateChange}
+                    <DatePicker
+                      selected={datePickerState.patientEpisodeTo}
+                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeTo')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
                     />
                   </div>
 
                   <div className="form-group">
                     <label>Rendering Practitioner</label>
                     <div className="searchable-dropdown">
-                      {editingPatient ? (
-                        <div className="selected-option">
-                          {editingPatient.renderingPractitioner}
-                          <button
-                            type="button"
-                            className="clear-option"
-                            onClick={() => handleClearOption('renderingPractitioner')}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <input
-                            type="text"
-                            value={searchTerm.renderingPractitioner}
-                            onChange={(e) => handleSearchChange('renderingPractitioner', e.target.value)}
-                            placeholder="Search Practitioner..."
-                          />
-                          {searchTerm.renderingPractitioner && (
-                            <div className="dropdown-options">
-                              {filteredPractitionerOptions.map(option => (
-                                <div
-                                  key={option}
-                                  className="dropdown-option"
-                                  onClick={() => handleSelectOption('renderingPractitioner', option)}
-                                >
-                                  {option}
-                                </div>
-                              ))}
+                      <input
+                        type="text"
+                        value={editingPatient ? editingPatient.renderingPractitioner : formData.renderingPractitioner}
+                        onChange={(e) => handleSearchChange('renderingPractitioner', e.target.value)}
+                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, renderingPractitioner: e.target.value }))}
+                        placeholder="Search or type practitioner name..."
+                      />
+                      {searchTerm.renderingPractitioner && filteredPractitionerOptions.length > 0 && (
+                        <div className="dropdown-options">
+                          {filteredPractitionerOptions.map(option => (
+                            <div
+                              key={option}
+                              className="dropdown-option"
+                              onClick={() => handleSelectOption('renderingPractitioner', option)}
+                            >
+                              {option}
                             </div>
-                          )}
-                        </>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>

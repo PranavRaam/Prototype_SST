@@ -179,6 +179,23 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+/* Basic input fields that should maintain default styling */
+.form-group input[name="patientId"],
+.form-group input[name="patientLastName"],
+.form-group input[name="patientFirstName"],
+.form-group input[name="patientMiddleName"] {
+  transition: none;
+}
+
+.form-group input[name="patientId"]:focus,
+.form-group input[name="patientLastName"]:focus,
+.form-group input[name="patientFirstName"]:focus,
+.form-group input[name="patientMiddleName"]:focus {
+  border-color: #d1d5db;
+  box-shadow: none;
+  outline: 1px solid #d1d5db;
+}
+
 .form-group select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -490,4 +507,148 @@
 .form-group textarea {
   background-color: #ffffff;
   color: #111827;
+}
+
+.searchable-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.searchable-dropdown input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchable-dropdown input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+  margin-top: 4px;
+}
+
+.dropdown-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-option:hover {
+  background-color: #f3f4f6;
+}
+
+.selected-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.clear-option {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.clear-option:hover {
+  color: #ef4444;
+}
+
+/* Date Picker Styles */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.react-datepicker {
+  font-family: 'Inter', sans-serif;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.react-datepicker__header {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 8px 0;
+}
+
+.react-datepicker__day {
+  width: 2rem;
+  line-height: 2rem;
+  margin: 0.2rem;
+  border-radius: 0.375rem;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f3f4f6;
+}
+
+.react-datepicker__day--selected {
+  background-color: #6366f1;
+  color: white;
+}
+
+.react-datepicker__day--selected:hover {
+  background-color: #4f49c9;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #6366f1;
+  color: white;
+}
+
+.react-datepicker__day--today {
+  font-weight: bold;
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #6366f1;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  padding: 2px;
 }
