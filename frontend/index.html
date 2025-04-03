@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Healthcare Services Dashboard with US 20-Region Classification Map" />
     <title>Healthcare Services Dashboard</title>
+    <!-- Console suppression to prevent excessive warnings -->
+    <script src="/console-suppress.js"></script>
+    <!-- Map fix scripts to address the show_states error -->
+    <script>
+      // Immediate fix for map variables
+      window.show_states = true;
+      window.show_counties = true;
+      window.show_msas = true;
+      window.True = true;
+      window.False = false;
+      console.log("Critical map variables defined in index.html head");
+    </script>
+    <!-- Load syntax error fix first to catch any issues with other scripts -->
+    <script src="/syntax-error-fix.js"></script>
+    <script src="/direct-map-fix.js"></script>
+    <script src="/map-state-fix.js"></script>
+    <script src="/map-inject.js"></script>
+    <script src="/iframe-patch.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -44,5 +62,8 @@
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Add map check script last to verify everything is working -->
+    <script src="/map-check.js"></script>
   </body>
 </html>

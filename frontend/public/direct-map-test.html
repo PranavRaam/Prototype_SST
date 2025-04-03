@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct Map Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    
+    #map-container {
+      width: 100%;
+      height: 800px;
+      position: relative;
+      background-color: #f5f5f5;
+      border: 1px solid #ccc;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #3498db;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <script>
+    // Pre-define variables
+    window.show_states = true;
+    window.show_counties = true;
+    window.show_msas = true;
+    window.True = true;
+    window.False = false;
+    console.log("Variables predefined in head");
+  </script>
+</head>
+<body>
+  <h1>Direct Map Test</h1>
+  <div id="map-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Loading map...</span>
+    </div>
+  </div>
+
+  <script>
+    // Simple function to load the map directly
+    async function loadMap() {
+      try {
+        const container = document.getElementById('map-container');
+        
+        // Fetch the map HTML from the API
+        const timestamp = Date.now();
+        const response = await fetch(`/api/map?t=${timestamp}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load map: ${response.status}`);
+        }
+        
+        // Get HTML content
+        const html = await response.text();
+        
+        // Extract body content
+        const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        const bodyContent = bodyMatch ? bodyMatch[1] : html;
+        
+        // Clear the container and load the content
+        container.innerHTML = '';
+        
+        // Add pre-script to ensure variables
+        const preScript = document.createElement('script');
+        preScript.textContent = `
+          window.show_states = true;
+          window.show_counties = true;
+          window.show_msas = true;
+          window.True = true;
+          window.False = false;
+          console.log("Variables predefined by load script");
+        `;
+        container.appendChild(preScript);
+        
+        // Create content div
+        const contentDiv = document.createElement('div');
+        contentDiv.style.width = '100%';
+        contentDiv.style.height = '100%';
+        contentDiv.innerHTML = bodyContent;
+        container.appendChild(contentDiv);
+        
+        // Execute scripts
+        const scripts = contentDiv.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          
+          // Copy attributes
+          Array.from(oldScript.attributes).forEach(attr => {
+            newScript.setAttribute(attr.name, attr.value);
+          });
+          
+          // Add content with error handling
+          const content = oldScript.innerHTML || oldScript.textContent;
+          newScript.textContent = `
+            try {
+              ${content}
+            } catch(e) {
+              console.warn("Script error:", e);
+            }
+          `;
+          
+          // Replace original script
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+        
+        // Add post-script to ensure everything renders properly
+        const postScript = document.createElement('script');
+        postScript.textContent = `
+          setTimeout(function() {
+            // Ensure variables are defined
+            window.show_states = true;
+            window.show_counties = true;
+            window.show_msas = true;
+            window.True = true;
+            window.False = false;
+            
+            // Force layer controls to show
+            const controls = document.querySelectorAll('.leaflet-control-layers');
+            controls.forEach(function(control) {
+              control.classList.add('leaflet-control-layers-expanded');
+            });
+            
+            // Force resize
+            if (window.dispatchEvent) {
+              window.dispatchEvent(new Event('resize'));
+            }
+            
+            // Invalidate map size if Leaflet is loaded
+            if (typeof L !== 'undefined') {
+              for (var key in window) {
+                if (window[key] && typeof window[key] === 'object' && window[key]._leaflet_id) {
+                  try {
+                    window[key].invalidateSize(true);
+                    console.log("Invalidated map size:", key);
+                  } catch(e) {}
+                }
+              }
+            }
+            
+            console.log("Post-loading fixes applied");
+          }, 1000);
+        `;
+        container.appendChild(postScript);
+        
+        console.log("Map loaded successfully");
+      } catch (error) {
+        console.error("Error loading map:", error);
+        document.getElementById('map-container').innerHTML = `
+          <div style="padding: 20px; text-align: center; color: red;">
+            <h2>Error Loading Map</h2>
+            <p>${error.message}</p>
+            <button onclick="location.reload()">Retry</button>
+          </div>
+        `;
+      }
+    }
+    
+    // Load the map when page loads
+    window.addEventListener('load', loadMap);
+  </script>
+</body>
+</html> 

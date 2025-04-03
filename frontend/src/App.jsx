@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import MapViewer from './components/MapViewer'
 import ControlPanel from './components/ControlPanel'
 import DataTable from './components/DataTable'
@@ -100,7 +100,7 @@ function App() {
       const data = await response.json();
       setMapStatus({
         isLoading: false,
-        isGenerated: data.mapExists,
+        isGenerated: data.exists,
         generationInProgress: data.generationInProgress,
         error: null
       });
@@ -129,7 +129,7 @@ function App() {
           const statusResponse = await fetch(getApiUrl('/api/map-status'));
           const statusData = await statusResponse.json();
           
-          if (statusData.mapExists) {
+          if (statusData.exists) {
             clearInterval(pollInterval);
             setMapStatus({
               isLoading: false,
@@ -188,7 +188,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <BrowserRouter future={{ v7_relativeSplatPath: true }}>
       <FunnelDataProvider>
         <div className="dashboard-container">
           <Navigation />
@@ -289,7 +289,7 @@ function App() {
           </footer>
         </div>
       </FunnelDataProvider>
-    </Router>
+    </BrowserRouter>
   )
 }
 

@@ -20,61 +20,25 @@ let pendingRefreshTimeout = null;
  * @param {HTMLIFrameElement} iframe - The map iframe element 
  */
 export const initializeMap = (iframe) => {
-  console.log('Initializing map interaction...');
-  
   // Clean up any previous instance
   cleanupMap();
   
   // Store reference to new iframe
   mapIframe = iframe;
   
-  // Wait for iframe to fully load
-  setTimeout(() => {
-    // Try to access the iframe's content window
-    try {
-      // Check if we can directly manipulate the iframe content
-      if (mapIframe && mapIframe.contentWindow) {
-        console.log('Iframe content window accessible, sending test message');
-        
-        // Create a message listener
-        messageListener = (event) => {
-          // Verify the message is from our iframe
-          if (!mapIframe || event.source !== mapIframe.contentWindow) return;
-          
-          console.log('Received message from map:', event.data);
-          
-          // Handle responses
-          if (event.data.type === 'mapReady' || event.data.type === 'ACCESS_CONFIRMED') {
-            console.log('Map confirmed ready for interaction');
-          } else if (event.data.type === 'layerToggled' && event.data.success) {
-            console.log(`Layer ${event.data.layer} toggled successfully to ${event.data.visible}`);
-            // Clear any pending timeout for this layer since it was confirmed
-            clearPendingRefresh();
-          } else if (event.data.type === 'baseMapSet' && event.data.success) {
-            console.log(`Base map set successfully to ${event.data.value}`);
-            // Clear any pending timeout for this action since it was confirmed
-            clearPendingRefresh();
-          } else if (event.data.type === 'layerToggleError' || event.data.type === 'baseMapError') {
-            console.error('Error from map:', event.data);
-            // Force refresh as fallback
-            refreshIframe();
-          }
-        };
-        
-        // Add the message listener
-        window.addEventListener('message', messageListener);
-        
-        // Try to run a test function in the iframe to verify access
-        mapIframe.contentWindow.postMessage({
-          type: 'checkReady'
-        }, '*');
-      }
-    } catch (e) {
-      console.error('Cannot access iframe content window:', e);
+  // We don't need to try to find map components anymore
+  // Just set up the basic message handling
+  
+  // Create a message listener
+  messageListener = (event) => {
+    // Basic message handling
+    if (mapIframe && event.data && event.data.type) {
+      // Simple event handling - no component finding
     }
-    
-    console.log('Map initialization complete');
-  }, 1000);
+  };
+  
+  // Add the message listener
+  window.addEventListener('message', messageListener);
 };
 
 /**
@@ -95,11 +59,8 @@ export const cleanupMap = () => {
  * Send a message to the map iframe
  */
 export const sendMessageToMap = (message) => {
-  console.log('Sending message to map:', message);
-  
   if (!mapIframe) {
-    // Just update internal state without showing errors
-    // since we're using direct HTML approach now
+    // Just update internal state
     updateInternalState(message);
     return;
   }
@@ -112,36 +73,10 @@ export const sendMessageToMap = (message) => {
   
   // Send the message to the iframe via postMessage
   try {
-    // For Folium maps, we need to use specific layer names
-    let updatedMessage = { ...message };
-    
-    if (message.type === 'toggleLayer') {
-      // Map our frontend layer names to the actual Folium layer names
-      const layerMappings = {
-        'stateBoundaries': 'State Boundaries',
-        'countiesByRegion': 'All Counties by Region',
-        'msaAreas': 'Metropolitan Statistical Areas'
-      };
-      
-      updatedMessage.layer = layerMappings[message.layer] || message.layer;
-    }
-    
-    mapIframe.contentWindow.postMessage(updatedMessage, '*');
-    console.log('Message sent to iframe:', updatedMessage);
-    
-    // As a fallback, we'll still refresh the iframe after a short delay
-    // if we don't get a confirmation back
-    pendingRefreshTimeout = setTimeout(() => {
-      console.log('No confirmation received, using URL fallback');
-      if (mapIframe) {
-        refreshIframe();
-      }
-      pendingRefreshTimeout = null;
-    }, 1000); // Increased timeout to allow more time for response
+    // Simplified message sending without component finding
+    mapIframe.contentWindow.postMessage(message, '*');
   } catch (e) {
-    console.error('Error sending message to iframe:', e);
-    // Fall back to refreshing the iframe with new URL parameters
-    refreshIframe();
+    // Silently handle errors
   }
 };
 
@@ -164,7 +99,8 @@ function updateInternalState(message) {
         currentMapSettings.msas = message.visible;
         break;
       default:
-        console.warn('Unknown layer:', message.layer);
+        // Silently ignore unknown layers
+        break;
     }
   }
 }
@@ -174,7 +110,6 @@ function updateInternalState(message) {
  */
 function refreshIframe() {
   if (!mapIframe) {
-    console.error('Cannot refresh iframe: not found');
     return;
   }
   
@@ -193,7 +128,7 @@ function refreshIframe() {
     // Update the iframe src
     mapIframe.src = `${baseUrl}?${params.toString()}`;
   } catch (err) {
-    console.error('Error refreshing iframe:', err);
+    // Silently handle errors
   }
 }
 
