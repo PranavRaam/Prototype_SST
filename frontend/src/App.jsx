@@ -8,6 +8,9 @@ import StatisticalAreaDetailView from './components/StatisticalAreaDetailView'
 import PgServiceView from './components/PgServiceView'
 import HHAHServiceView from './components/HHAHServiceView'
 import PGView from './components/sa_view_components/PGView'
+import PhysicianView from './components/sa_view_components/PhysicianView'
+import NPPView from './components/sa_view_components/NPPView'
+import OfficeStaffView from './components/sa_view_components/OfficeStaffView'
 import { divisionalGroupToRegions, divisionalGroupToStatisticalAreas } from './utils/regionMapping'
 import { getApiUrl } from './config'
 import { FunnelDataProvider } from './components/sa_view_components/FunnelDataContext'
@@ -275,6 +278,9 @@ function App() {
               <Route path="/pg-services" element={<PgServiceView />} />
               <Route path="/hhah-services" element={<HHAHServiceView />} />
               <Route path="/pg-view/:pgName" element={<PGView />} />
+              <Route path="/physician/:id" element={<PhysicianView />} />
+              <Route path="/npp/:nppId" element={<NPPView />} />
+              <Route path="/office-staff/:staffId" element={<OfficeStaffView />} />
             </Routes>
           </div>
           

@@ -15,6 +15,9 @@
   padding: 1.5rem;
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
 .pg-title {
@@ -54,6 +57,21 @@
 .pg-subtitle {
   color: #64748b;
   margin-top: 0.5rem;
+}
+
+.pg-subtitle a {
+  color: #4F46E5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pg-subtitle a:hover {
+  text-decoration: underline;
+}
+
+.back-button .physician-context {
+  color: #4F46E5;
+  font-weight: 500;
 }
 
 .pg-actions {

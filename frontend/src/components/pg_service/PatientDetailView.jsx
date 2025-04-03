@@ -566,6 +566,24 @@ const PatientDetailView = ({ patient, onBack }) => {
     }
   ]);
   
+  // Add cpoDocs state before it's used in other functions
+  const [cpoDocs, setCpoDocs] = useState([
+    {
+      id: "CPO_001",
+      fileName: "CPO_Document_001.pdf",
+      type: "CPO Assessment",
+      creationDate: "2023-04-05",
+      size: "1.2 MB"
+    },
+    {
+      id: "CPO_002",
+      fileName: "CPO_Document_002.pdf",
+      type: "CPO Evaluation",
+      creationDate: "2023-05-10",
+      size: "0.9 MB"
+    }
+  ]);
+
   // Function to filter documents
   const filterDocuments = (docs) => {
     return docs.filter(doc => {
@@ -653,7 +671,7 @@ const PatientDetailView = ({ patient, onBack }) => {
     if (files.length > 0) {
       uploadFiles(files);
     }
-  }, []);
+  }, [uploadFiles]);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
@@ -662,7 +680,7 @@ const PatientDetailView = ({ patient, onBack }) => {
     if (files.length > 0) {
       uploadFiles(files);
     }
-  }, []);
+  }, [uploadFiles]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -697,7 +715,7 @@ const PatientDetailView = ({ patient, onBack }) => {
       });
       return updatedDocs;
     });
-  }, []);
+  }, [showNotification]);
 
   const moveToSigned = useCallback((docId) => {
     const docToMove = newPreparedDocs.find(doc => doc.id === docId);
@@ -732,10 +750,10 @@ const PatientDetailView = ({ patient, onBack }) => {
         `Document ${docId} has been moved to signed documents`
       );
     }
-  }, [newPreparedDocs, timelineData]);
+  }, [newPreparedDocs, timelineData, showNotification]);
   
   // Function to upload files
-  const uploadFiles = (files) => {
+  const uploadFiles = useCallback((files) => {
     setIsUploading(true);
     
     // Simulate upload delay
@@ -774,17 +792,17 @@ const PatientDetailView = ({ patient, onBack }) => {
         fileInputRef.current.value = '';
       }
     }, 1500);
-  };
+  }, [patientInfo, timelineData, showNotification]);
   
   // Function to show notification
-  const showNotification = (type, title, message) => {
+  const showNotification = useCallback((type, title, message) => {
     setNotification({ type, title, message });
-  };
+  }, []);
   
   // Function to close notification
-  const closeNotification = () => {
+  const closeNotification = useCallback(() => {
     setNotification(null);
-  };
+  }, []);
   
   // Calculate CPO minutes
   const calculateCPOMinutes = () => {
@@ -1063,7 +1081,7 @@ const PatientDetailView = ({ patient, onBack }) => {
     setSelectedDocument(null);
   };
 
-  const markAsPrepared = (docId) => {
+  const markAsPrepared = useCallback((docId) => {
     setNewPreparedDocs(prevDocs => {
       const updatedDocs = prevDocs.map(doc => {
         if (doc.id === docId) {
@@ -1078,9 +1096,9 @@ const PatientDetailView = ({ patient, onBack }) => {
       });
       return updatedDocs;
     });
-  };
+  }, [showNotification]);
 
-  const markAsUnprepared = (docId) => {
+  const markAsUnprepared = useCallback((docId) => {
     setNewPreparedDocs(prevDocs => {
       const updatedDocs = prevDocs.map(doc => {
         if (doc.id === docId) {
@@ -1095,7 +1113,7 @@ const PatientDetailView = ({ patient, onBack }) => {
       });
       return updatedDocs;
     });
-  };
+  }, [showNotification]);
 
   // Add these new functions after the existing markAsPrepared function
   
@@ -1399,63 +1417,56 @@ Total documents: ${documents.length}
   const generateMockDocumentContent = (doc) => {
     let content = '';
     
-    // Add document header
-    content += `Document ID: ${doc.id}\n`;
-    content += `Document Type: ${doc.type || 'Unspecified'}\n`;
-    content += `Status: ${doc.status}\n`;
-    content += `Date: ${formatDate(doc.signedDate || doc.receivedDate)}\n\n`;
-    
-    // Add mock content based on document type
-    if (doc.type && doc.type.toLowerCase().includes('evaluation')) {
-      content += `PATIENT EVALUATION REPORT\n\n`;
-      content += `Patient Name: ${patientInfo.name}\n`;
-      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
-      content += `Evaluation Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
+    if (doc.type === 'Evaluation' || doc.type === 'Re-evaluation') {
+      content = `PATIENT EVALUATION REPORT\n`;
+      content += `=============================================\n`;
+      content += `Patient: ${patientInfo.name}\n`;
+      content += `DOB: ${formatDate(patientInfo.dob)}\n`;
+      content += `Evaluation Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n`;
+      content += `Document ID: ${doc.id}\n\n`;
+      
+      content += `SUBJECTIVE:\n`;
+      content += `Patient presents with complaints of generalized pain and discomfort.\n`;
+      content += `History shows ${patientInfo.primaryDiagnosis}.\n\n`;
+      
+      content += `OBJECTIVE:\n`;
+      content += `- Blood Pressure: 130/85 mmHg\n`;
+      content += `- Heart Rate: 72 bpm\n`;
+      content += `- Respiratory Rate: 16 breaths/min\n`;
+      content += `- Temperature: 98.6°F\n\n`;
+      
       content += `ASSESSMENT:\n`;
-      content += `Patient presents with ${patientInfo.primaryDiagnosis || 'primary diagnosis not specified'}. `;
-      content += `Secondary conditions include ${patientInfo.secondaryDiagnosis || 'none noted'}.\n\n`;
-      content += `RECOMMENDATIONS:\n`;
+      content += `Patient shows signs consistent with ${patientInfo.primaryDiagnosis}.\n`;
+      content += `Secondary concerns include ${patientInfo.secondaryDiagnosis}.\n\n`;
+      
+      content += `PLAN:\n`;
       content += `1. Continue current medication regimen\n`;
-      content += `2. Schedule follow-up in 30 days\n`;
-      content += `3. Begin physical therapy 2x weekly\n\n`;
+      content += `2. Physical therapy twice weekly\n`;
+      content += `3. Follow-up in 2 weeks\n\n`;
       
       if (doc.status === 'Signed') {
         content += `SIGNED BY: ${doc.signedBy || 'Provider'}\n`;
         content += `DATE: ${formatDate(doc.signedDate)}\n`;
       }
-    } else if (doc.type && doc.type.toLowerCase().includes('order')) {
-      content += `PHYSICIAN ORDER\n\n`;
-      content += `Patient Name: ${patientInfo.name}\n`;
-      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
-      content += `Order Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
-      content += `ORDERS:\n`;
-      content += `1. Home health aide services 3x weekly\n`;
-      content += `2. Skilled nursing visit 1x weekly for wound care\n`;
-      content += `3. Occupational therapy evaluation and treatment\n\n`;
-      content += `Diagnosis: ${patientInfo.primaryDiagnosis || 'Not specified'}\n\n`;
+    } else if (doc.type === 'Position Order') {
+      content = `PHYSICIAN ORDER\n`;
+      content += `=============================================\n`;
+      content += `Patient: ${patientInfo.name}\n`;
+      content += `DOB: ${formatDate(patientInfo.dob)}\n`;
+      content += `Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n`;
+      content += `Document ID: ${doc.id}\n\n`;
+      
+      content += `The following services are ordered for the above patient:\n\n`;
+      content += `1. Physical Therapy: 2 times per week for 6 weeks\n`;
+      content += `2. Occupational Therapy: 1 time per week for 4 weeks\n`;
+      content += `3. Home Health Aide: 3 times per week for 6 weeks\n\n`;
+      
+      content += `DIAGNOSIS: ${patientInfo.primaryDiagnosis}\n\n`;
+      content += `ADDITIONAL INSTRUCTIONS:\n`;
+      content += `Patient to be monitored for pain levels and progress.\n\n`;
       
       if (doc.status === 'Signed') {
         content += `SIGNED BY: ${doc.signedBy || 'Provider'}\n`;
-        content += `DATE: ${formatDate(doc.signedDate)}\n`;
-      }
-    } else if (doc.fileName && doc.fileName.toLowerCase().includes('lab')) {
-      content += `LABORATORY RESULTS\n\n`;
-      content += `Patient Name: ${patientInfo.name}\n`;
-      content += `Date of Birth: ${formatDate(patientInfo.dob)}\n`;
-      content += `Collection Date: ${formatDate(doc.receivedDate || doc.signedDate)}\n\n`;
-      content += `RESULTS:\n`;
-      content += `CBC:\n`;
-      content += `- WBC: 7.2 (normal range: 4.5-11.0)\n`;
-      content += `- RBC: 4.8 (normal range: 4.5-5.9)\n`;
-      content += `- Hemoglobin: 14.2 (normal range: 13.5-17.5)\n`;
-      content += `- Hematocrit: 42% (normal range: 41-50%)\n\n`;
-      content += `Chemistry:\n`;
-      content += `- Glucose: 98 (normal range: 70-99)\n`;
-      content += `- BUN: 15 (normal range: 7-20)\n`;
-      content += `- Creatinine: 0.9 (normal range: 0.6-1.2)\n\n`;
-      
-      if (doc.status === 'Signed') {
-        content += `REVIEWED BY: ${doc.signedBy || 'Provider'}\n`;
         content += `DATE: ${formatDate(doc.signedDate)}\n`;
       }
     } else {
@@ -1475,22 +1486,23 @@ Total documents: ${documents.length}
   };
 
   // Add after calculateCPOMinutes function
-  const [cpoDocs, setCpoDocs] = useState([
-    {
-      id: "CPO_001",
-      fileName: "CPO_Document_001.pdf",
-      type: "CPO Assessment",
-      creationDate: "2023-04-05",
-      size: "1.2 MB"
-    },
-    {
-      id: "CPO_002",
-      fileName: "CPO_Document_002.pdf",
-      type: "CPO Evaluation",
-      creationDate: "2023-05-10",
-      size: "0.9 MB"
-    }
-  ]);
+  // Remove this duplicate state declaration
+  // const [cpoDocs, setCpoDocs] = useState([
+  //   {
+  //     id: "CPO_001",
+  //     fileName: "CPO_Document_001.pdf",
+  //     type: "CPO Assessment",
+  //     creationDate: "2023-04-05",
+  //     size: "1.2 MB"
+  //   },
+  //   {
+  //     id: "CPO_002",
+  //     fileName: "CPO_Document_002.pdf",
+  //     type: "CPO Evaluation",
+  //     creationDate: "2023-05-10",
+  //     size: "0.9 MB"
+  //   }
+  // ]);
 
   // New state for episodes, cpo data and document handling
   const [episodes, setEpisodes] = useState(generateEpisodeData());
@@ -1649,29 +1661,33 @@ Total documents: ${documents.length}
     showNotification('success', 'Document Added', `${documentType} document has been added to Episode ${episodeId}.`);
   };
   
-  // Add function to move document from newPrepared to signed
-  const handleSignDocument = (docId) => {
-    const docIndex = newPreparedDocs.findIndex(doc => doc.id === docId);
-    if (docIndex === -1) return;
+  const handleSignDocument = useCallback((docId) => {
+    // First check if the document exists and is prepared
+    const docToSign = newPreparedDocs.find(doc => doc.id === docId);
     
-    const doc = newPreparedDocs[docIndex];
-    const today = new Date().toISOString().split('T')[0];
+    if (!docToSign) {
+      showNotification('error', 'Sign Failed', 'Document not found');
+      return;
+    }
     
-    // Add to signed docs
-    const signedDoc = {
-      ...doc,
-      signedDate: today,
-      signedBy: 'Current User'
-    };
+    if (docToSign.status !== 'Prepared') {
+      showNotification('warning', 'Not Ready', 'Document must be marked as Prepared before signing');
+      return;
+    }
     
-    setSignedDocs(prev => [...prev, signedDoc]);
+    if (!docToSign.type) {
+      showNotification('warning', 'Type Required', 'Please select a document type before signing');
+      return;
+    }
     
-    // Remove from new/prepared docs
-    setNewPreparedDocs(prev => prev.filter(d => d.id !== docId));
+    // Show signing in progress notification
+    showNotification('info', 'Signing Document', 'Processing signature...');
     
-    // Update notification
-    showNotification('success', 'Document Signed', `${doc.type || 'Document'} has been signed successfully.`);
-  };
+    // Simulate a delay for document signing
+    setTimeout(() => {
+      moveToSigned(docId);
+    }, 1500);
+  }, [newPreparedDocs, showNotification, moveToSigned]);
   
   // Add function to update document type
   const handleUpdateDocumentType = (docId, isNew, newType) => {
@@ -1746,50 +1762,42 @@ Total documents: ${documents.length}
   };
 
   // Add this function to handle document download
-  const handleDownloadDocument = (doc) => {
+  const handleDownloadDocument = useCallback((doc) => {
     showNotification('info', 'Downloading Document', `Preparing ${doc.fileName} for download...`);
     
+    // Simulate file download delay
     setTimeout(() => {
+      // In a real app, this would use a Blob URL or a direct link to the document
+      // Create a mock download process
       try {
-        // Create document content
+        // Create dummy content based on document type
         const content = generateMockDocumentContent(doc);
         
-        // Determine file type and create appropriate blob
-        let mimeType = 'text/plain';
-        let fileContent = content;
-        
-        // Check file extension to determine type
-        const fileExt = doc.fileName.split('.').pop().toLowerCase();
-        if (fileExt === 'pdf') {
-          mimeType = 'application/pdf';
-          fileContent = createSimplePDF(content);
-        } else if (fileExt === 'docx') {
-          mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-          fileContent = createSimpleDocx(content);
-        }
-        
-        // Create blob and download
-        const blob = new Blob([fileContent], { type: mimeType });
+        // Create a Blob with the content
+        const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = doc.fileName;
-        document.body.appendChild(link);
-        link.click();
+        // Create a temporary anchor element for download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.fileName || `document-${doc.id}.txt`;
+        document.body.appendChild(a);
+        
+        // Trigger click to download
+        a.click();
         
         // Clean up
-        setTimeout(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          showNotification('success', 'Download Complete', `${doc.fileName} has been downloaded successfully!`);
-        }, 500);
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show success notification
+        showNotification('success', 'Download Complete', `${doc.fileName} downloaded successfully`);
       } catch (error) {
-        console.error("Error downloading document:", error);
-        showNotification('error', 'Download Failed', 'Failed to download document. Please try again.');
+        console.error('Error downloading document:', error);
+        showNotification('error', 'Download Failed', 'There was an error preparing your document for download');
       }
-    }, 1000);
-  };
+    }, 1500);
+  }, [showNotification, generateMockDocumentContent, patientInfo]);
 
   // Add this function to handle signed document uploads
   const handleSignedDocumentUpload = (e) => {
@@ -2438,8 +2446,8 @@ Total documents: ${documents.length}
                   <FaPlus className="action-icon" />
                   Add Episode
                 </button>
-              </div>
-              
+                    </div>
+                    
               <div className="episode-timeline">
                 {filteredEpisodes.length > 0 ? (
                   filteredEpisodes.map((episode) => (
@@ -2452,20 +2460,20 @@ Total documents: ${documents.length}
                         <div className="episode-title">
                           <h5>Episode {episode.id}</h5>
                           <span className={`episode-status ${episode.status}`}>{episode.status}</span>
-                        </div>
+                      </div>
                         <div className="episode-expand-icon">
                           {expandedEpisode === episode.id ? 
                             <FaChevronDown className="expand-icon" /> : 
                             <FaChevronRight className="expand-icon" />
                           }
-                        </div>
                       </div>
-                      
+                    </div>
+                    
                       <div className="episode-date">
                         <div className="episode-marker start">
                           <FaCircle className="marker-icon" />
                           <div className="marker-label">Start</div>
-                        </div>
+                      </div>
                         <div className="episode-line"></div>
                         <div className="episode-marker soc">
                           <FaCircle className="marker-icon soc" />
@@ -2475,15 +2483,15 @@ Total documents: ${documents.length}
                         <div className="episode-marker end">
                           <FaCircle className="marker-icon" />
                           <div className="marker-label">End</div>
-                        </div>
                       </div>
-                      
+                    </div>
+                    
                       <div className="episode-details">
                         <div className="episode-date-label">{formatDate(episode.startDate)}</div>
                         <div className="episode-date-label">{formatDate(episode.socDate)}</div>
                         <div className="episode-date-label">{formatDate(episode.endDate)}</div>
-                      </div>
-                      
+                    </div>
+                    
                       {/* Additional episode details visible when expanded */}
                       {expandedEpisode === episode.id && (
                         <div className="episode-expanded-info">
@@ -2491,27 +2499,27 @@ Total documents: ${documents.length}
                             <div className="episode-info-item">
                               <label>Duration:</label>
                               <span>{calculateDuration(episode.startDate, episode.endDate)} days</span>
-                            </div>
+                      </div>
                             <div className="episode-info-item">
                               <label>Primary Diagnosis:</label>
                               <span>{episode.diagnosis}</span>
-                            </div>
+                      </div>
                             <div className="episode-info-item">
                               <label>Provider:</label>
                               <span>{episode.provider}</span>
-                            </div>
+                    </div>
                             {episode.notes && (
                               <div className="episode-info-item full-width">
                                 <label>Notes:</label>
                                 <span>{episode.notes}</span>
-                              </div>
+                  </div>
                             )}
                             <div className="episode-info-item">
                               <label>Documents:</label>
                               <span>{episode.documents ? episode.documents.length : 0} document(s)</span>
-                            </div>
-                          </div>
-                          
+                  </div>
+                </div>
+                
                           <div className="episode-actions">
                             <button 
                               className="episode-action-button edit"
@@ -2522,7 +2530,7 @@ Total documents: ${documents.length}
                             >
                               <FaEdit className="action-icon" />
                               Edit Episode
-                            </button>
+                  </button>
                             <button 
                               className="episode-action-button"
                               onClick={(e) => {
@@ -2545,11 +2553,11 @@ Total documents: ${documents.length}
                             >
                               <FaPlus className="action-icon" />
                               Add Document
-                            </button>
-                          </div>
-                        </div>
+                  </button>
+                </div>
+              </div>
                       )}
-                    </div>
+                          </div>
                   ))
                 ) : (
                   <div className="no-episodes">
@@ -2560,10 +2568,10 @@ Total documents: ${documents.length}
                     >
                       Reset Filters
                     </button>
-                  </div>
+                            </div>
                 )}
-              </div>
-            </div>
+                              </div>
+                              </div>
             
             {/* PG Services Timeline Section with editable CPO minutes */}
             <div className="timeline-section">
@@ -3158,70 +3166,70 @@ Total documents: ${documents.length}
                         accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                       />
                     </div>
-                    <table className="document-table">
-                      <thead>
-                        <tr>
-                          <th>Document Type</th>
-                          <th>Document ID</th>
-                          <th>File Name</th>
-                          <th>Date Signed</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredSignedDocs.map(doc => (
-                          <tr key={doc.id} className="status-signed">
-                            <td>
-                              <div className="cell-with-icon">
-                                <FaFileAlt className="cell-icon" />
-                                {doc.type}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="cell-with-icon">
-                                <DocIdInput docId={doc.id} onUpdate={updateDocId} />
-                              </div>
-                            </td>
-                            <td>
-                              <div className="cell-with-icon">
-                                {getFileIconByName(doc.fileName)}
-                                <span 
-                                  className="file-name" 
-                                  onClick={() => openDocumentViewer(doc)} 
-                                  style={{ cursor: 'pointer' }}
-                                >
-                                  {doc.fileName || 'Document File'}
-                                </span>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="cell-with-icon">
-                                <FaCalendar className="cell-icon" />
-                                {formatDate(doc.signedDate)}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="actions-cell">
-                                <button 
-                                  className="action-icon-button"
-                                  title="View Document"
-                                  onClick={() => openDocumentViewer(doc)}
-                                >
-                                  <FaEye />
-                                </button>
-                                <button 
-                                  className="action-icon-button" 
-                                  title="Download Document"
+                  <table className="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document Type</th>
+                        <th>Document ID</th>
+                        <th>File Name</th>
+                        <th>Date Signed</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredSignedDocs.map(doc => (
+                        <tr key={doc.id} className="status-signed">
+                          <td>
+                            <div className="cell-with-icon">
+                              <FaFileAlt className="cell-icon" />
+                              {doc.type}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="cell-with-icon">
+                              <DocIdInput docId={doc.id} onUpdate={updateDocId} />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="cell-with-icon">
+                              {getFileIconByName(doc.fileName)}
+                              <span 
+                                className="file-name" 
+                                onClick={() => openDocumentViewer(doc)} 
+                                style={{ cursor: 'pointer' }}
+                              >
+                                {doc.fileName || 'Document File'}
+                              </span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="cell-with-icon">
+                              <FaCalendar className="cell-icon" />
+                              {formatDate(doc.signedDate)}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="actions-cell">
+                              <button 
+                                className="action-icon-button"
+                                title="View Document"
+                                onClick={() => openDocumentViewer(doc)}
+                              >
+                                <FaEye />
+                              </button>
+                              <button 
+                                className="action-icon-button" 
+                                title="Download Document"
                                   onClick={() => handleDownloadDocument(doc)}
-                                >
-                                  <FaDownload />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                              >
+                                <FaDownload />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                   </>
                 )
               )}
@@ -3346,34 +3354,34 @@ Total documents: ${documents.length}
                     <tbody>
                       {cpoDocs.map((doc, index) => (
                         <tr key={doc.id}>
-                          <td>
-                            <div className="document-name">
-                              <FaFilePdf className="file-icon pdf" />
+                        <td>
+                          <div className="document-name">
+                            <FaFilePdf className="file-icon pdf" />
                               <span>{doc.fileName}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="date-display">
-                              <FaCalendar className="date-icon" />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="date-display">
+                            <FaCalendar className="date-icon" />
                               <span>{formatDate(doc.creationDate)}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="action-buttons">
-                              <button
-                                className="action-icon-button"
+                          </div>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="action-icon-button"
                                 onClick={() => openDocumentViewer(doc)}
-                                title="View Document"
-                              >
-                                <FaEye />
-                              </button>
-                              <button 
-                                className="action-icon-button" 
+                              title="View Document"
+                            >
+                              <FaEye />
+                            </button>
+                            <button
+                              className="action-icon-button"
                                 title="Download Document"
                                 onClick={() => handleDownloadDocument(doc)}
-                              >
-                                <FaDownload />
-                              </button>
+                            >
+                              <FaDownload />
+                            </button>
                               <button 
                                 className="action-icon-button" 
                                 title="Edit Document"
@@ -3383,11 +3391,11 @@ Total documents: ${documents.length}
                                   setViewerOpen(true);
                                 }}
                               >
-                                <FaEdit />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                              <FaEdit />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
                       ))}
                     </tbody>
                   </table>
@@ -3684,7 +3692,7 @@ Total documents: ${documents.length}
               <button className="modal-close" onClick={() => setShowEpisodeModal(false)}>
                 <FaTimes />
               </button>
-            </div>
+    </div>
             <div className="modal-body">
               <div className="form-grid">
                 <div className="form-group">

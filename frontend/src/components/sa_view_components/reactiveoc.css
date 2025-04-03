@@ -60,6 +60,12 @@
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+.ro-filters {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
 .ro-status-select {
   padding: 0.75rem 2rem 0.75rem 1rem;
   border: 1px solid #e2e8f0;
@@ -69,6 +75,7 @@
   color: #1e293b;
   cursor: pointer;
   min-width: 150px;
+  margin-right: 15px;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -463,9 +470,4 @@
 .status-badge.analysed {
   background-color: #fff3cd;
   color: #664d03;
-}
-
-.status-badge.catalysed {
-  background-color: #d1e7dd;
-  color: #0f5132;
 } 

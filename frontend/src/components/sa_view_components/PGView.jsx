@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import '../sa_view_css/PGView.css';
 import './StaffList.css';
-import './reactiveoc.css';
+import './proactiveoutcomes.css';
 import './InteractionLog.css';
 import './ValueCommunication.css';
 import StaffList from './StaffList';
@@ -12,6 +12,7 @@ import InteractionLog from './InteractionLog';
 const PGView = () => {
   const navigate = useNavigate();
   const { pgName } = useParams();
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedDateRange, setSelectedDateRange] = useState({ start: '', end: '' });
   const [selectedPeriod, setSelectedPeriod] = useState('all');
@@ -19,6 +20,30 @@ const PGView = () => {
   const [selectedMonth, setSelectedMonth] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Add state for tracking if we're viewing from physician context
+  const [fromPhysician, setFromPhysician] = useState(false);
+  const [physicianContext, setPhysicianContext] = useState(null);
+  
+  // Add useEffect to check if we're coming from a physician view
+  useEffect(() => {
+    if (location.state?.fromPhysician) {
+      setFromPhysician(true);
+      setPhysicianContext({
+        id: location.state.physicianId,
+        name: location.state.physicianName
+      });
+    }
+  }, [location]);
+
+  // Add function to handle back navigation
+  const handleBackNavigation = () => {
+    if (fromPhysician && physicianContext) {
+      navigate(`/physician/${physicianContext.id}`);
+    } else {
+      navigate('/');
+    }
+  };
   
   // Add new state for form inputs
   const [newPhysician, setNewPhysician] = useState({
@@ -121,9 +146,11 @@ const PGView = () => {
       { id: 3, title: "Patient Engagement", progress: 45, status: "Needs Attention" }
     ],
     reactiveOutcomes: [
-      { id: 1, title: "Emergency Response Time", status: "Improved", change: "+15%" },
-      { id: 2, title: "Patient Satisfaction", status: "Stable", change: "0%" },
-      { id: 3, title: "Treatment Adherence", status: "Declined", change: "-5%" }
+      { id: 1, title: "Emergency Response Time", status: "Open", change: "+15%" },
+      { id: 2, title: "Patient Satisfaction", status: "Analysing", change: "0%" },
+      { id: 3, title: "Treatment Adherence", status: "Analysed", change: "-5%" },
+      { id: 4, title: "Medication Compliance", status: "Catalysed", change: "+8%" },
+      { id: 5, title: "Patient Followup", status: "Open", change: "-3%" }
     ],
     claims: [
       { id: 1, patientName: "John Doe", claimId: "CLM001", amount: 1500, date: "2024-03-15", status: "Approved" },
@@ -163,8 +190,16 @@ const PGView = () => {
       { id: 2, task: "Collect physician feedback", completed: false, dueDate: "2024-03-18" },
       { id: 3, task: "Update patient satisfaction metrics", completed: false, dueDate: "2024-03-25" }
     ],
+    mbrsDone: 12,
+    mbrsUpcoming: 5,
+    weeklyReportsSent: 24,
+    weeklyReportsUpcoming: 3,
     newInteraction: "",
     newReportNote: "",
+    newMBRTask: "",
+    newMBRTaskDate: "",
+    newWeeklyTask: "",
+    newWeeklyTaskDate: "",
     showAllInteractions: false,
     selectedReport: null,
     isEditingReport: false
@@ -189,19 +224,73 @@ const PGView = () => {
     notification: null
   });
 
+  // Add a useEffect to check for physician updates from StaffList
+  useEffect(() => {
+    // When pgData.physicians changes, update proactiveOutcomes
+    const physicianIds = pgData.physicians.map(physician => physician.id);
+    
+    // Find physicians that are in physicians list but not in proactiveOutcomes
+    const newProactivePhysicians = pgData.physicians
+      .filter(physician => {
+        const existingPhysician = pgData.proactiveOutcomes.find(p => p.id === physician.id && p.type === 'physician');
+        return !existingPhysician;
+      })
+      .map(physician => ({
+        id: physician.id,
+        name: physician.name,
+        npi: physician.npi,
+        specialty: physician.specialty,
+        onboarded: true,
+        type: 'physician', // Ensure type is specified
+        dateAdded: new Date().toISOString()
+      }));
+    
+    if (newProactivePhysicians.length > 0) {
+      setPgData(prev => ({
+        ...prev,
+        proactiveOutcomes: [...prev.proactiveOutcomes, ...newProactivePhysicians]
+      }));
+    }
+  }, [pgData.physicians]);
+
   const handleOnboardingToggle = (type, id) => {
-    setPgData(prevData => {
-      const newData = { ...prevData };
+    setPgData(prev => {
+      // Update in the proactiveOutcomes array
+      const updatedOutcomes = prev.proactiveOutcomes.map(item => {
+        if (item.id === id && item.type === type) {
+          return { ...item, onboarded: !item.onboarded };
+        }
+        return item;
+      });
+      
+      // If it's a physician, also update in the physicians array
+      let updatedPhysicians = [...prev.physicians];
       if (type === 'physician') {
-        newData.physicians = prevData.physicians.map(physician =>
-          physician.id === id ? { ...physician, onboarded: !physician.onboarded } : physician
-        );
-      } else if (type === 'hhah') {
-        newData.hhahs = prevData.hhahs.map(hhah =>
-          hhah.id === id ? { ...hhah, onboarded: !hhah.onboarded } : hhah
-        );
+        updatedPhysicians = prev.physicians.map(physician => {
+          if (physician.id === id) {
+            return { ...physician, onboarded: !physician.onboarded };
+          }
+          return physician;
+        });
       }
-      return newData;
+      
+      // If it's an HHA, also update in the hhahs array
+      let updatedHHAs = [...prev.hhahs];
+      if (type === 'hha') {
+        updatedHHAs = prev.hhahs.map(hha => {
+          if (hha.id === id) {
+            return { ...hha, onboarded: !hha.onboarded };
+          }
+          return hha;
+        });
+      }
+      
+      return {
+        ...prev,
+        proactiveOutcomes: updatedOutcomes,
+        physicians: updatedPhysicians,
+        hhahs: updatedHHAs
+      };
     });
   };
 
@@ -487,7 +576,7 @@ const PGView = () => {
           </thead>
           <tbody>
             {getFilteredClaims().map(claim => (
-              <tr key={claim.id}>
+              <tr key={`claim-${claim.id}`}>
                 <td>{claim.patientName}</td>
                 <td>{claim.claimId}</td>
                 <td>${claim.amount}</td>
@@ -509,10 +598,9 @@ const PGView = () => {
   );
 
   const renderProactiveOutcomes = () => (
-    <div className="outcomes-section proactive">
+    <div className="proactive-outcomes-section outcomes-section">
       <div className="section-header">
         <h2>Proactive Outcomes</h2>
-        <p className="section-description">Manage physician and HHA onboarding, and track claims</p>
       </div>
       
       <div className="proactive-tables">
@@ -526,7 +614,7 @@ const PGView = () => {
                 placeholder="Search physicians..."
                 className="search-input"
                 onChange={(e) => {
-                  // Add physician search functionality
+                  // Add physician search functionality - could be added in future
                 }}
               />
               <button className="action-button" onClick={() => setShowPhysicianForm(!showPhysicianForm)}>
@@ -597,13 +685,29 @@ const PGView = () => {
                     return;
                   }
 
+                  const newPhysicianObj = {
+                    id: pgData.physicians.length + 1,
+                    ...newPhysician,
+                    onboarded: true // Set to true by default when added directly here
+                  };
+
                   setPgData(prev => ({
                     ...prev,
                     physicians: [
                       ...prev.physicians,
+                      newPhysicianObj
+                    ],
+                    // Also add to proactiveOutcomes
+                    proactiveOutcomes: [
+                      ...prev.proactiveOutcomes,
                       {
-                        id: prev.physicians.length + 1,
-                        ...newPhysician
+                        id: newPhysicianObj.id,
+                        name: newPhysicianObj.name,
+                        npi: newPhysicianObj.npi,
+                        specialty: newPhysicianObj.specialty,
+                        onboarded: true,
+                        type: 'physician', // Ensure type is specified
+                        dateAdded: new Date().toISOString()
                       }
                     ]
                   }));
@@ -628,67 +732,72 @@ const PGView = () => {
               <thead>
                 <tr>
                   <th>Physician Name</th>
-                  <th>NPI Number</th>
+                  <th>NPI</th>
                   <th>Specialty</th>
-                  <th>Status</th>
+                  <th>Analysis</th>
                   <th>Onboarded</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {pgData.physicians.map(physician => (
-                  <tr key={physician.id}>
-                    <td>{physician.name}</td>
-                    <td>{physician.npi}</td>
-                    <td>{physician.specialty}</td>
-                    <td>
-                      <span className={`status-badge ${physician.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                        {physician.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button 
-                        className={`onboarding-toggle ${physician.onboarded ? 'onboarded' : 'not-onboarded'}`}
-                        onClick={() => handleOnboardingToggle('physician', physician.id)}
-                      >
-                        {physician.onboarded ? '✓' : '✗'}
-                      </button>
-                    </td>
-                    <td>
-                      <div className="row-actions">
-                        <button className="action-icon edit">Edit</button>
-                        <button className="action-icon delete">Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {pgData.proactiveOutcomes
+                  .filter(outcome => outcome.type === 'physician')
+                  .map((physician, index) => {
+                    const physicianData = pgData.physicians.find(p => p.id === physician.id) || physician;
+                    return (
+                      <tr key={`p-outcome-physician-${physician.id}-${index}`}>
+                        <td>
+                          <span className="physician-name-link" onClick={() => navigate(`/physician/${physician.id}`, { state: { physician: physicianData } })}>
+                            {physician.name}
+                          </span>
+                        </td>
+                        <td>{physician.npi}</td>
+                        <td>{physician.specialty}</td>
+                        <td>{physician.analysis || "Pending analysis"}</td>
+                        <td>
+                          <button 
+                            className={`onboarding-toggle ${physician.onboarded ? 'onboarded' : 'not-onboarded'}`}
+                            onClick={() => handleOnboardingToggle('physician', physician.id)}
+                          >
+                            {physician.onboarded ? '✓' : '✗'}
+                          </button>
+                        </td>
+                        <td>
+                          <div className="row-actions">
+                            <button className="action-icon edit">Edit</button>
+                            <button className="action-icon delete">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* HHAs Table */}
-        <div className="table-section hhas-section">
+        {/* HHAHs Table */}
+        <div className="table-section hhahs-section">
           <div className="section-header-with-actions">
             <h3>HHAH Onboarding Status</h3>
             <div className="table-actions">
               <input
                 type="text"
-                placeholder="Search HHAs..."
+                placeholder="Search HHAHs..."
                 className="search-input"
                 onChange={(e) => {
-                  // Add HHA search functionality
+                  // Add HHAH search functionality - could be added in future
                 }}
               />
               <button className="action-button" onClick={() => setShowHHAForm(!showHHAForm)}>
-                <span className="icon">+</span> Add HHA
+                <span className="icon">+</span> Add HHAH
               </button>
             </div>
           </div>
           
           {showHHAForm && (
             <div className="form-container">
-              <h4>Add New HHA</h4>
+              <h4>Add New HHAH</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label>Name:</label>
@@ -700,11 +809,11 @@ const PGView = () => {
                       ...prev,
                       name: e.target.value
                     }))} 
-                    placeholder="Enter HHA name"
+                    placeholder="Enter HHAH name"
                   />
                 </div>
                 <div className="form-group">
-                  <label>Location:</label>
+                  <label>Statistical Area:</label>
                   <input 
                     type="text" 
                     name="location" 
@@ -713,7 +822,7 @@ const PGView = () => {
                       ...prev,
                       location: e.target.value
                     }))} 
-                    placeholder="Enter location"
+                    placeholder="Enter statistical area"
                   />
                 </div>
                 <div className="form-group">
@@ -756,7 +865,7 @@ const PGView = () => {
                     onboarded: false
                   });
                   setShowHHAForm(false);
-                }}>Add HHA</button>
+                }}>Add HHAH</button>
                 <button className="cancel-button" onClick={() => setShowHHAForm(false)}>Cancel</button>
               </div>
             </div>
@@ -766,23 +875,25 @@ const PGView = () => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>HHA Name</th>
-                  <th>Location</th>
+                  <th>HHAH Name</th>
+                  <th>Statistical Area</th>
                   <th>Contact</th>
+                  <th>Analysis</th>
                   <th>Onboarded</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {pgData.hhahs.map(hhah => (
-                  <tr key={hhah.id}>
+                  <tr key={`hhah-entry-${hhah.id}`}>
                     <td>{hhah.name}</td>
                     <td>{hhah.location}</td>
                     <td>{hhah.contact}</td>
+                    <td>{hhah.analysis || "Pending analysis"}</td>
                     <td>
                       <button 
                         className={`onboarding-toggle ${hhah.onboarded ? 'onboarded' : 'not-onboarded'}`}
-                        onClick={() => handleOnboardingToggle('hhah', hhah.id)}
+                        onClick={() => handleOnboardingToggle('hha', hhah.id)}
                       >
                         {hhah.onboarded ? '✓' : '✗'}
                       </button>
@@ -820,7 +931,11 @@ const PGView = () => {
 
   const renderStaffList = () => (
     <div className="staff-list-section">
-      <StaffList />
+      <div className="section-header">
+        <h2>Staff Management</h2>
+        <p className="section-description">Manage physicians, NPPs, and office staff members</p>
+      </div>
+      <StaffList pgData={pgData} setPgData={setPgData} />
     </div>
   );
 
@@ -832,58 +947,156 @@ const PGView = () => {
       </div>
 
       <div className="value-comm-grid">
-        {/* Communication Reports Panel */}
+        {/* Communication Reports Panel - Now separated into MBRs and Weekly Reports */}
         <div className="value-comm-panel reports-panel">
           <div className="panel-header">
             <h3>Communication Reports</h3>
-            <button className="action-button">
-              <span className="icon">+</span> Add Report
-            </button>
           </div>
           
-          <div className="reports-list">
-            {valueCommunicationState.reports.map(report => (
-              <div key={report.id} className="report-card">
-                <div className="report-icon">
-                  <span className="document-icon">📄</span>
-                </div>
-                <div className="report-details">
-                  <h4 className="report-filename">{report.fileName}</h4>
-                  {valueCommunicationState.isEditingReport && valueCommunicationState.selectedReport?.id === report.id ? (
-                    <div className="edit-report">
-                      <input
-                        type="text"
-                        value={valueCommunicationState.newReportNote}
-                        onChange={(e) => setValueCommunicationState(prev => ({
-                          ...prev,
-                          newReportNote: e.target.value
-                        }))}
-                        className="interaction-input"
-                      />
-                      <button onClick={handleSaveReport} className="submit-button">
-                        Save
+          {/* MBR Reports Section */}
+          <div className="reports-section">
+            <div className="reports-section-header">
+              <h4 className="reports-section-title">MBR Reports</h4>
+              <button className="action-button" onClick={() => {
+                const fileName = `MBR_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+                const notes = window.prompt("Enter MBR report notes:", "Monthly business review");
+                if (notes) {
+                  setValueCommunicationState(prev => ({
+                    ...prev,
+                    reports: [
+                      ...prev.reports,
+                      {
+                        id: prev.reports.length + 1,
+                        fileName,
+                        notes,
+                        date: new Date().toISOString().split('T')[0]
+                      }
+                    ]
+                  }));
+                }
+              }}>
+                <span className="icon">+</span> Add MBR Report
+              </button>
+            </div>
+            <div className="reports-list">
+              {valueCommunicationState.reports
+                .filter(report => report.fileName.toLowerCase().includes('communication') || report.fileName.toLowerCase().includes('feedback') || report.fileName.toLowerCase().includes('mbr'))
+                .map(report => (
+                  <div key={report.id} className="report-card">
+                    <div className="report-icon">
+                      <span className="document-icon">📄</span>
+                    </div>
+                    <div className="report-details">
+                      <h4 className="report-filename">{report.fileName}</h4>
+                      {valueCommunicationState.isEditingReport && valueCommunicationState.selectedReport?.id === report.id ? (
+                        <div className="edit-report">
+                          <input
+                            type="text"
+                            value={valueCommunicationState.newReportNote}
+                            onChange={(e) => setValueCommunicationState(prev => ({
+                              ...prev,
+                              newReportNote: e.target.value
+                            }))}
+                            className="interaction-input"
+                          />
+                          <button onClick={handleSaveReport} className="submit-button">
+                            Save
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="report-notes">{report.notes}</p>
+                      )}
+                      <div className="report-meta">
+                        <span className="report-date">{report.date}</span>
+                      </div>
+                    </div>
+                    <div className="report-actions">
+                      <button className="icon-button edit" title="Edit Report" onClick={() => handleEditReport(report)}>
+                        <span className="action-icon">✏️</span>
+                      </button>
+                      <button className="icon-button download" title="Download Report" onClick={() => handleDownloadReport(report)}>
+                        <span className="action-icon">⬇️</span>
+                      </button>
+                      <button className="icon-button delete" title="Delete Report" onClick={() => handleDeleteReport(report.id)}>
+                        <span className="action-icon">🗑️</span>
                       </button>
                     </div>
-                  ) : (
-                    <p className="report-notes">{report.notes}</p>
-                  )}
-                  <div className="report-meta">
-                    <span className="report-date">{report.date}</span>
                   </div>
-                </div>
-                <div className="report-actions">
-                  <button className="icon-button edit" title="Edit Report" onClick={() => handleEditReport(report)}>
-                    <span className="action-icon">✏️</span>
-                  </button>
-                  <button className="icon-button download" title="Download Report">
-                    <span className="action-icon">⬇️</span>
-                  </button>
-                  <button className="icon-button delete" title="Delete Report" onClick={() => handleDeleteReport(report.id)}>
-                    <span className="action-icon">🗑️</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+                ))}
+            </div>
+          </div>
+          
+          {/* Weekly Reports Section */}
+          <div className="reports-section">
+            <div className="reports-section-header">
+              <h4 className="reports-section-title">Weekly Reports</h4>
+              <button className="action-button" onClick={() => {
+                const fileName = `Weekly_Update_${new Date().getDate()}.pdf`;
+                const notes = window.prompt("Enter weekly report notes:", "Weekly progress report");
+                if (notes) {
+                  setValueCommunicationState(prev => ({
+                    ...prev,
+                    reports: [
+                      ...prev.reports,
+                      {
+                        id: prev.reports.length + 1,
+                        fileName,
+                        notes,
+                        date: new Date().toISOString().split('T')[0]
+                      }
+                    ]
+                  }));
+                }
+              }}>
+                <span className="icon">+</span> Add Weekly Report
+              </button>
+            </div>
+            <div className="reports-list">
+              {valueCommunicationState.reports
+                .filter(report => report.fileName.toLowerCase().includes('weekly') || report.fileName.toLowerCase().includes('update'))
+                .map(report => (
+                  <div key={report.id} className="report-card">
+                    <div className="report-icon">
+                      <span className="document-icon">📄</span>
+                    </div>
+                    <div className="report-details">
+                      <h4 className="report-filename">{report.fileName}</h4>
+                      {valueCommunicationState.isEditingReport && valueCommunicationState.selectedReport?.id === report.id ? (
+                        <div className="edit-report">
+                          <input
+                            type="text"
+                            value={valueCommunicationState.newReportNote}
+                            onChange={(e) => setValueCommunicationState(prev => ({
+                              ...prev,
+                              newReportNote: e.target.value
+                            }))}
+                            className="interaction-input"
+                          />
+                          <button onClick={handleSaveReport} className="submit-button">
+                            Save
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="report-notes">{report.notes}</p>
+                      )}
+                      <div className="report-meta">
+                        <span className="report-date">{report.date}</span>
+                      </div>
+                    </div>
+                    <div className="report-actions">
+                      <button className="icon-button edit" title="Edit Report" onClick={() => handleEditReport(report)}>
+                        <span className="action-icon">✏️</span>
+                      </button>
+                      <button className="icon-button download" title="Download Report" onClick={() => handleDownloadReport(report)}>
+                        <span className="action-icon">⬇️</span>
+                      </button>
+                      <button className="icon-button delete" title="Delete Report" onClick={() => handleDeleteReport(report.id)}>
+                        <span className="action-icon">🗑️</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
 
@@ -945,75 +1158,176 @@ const PGView = () => {
           </div>
         </div>
 
-        {/* MDR Tasks Panel */}
-        <div className="value-comm-panel mdr-panel">
+        {/* MBR Tasks Panel - Now separate from Weekly Reports */}
+        <div className="value-comm-panel mbr-panel">
           <div className="panel-header">
-            <h3>MDR & Weekly Reports</h3>
+            <h3>MBR Tasks</h3>
           </div>
 
-          <div className="mdr-tasks-list">
-            {valueCommunicationState.mdrTasks.map(task => (
-              <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''}`}>
-                <div className="task-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => handleToggleMDRTask(task.id)}
-                    id={`task-${task.id}`}
-                  />
-                  <label htmlFor={`task-${task.id}`}></label>
-                </div>
-                <div className="task-content">
-                  <p className="task-text">{task.task}</p>
-                  <div className="task-meta">
-                    <span className="task-due-date">Due: {task.dueDate}</span>
-                    <span className={`task-status ${task.completed ? 'completed' : 'pending'}`}>
-                      {task.completed ? 'Completed' : 'Pending'}
-                    </span>
+          <div className="mbr-stats">
+            <div className="mbr-stat-item">
+              <span className="stat-label">MBRs Done:</span>
+              <span className="stat-value">{valueCommunicationState.mbrsDone}</span>
+            </div>
+            <div className="mbr-stat-item">
+              <span className="stat-label">MBRs Upcoming:</span>
+              <span className="stat-value">{valueCommunicationState.mbrsUpcoming}</span>
+            </div>
+          </div>
+
+          <div className="mbr-tasks-list">
+            {valueCommunicationState.mdrTasks
+              .filter(task => task.task.toLowerCase().includes('data') || task.task.toLowerCase().includes('metrics'))
+              .map(task => (
+                <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''}`}>
+                  <div className="task-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleToggleMDRTask(task.id)}
+                      id={`task-${task.id}`}
+                    />
+                    <label htmlFor={`task-${task.id}`}></label>
+                  </div>
+                  <div className="task-content">
+                    <p className="task-text">{task.task}</p>
+                    <div className="task-meta">
+                      <span className="task-due-date">Due: {task.dueDate}</span>
+                      <span className={`task-status ${task.completed ? 'completed' : 'pending'}`}>
+                        {task.completed ? 'Completed' : 'Pending'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div className="add-task-form">
             <input
               type="text"
-              placeholder="Add new task..."
+              placeholder="Add new MBR task..."
               className="task-input"
-              value={valueCommunicationState.newTask || ''}
+              value={valueCommunicationState.newMBRTask || ''}
               onChange={(e) => setValueCommunicationState(prev => ({
                 ...prev,
-                newTask: e.target.value
+                newMBRTask: e.target.value
               }))}
             />
             <input
               type="date"
               className="task-date-input"
-              value={valueCommunicationState.newTaskDate || ''}
+              value={valueCommunicationState.newMBRTaskDate || ''}
               onChange={(e) => setValueCommunicationState(prev => ({
                 ...prev,
-                newTaskDate: e.target.value
+                newMBRTaskDate: e.target.value
               }))}
             />
             <button 
               className="submit-button"
-              disabled={!valueCommunicationState.newTask || !valueCommunicationState.newTaskDate}
               onClick={() => {
-                if (valueCommunicationState.newTask && valueCommunicationState.newTaskDate) {
+                if (valueCommunicationState.newMBRTask && valueCommunicationState.newMBRTaskDate) {
                   handleAddMDRTask(
-                    valueCommunicationState.newTask,
-                    valueCommunicationState.newTaskDate
+                    valueCommunicationState.newMBRTask,
+                    valueCommunicationState.newMBRTaskDate
                   );
                   setValueCommunicationState(prev => ({
                     ...prev,
-                    newTask: "",
-                    newTaskDate: ""
+                    newMBRTask: "",
+                    newMBRTaskDate: ""
                   }));
+                } else {
+                  alert("Please fill in both the task description and due date");
                 }
               }}
             >
-              Add Task
+              Add MBR Task
+            </button>
+          </div>
+        </div>
+
+        {/* Weekly Reports Panel - Separated from MBR */}
+        <div className="value-comm-panel weekly-reports-panel">
+          <div className="panel-header">
+            <h3>Weekly Reports</h3>
+          </div>
+
+          <div className="weekly-report-stats">
+            <div className="weekly-stat-item">
+              <span className="stat-label">Reports Sent:</span>
+              <span className="stat-value">{valueCommunicationState.weeklyReportsSent}</span>
+            </div>
+            <div className="weekly-stat-item">
+              <span className="stat-label">Reports Upcoming:</span>
+              <span className="stat-value">{valueCommunicationState.weeklyReportsUpcoming}</span>
+            </div>
+          </div>
+
+          <div className="weekly-tasks-list">
+            {valueCommunicationState.mdrTasks
+              .filter(task => task.task.toLowerCase().includes('feedback') || task.task.toLowerCase().includes('collect'))
+              .map(task => (
+                <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''}`}>
+                  <div className="task-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleToggleMDRTask(task.id)}
+                      id={`weekly-task-${task.id}`}
+                    />
+                    <label htmlFor={`weekly-task-${task.id}`}></label>
+                  </div>
+                  <div className="task-content">
+                    <p className="task-text">{task.task}</p>
+                    <div className="task-meta">
+                      <span className="task-due-date">Due: {task.dueDate}</span>
+                      <span className={`task-status ${task.completed ? 'completed' : 'pending'}`}>
+                        {task.completed ? 'Completed' : 'Pending'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          <div className="add-task-form">
+            <input
+              type="text"
+              placeholder="Add new weekly report task..."
+              className="task-input"
+              value={valueCommunicationState.newWeeklyTask || ''}
+              onChange={(e) => setValueCommunicationState(prev => ({
+                ...prev,
+                newWeeklyTask: e.target.value
+              }))}
+            />
+            <input
+              type="date"
+              className="task-date-input"
+              value={valueCommunicationState.newWeeklyTaskDate || ''}
+              onChange={(e) => setValueCommunicationState(prev => ({
+                ...prev,
+                newWeeklyTaskDate: e.target.value
+              }))}
+            />
+            <button 
+              className="submit-button"
+              onClick={() => {
+                if (valueCommunicationState.newWeeklyTask && valueCommunicationState.newWeeklyTaskDate) {
+                  handleAddMDRTask(
+                    valueCommunicationState.newWeeklyTask, 
+                    valueCommunicationState.newWeeklyTaskDate
+                  );
+                  setValueCommunicationState(prev => ({
+                    ...prev,
+                    newWeeklyTask: "",
+                    newWeeklyTaskDate: ""
+                  }));
+                } else {
+                  alert("Please fill in both the task description and due date");
+                }
+              }}
+            >
+              Add Weekly Task
             </button>
           </div>
         </div>
@@ -1032,91 +1346,143 @@ const PGView = () => {
                 type="text"
                 placeholder="Search by name or designation..."
                 className="rapport-search-input"
+                onChange={(e) => handleRapportSearch(e)}
+                value={rapportState.searchTerm || ''}
               />
             </div>
-            <button className="rapport-export-btn">Export CSV</button>
-            <button className="rapport-export-btn">Export PDF</button>
+            <button className="rapport-export-btn" onClick={() => handleExportRapport('csv')}>Export CSV</button>
+            <button className="rapport-export-btn" onClick={() => handleExportRapport('pdf')}>Export PDF</button>
           </div>
         </div>
 
         <div className="rapport-score">
-          <div className="rapport-score-value">5.0</div>
+          <div className="rapport-score-value">{calculateAverageScore()}</div>
           <div className="rapport-score-label">/10 Average Rapport Score</div>
         </div>
 
-        <button className="rapport-analytics-toggle">Show Analytics</button>
+        <button 
+          className="rapport-analytics-toggle"
+          onClick={() => setRapportState(prev => ({ ...prev, showAnalytics: !prev.showAnalytics }))}
+        >
+          {rapportState.showAnalytics ? "Hide Analytics" : "Show Analytics"}
+        </button>
+
+        {rapportState.showAnalytics && (
+          <div className="rapport-analytics">
+            <h3>Rapport Analytics</h3>
+            <div className="rapport-stats">
+              <div className="rapport-stat">
+                <span className="stat-label">High Rapport (8-10):</span>
+                <span className="stat-value">{rapportState.records.filter(r => parseFloat(r.score) >= 8).length}</span>
+              </div>
+              <div className="rapport-stat">
+                <span className="stat-label">Medium Rapport (5-7):</span>
+                <span className="stat-value">{rapportState.records.filter(r => parseFloat(r.score) >= 5 && parseFloat(r.score) < 8).length}</span>
+              </div>
+              <div className="rapport-stat">
+                <span className="stat-label">Low Rapport (0-4):</span>
+                <span className="stat-value">{rapportState.records.filter(r => parseFloat(r.score) < 5).length}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="add-rapport-form">
           <div className="rapport-form-group">
             <label>Person Name</label>
-            <input type="text" placeholder="Enter name" />
+            <input 
+              type="text" 
+              placeholder="Enter name" 
+              name="name"
+              value={rapportState.newRecord.name}
+              onChange={(e) => handleNewRapportChange(e)}
+            />
           </div>
           <div className="rapport-form-group">
             <label>Designation</label>
-            <input type="text" placeholder="Enter designation" />
+            <input 
+              type="text" 
+              placeholder="Enter designation" 
+              name="designation"
+              value={rapportState.newRecord.designation}
+              onChange={(e) => handleNewRapportChange(e)}
+            />
           </div>
           <div className="rapport-form-group">
             <label>Score (0-10)</label>
-            <input type="number" min="0" max="10" placeholder="Enter score" />
+            <input 
+              type="number" 
+              min="0" 
+              max="10" 
+              placeholder="Enter score" 
+              name="score"
+              value={rapportState.newRecord.score}
+              onChange={(e) => handleNewRapportChange(e)}
+            />
           </div>
           <div className="rapport-form-group">
             <label>Understanding/Feedback</label>
-            <textarea placeholder="Enter feedback"></textarea>
+            <textarea 
+              placeholder="Enter feedback" 
+              name="understanding"
+              value={rapportState.newRecord.understanding}
+              onChange={(e) => handleNewRapportChange(e)}
+            ></textarea>
           </div>
-          <button className="add-record-btn">Add Record</button>
+          <button className="add-record-btn" onClick={handleSubmitRapport}>Add Record</button>
         </div>
 
         <table className="rapport-table">
           <thead>
             <tr>
-              <th>PERSON NAME</th>
-              <th>DESIGNATION</th>
-              <th>SCORE</th>
+              <th onClick={() => handleRapportSort('name')}>
+                PERSON NAME
+                {rapportState.sortConfig.key === 'name' && (
+                  <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
+                )}
+              </th>
+              <th onClick={() => handleRapportSort('designation')}>
+                DESIGNATION
+                {rapportState.sortConfig.key === 'designation' && (
+                  <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
+                )}
+              </th>
+              <th onClick={() => handleRapportSort('score')}>
+                SCORE
+                {rapportState.sortConfig.key === 'score' && (
+                  <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
+                )}
+              </th>
               <th>UNDERSTANDING</th>
-              <th>DATE</th>
+              <th onClick={() => handleRapportSort('date')}>
+                DATE
+                {rapportState.sortConfig.key === 'date' && (
+                  <span>{rapportState.sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>
+                )}
+              </th>
               <th>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Check Name</td>
-              <td>Designation Check</td>
-              <td><span className="rapport-score-badge high">10/10</span></td>
-              <td>Excellent understanding of all processes</td>
-              <td>2024-03-15</td>
-              <td>
-                <div className="rapport-action-buttons">
-                  <button className="rapport-edit-btn">Edit</button>
-                  <button className="rapport-delete-btn">Delete</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>Test Name</td>
-              <td>Designation Test</td>
-              <td><span className="rapport-score-badge low">3/10</span></td>
-              <td>Needs significant improvement</td>
-              <td>2024-03-10</td>
-              <td>
-                <div className="rapport-action-buttons">
-                  <button className="rapport-edit-btn">Edit</button>
-                  <button className="rapport-delete-btn">Delete</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>Person1</td>
-              <td>Designation Check</td>
-              <td><span className="rapport-score-badge low">2/10</span></td>
-              <td>Limited understanding of core processes</td>
-              <td>2024-03-05</td>
-              <td>
-                <div className="rapport-action-buttons">
-                  <button className="rapport-edit-btn">Edit</button>
-                  <button className="rapport-delete-btn">Delete</button>
-                </div>
-              </td>
-            </tr>
+            {getFilteredAndSortedRapportRecords().map(record => (
+              <tr key={`rapport-${record.id}`}>
+                <td>{record.name}</td>
+                <td>{record.designation}</td>
+                <td>
+                  <span className={`rapport-score-badge ${parseFloat(record.score) >= 8 ? 'high' : parseFloat(record.score) >= 5 ? 'medium' : 'low'}`}>
+                    {record.score}/10
+                  </span>
+                </td>
+                <td>{record.understanding}</td>
+                <td>{record.date}</td>
+                <td>
+                  <div className="rapport-action-buttons">
+                    <button className="rapport-edit-btn" onClick={() => handleEditRapportRecord(record.id)}>Edit</button>
+                    <button className="rapport-delete-btn" onClick={() => handleDeleteRapportRecord(record.id)}>Delete</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -1124,6 +1490,11 @@ const PGView = () => {
   };
 
   // Value Communication Handlers
+  const validateRapportScore = (score) => {
+    const numScore = parseFloat(score);
+    return !isNaN(numScore) && numScore >= 0 && numScore <= 10;
+  };
+
   const handleAddInteraction = () => {
     if (!valueCommunicationState.newInteraction.trim()) return;
 
@@ -1192,19 +1563,211 @@ const PGView = () => {
           completed: false,
           dueDate
         }
+      ],
+      // Increment mbrsUpcoming if it's an MBR task
+      mbrsUpcoming: taskName.toLowerCase().includes('data') || taskName.toLowerCase().includes('metrics') 
+        ? prev.mbrsUpcoming + 1 
+        : prev.mbrsUpcoming,
+      // Increment weeklyReportsUpcoming if it's a weekly report task
+      weeklyReportsUpcoming: taskName.toLowerCase().includes('feedback') || taskName.toLowerCase().includes('collect')
+        ? prev.weeklyReportsUpcoming + 1
+        : prev.weeklyReportsUpcoming
+    }));
+  };
+
+  // New function to add a report
+  const handleAddReport = () => {
+    const reportType = window.prompt("Select report type (MBR or Weekly):", "MBR");
+    if (!reportType) return;
+    
+    const fileName = reportType.toLowerCase() === "mbr" 
+      ? `MBR_Report_${new Date().toISOString().split('T')[0]}.pdf`
+      : `Weekly_Update_${new Date().getDate()}.pdf`;
+      
+    const notes = window.prompt("Enter report notes:", 
+      reportType.toLowerCase() === "mbr" ? "Monthly business review" : "Weekly progress report");
+    if (!notes) return;
+    
+    setValueCommunicationState(prev => ({
+      ...prev,
+      reports: [
+        ...prev.reports,
+        {
+          id: prev.reports.length + 1,
+          fileName,
+          notes,
+          date: new Date().toISOString().split('T')[0]
+        }
       ]
     }));
   };
 
-  // Rapport Handlers
-  const handleRapportSort = (key) => {
+  // New function to download a report
+  const handleDownloadReport = (report) => {
+    // Create mock report content based on report type
+    let content = '';
+    
+    if (report.fileName.toLowerCase().includes('communication') || report.fileName.toLowerCase().includes('mbr')) {
+      // MBR report content
+      content = `
+# ${report.fileName.replace('.pdf', '')}
+Date: ${report.date}
+Type: Monthly Business Review
+
+## Summary
+${report.notes}
+
+## Performance Metrics
+- Patient Satisfaction: 87%
+- Care Quality: 92%
+- Response Time: 4.3 hours (average)
+
+## Physician Engagement
+- Dr. Sarah Johnson: High engagement
+- Dr. Robert Chen: Medium engagement
+- Dr. Maria Garcia: High engagement
+
+## Action Items
+1. Improve response time for urgent cases
+2. Schedule follow-up meeting with key physicians
+3. Review patient feedback for Q1
+
+## Prepared by
+Healthcare Analytics Team
+`;
+    } else {
+      // Weekly report content
+      content = `
+# ${report.fileName.replace('.pdf', '')}
+Date: ${report.date}
+Type: Weekly Progress Report
+
+## Summary
+${report.notes}
+
+## Weekly Metrics
+- New Patients: 12
+- Follow-up Appointments: 28
+- Emergency Cases: 3
+
+## Notable Events
+- Staff meeting on Tuesday
+- New equipment training on Thursday
+- Patient satisfaction survey distributed
+
+## Next Week Focus
+- Complete patient outreach program
+- Finalize schedule for next month
+- Review inventory needs
+
+## Prepared by
+Operations Team
+`;
+    }
+    
+    // Create blob and trigger download
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = report.fileName.replace('.pdf', '.txt');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Fix for Rapport record editing
+  const handleEditRapportRecord = (recordId) => {
+    const record = rapportState.records.find(r => r.id === recordId);
+    if (!record) return;
+    
     setRapportState(prev => ({
       ...prev,
-      sortConfig: {
-        key,
-        direction: prev.sortConfig.key === key && prev.sortConfig.direction === 'asc' ? 'desc' : 'asc'
-      }
+      editingRecord: { ...record }
     }));
+    
+    const name = window.prompt("Enter name:", record.name);
+    if (!name) return;
+    
+    const designation = window.prompt("Enter designation:", record.designation);
+    if (!designation) return;
+    
+    const score = window.prompt("Enter score (0-10):", record.score);
+    if (!score || !validateRapportScore(score)) {
+      alert("Score must be between 0 and 10");
+      return;
+    }
+    
+    const understanding = window.prompt("Enter understanding/feedback:", record.understanding);
+    if (!understanding) return;
+    
+    setRapportState(prev => ({
+      ...prev,
+      records: prev.records.map(r => 
+        r.id === recordId 
+          ? { ...r, name, designation, score, understanding }
+          : r
+      ),
+      notification: { message: "Record updated successfully", type: "success" }
+    }));
+    
+    setTimeout(() => {
+      setRapportState(prev => ({ ...prev, notification: null }));
+    }, 3000);
+  };
+  
+  // Fix for Rapport record deletion
+  const handleDeleteRapportRecord = (recordId) => {
+    if (!window.confirm("Are you sure you want to delete this record?")) return;
+    
+    setRapportState(prev => ({
+      ...prev,
+      records: prev.records.filter(r => r.id !== recordId),
+      notification: { message: "Record deleted successfully", type: "success" }
+    }));
+    
+    setTimeout(() => {
+      setRapportState(prev => ({ ...prev, notification: null }));
+    }, 3000);
+  };
+  
+  // Fix for adding new Rapport record
+  const handleAddRapportRecord = () => {
+    const name = window.prompt("Enter name:");
+    if (!name) return;
+    
+    const designation = window.prompt("Enter designation:");
+    if (!designation) return;
+    
+    const score = window.prompt("Enter score (0-10):");
+    if (!score || !validateRapportScore(score)) {
+      alert("Score must be between 0 and 10");
+      return;
+    }
+    
+    const understanding = window.prompt("Enter understanding/feedback:");
+    if (!understanding) return;
+    
+    setRapportState(prev => ({
+      ...prev,
+      records: [
+        ...prev.records,
+        {
+          id: prev.records.length + 1,
+          name,
+          designation,
+          score,
+          understanding,
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      notification: { message: "Record added successfully", type: "success" }
+    }));
+    
+    setTimeout(() => {
+      setRapportState(prev => ({ ...prev, notification: null }));
+    }, 3000);
   };
 
   const handleRapportSearch = (e) => {
@@ -1212,32 +1775,6 @@ const PGView = () => {
       ...prev,
       searchTerm: e.target.value
     }));
-  };
-
-  const handleNewRapportChange = (e) => {
-    const { name, value } = e.target;
-    setRapportState(prev => ({
-      ...prev,
-      newRecord: {
-        ...prev.newRecord,
-        [name]: value
-      }
-    }));
-  };
-
-  const validateRapportScore = (score) => {
-    const numScore = parseFloat(score);
-    return !isNaN(numScore) && numScore >= 0 && numScore <= 10;
-  };
-
-  const showNotification = (message, type = 'success') => {
-    setRapportState(prev => ({
-      ...prev,
-      notification: { message, type }
-    }));
-    setTimeout(() => {
-      setRapportState(prev => ({ ...prev, notification: null }));
-    }, 3000);
   };
 
   const handleSubmitRapport = () => {
@@ -1280,39 +1817,71 @@ const PGView = () => {
     showNotification('Rapport record added successfully');
   };
 
-  const handleEditRapport = (record) => {
-    setRapportState(prev => ({
-      ...prev,
-      editingRecord: { ...record }
-    }));
+  const calculateAverageScore = () => {
+    const scores = rapportState.records.map(record => parseFloat(record.score));
+    const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+    return isNaN(average) ? 0 : average.toFixed(1);
   };
 
-  const handleUpdateRapport = () => {
-    const { editingRecord } = rapportState;
+  // Calculate physician onboarding success rate
+  const calculatePhysicianOnboardingRate = () => {
+    if (pgData.physicians.length === 0) return 0;
+    const onboardedCount = pgData.physicians.filter(physician => physician.onboarded).length;
+    return Math.round((onboardedCount / pgData.physicians.length) * 100);
+  };
+
+  // Calculate HHAH onboarding success rate
+  const calculateHHAHOnboardingRate = () => {
+    if (pgData.hhahs.length === 0) return 0;
+    const onboardedCount = pgData.hhahs.filter(hhah => hhah.onboarded).length;
+    return Math.round((onboardedCount / pgData.hhahs.length) * 100);
+  };
+
+  // Count reactive outcomes by status
+  const countReactiveOutcomesByStatus = () => {
+    const statusCounts = {
+      Open: 0,
+      Analysing: 0,
+      Analysed: 0,
+      Catalysed: 0
+    };
     
-    if (!validateRapportScore(editingRecord.score)) {
-      showNotification('Score must be between 0 and 10', 'error');
-      return;
-    }
-
-    setRapportState(prev => ({
-      ...prev,
-      records: prev.records.map(record =>
-        record.id === editingRecord.id ? editingRecord : record
-      ),
-      editingRecord: null
-    }));
-
-    showNotification('Rapport record updated successfully');
+    pgData.reactiveOutcomes.forEach(outcome => {
+      if (statusCounts.hasOwnProperty(outcome.status)) {
+        statusCounts[outcome.status]++;
+      }
+    });
+    
+    return statusCounts;
   };
 
-  const handleDeleteRapport = (id) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      setRapportState(prev => ({
-        ...prev,
-        records: prev.records.filter(record => record.id !== id)
-      }));
-      showNotification('Rapport record deleted successfully');
+  const handleExportRapport = (format) => {
+    const records = getFilteredAndSortedRapportRecords();
+    
+    if (format === 'csv') {
+      const csvContent = [
+        ["Name", "Designation", "Score", "Understanding", "Date"],
+        ...records.map(record => [
+          record.name,
+          record.designation,
+          record.score,
+          record.understanding,
+          record.date
+        ])
+      ].map(row => row.join(",")).join("\\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rapport-records-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      showNotification('Report exported as CSV');
+    } else if (format === 'pdf') {
+      showNotification('PDF export functionality coming soon', 'info');
     }
   };
 
@@ -1348,39 +1917,180 @@ const PGView = () => {
     return filteredRecords;
   };
 
-  const calculateAverageScore = () => {
-    const scores = rapportState.records.map(record => parseFloat(record.score));
-    const average = scores.reduce((a, b) => a + b, 0) / scores.length;
-    return isNaN(average) ? 0 : average.toFixed(1);
+  const showNotification = (message, type = 'success') => {
+    setRapportState(prev => ({
+      ...prev,
+      notification: { message, type }
+    }));
+    setTimeout(() => {
+      setRapportState(prev => ({ ...prev, notification: null }));
+    }, 3000);
   };
 
-  const handleExportRapport = (format) => {
-    const records = getFilteredAndSortedRapportRecords();
-    
-    if (format === 'csv') {
-      const csvContent = [
-        ["Name", "Designation", "Score", "Understanding", "Date"],
-        ...records.map(record => [
-          record.name,
-          record.designation,
-          record.score,
-          record.understanding,
-          record.date
-        ])
-      ].map(row => row.join(",")).join("\\n");
+  const handleRapportSort = (key) => {
+    setRapportState(prev => ({
+      ...prev,
+      sortConfig: {
+        key,
+        direction: prev.sortConfig.key === key && prev.sortConfig.direction === 'asc' ? 'desc' : 'asc'
+      }
+    }));
+  };
 
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `rapport-records-${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      showNotification('Report exported as CSV');
-    } else if (format === 'pdf') {
-      showNotification('PDF export functionality coming soon', 'info');
+  const handleNewRapportChange = (e) => {
+    const { name, value } = e.target;
+    setRapportState(prev => ({
+      ...prev,
+      newRecord: {
+        ...prev.newRecord,
+        [name]: value
+      }
+    }));
+  };
+
+  const renderOverviewSection = () => (
+    <div className="overview-section">
+      {/* Section Summary Cards - Clickable to navigate to tabs */}
+      <h3 className="section-summaries-title">Section Summaries</h3>
+      <div className="section-summaries">
+        {/* Staff List Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('staff')}>
+          <div className="summary-header">
+            <h4>Staff List</h4>
+            <span className="summary-icon">👥</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">{pgData.physicians.length} Physicians</p>
+            <p className="summary-stat">{pgData.npp.length} NPPs</p>
+            <p className="summary-stat">{pgData.staff.length} Staff Members</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Proactive Outcomes Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('proactive-outcomes')}>
+          <div className="summary-header">
+            <h4>Proactive Outcomes</h4>
+            <span className="summary-icon">📈</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">Physician Onboarding: {calculatePhysicianOnboardingRate()}%</p>
+            <p className="summary-stat">HHAH Onboarding: {calculateHHAHOnboardingRate()}%</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Reactive Outcomes Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('reactive-outcomes')}>
+          <div className="summary-header">
+            <h4>Reactive Outcomes</h4>
+            <span className="summary-icon">🚨</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">
+              Open: {countReactiveOutcomesByStatus().Open}
+            </p>
+            <p className="summary-stat">
+              Analysing: {countReactiveOutcomesByStatus().Analysing}, 
+              Analysed: {countReactiveOutcomesByStatus().Analysed}, 
+              Catalysed: {countReactiveOutcomesByStatus().Catalysed}
+            </p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Interaction Log Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('interaction-log')}>
+          <div className="summary-header">
+            <h4>Interaction Log</h4>
+            <span className="summary-icon">📝</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">Recent Interactions</p>
+            <p className="summary-stat">View interaction history</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Claims Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('claims')}>
+          <div className="summary-header">
+            <h4>Claims</h4>
+            <span className="summary-icon">📊</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">179 Total Claims</p>
+            <p className="summary-stat">180 Pending</p>
+            <p className="summary-stat">$181 Total Value</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Value Communication Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('value-communication')}>
+          <div className="summary-header">
+            <h4>Value Communication</h4>
+            <span className="summary-icon">💬</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">MBRs: {valueCommunicationState.mbrsDone} Done, {valueCommunicationState.mbrsUpcoming} Upcoming</p>
+            <p className="summary-stat">Weekly Reports: {valueCommunicationState.weeklyReportsSent} Sent, {valueCommunicationState.weeklyReportsUpcoming} Upcoming</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+
+        {/* Rapport Summary */}
+        <div className="summary-card" onClick={() => setActiveSection('rapport')}>
+          <div className="summary-header">
+            <h4>Rapport</h4>
+            <span className="summary-icon">🤝</span>
+          </div>
+          <div className="summary-content">
+            <p className="summary-stat">{calculateAverageScore()}/10 Average Score</p>
+            <p className="summary-stat">{rapportState.records ? rapportState.records.filter(record => parseFloat(record.score) >= 8).length : 0} High Rapport Relationships</p>
+          </div>
+          <div className="summary-footer">
+            <span className="view-more">View Details →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMainContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return renderOverviewSection();
+      case 'proactive-outcomes':
+        return renderProactiveOutcomes();
+      case 'staff':
+        return renderStaffList();
+      case 'communication':
+        return renderValueCommunication();
+      case 'reactive-outcomes':
+        return renderReactiveOutcomes();
+      case 'interaction-log':
+        return renderInteractionLog();
+      case 'claims':
+        return renderClaimsSection();
+      case 'value-communication':
+        return renderValueCommunication();
+      case 'rapport':
+        return renderRapportManagement();
+      default:
+        return renderOverviewSection();
     }
   };
 
@@ -1389,18 +2099,34 @@ const PGView = () => {
       <div className="pg-title">
         <button 
           className="back-button" 
-          onClick={() => window.history.back()}
+          onClick={handleBackNavigation}
         >
-          <span className="back-arrow">←</span> Back
+          <span className="back-arrow">←</span> 
+          {fromPhysician 
+            ? `Back to Dr. ${physicianContext?.name?.split(' ').pop() || 'Physician'}` 
+            : 'Back'
+          }
         </button>
-        <h2>Physician Group Overview</h2>
-        <p className="pg-subtitle">Manage and monitor physician group performance</p>
+        <h2>{pgData.name}</h2>
+        <p className="pg-subtitle">
+          {fromPhysician 
+            ? `Viewing as associated with physician: ${physicianContext?.name}` 
+            : 'Manage and monitor performance with Physician Group.'
+          }
+        </p>
       </div>
       <div className="pg-actions">
-        <button className="action-button primary">
+        <button className="action-button primary" onClick={() => {
+          const format = window.prompt("Select export format (csv or pdf):", "csv");
+          if (format === "csv" || format === "pdf") {
+            handleExportRapport(format);
+          }
+        }}>
           <span className="icon">📊</span> Export Data
         </button>
-        <button className="action-button">
+        <button className="action-button" onClick={() => {
+          alert("Settings functionality will be implemented in a future update.");
+        }}>
           <span className="icon">⚙️</span> Settings
         </button>
       </div>
@@ -1459,146 +2185,6 @@ const PGView = () => {
       </button>
     </div>
   );
-
-  const renderOverviewSection = () => (
-    <div className="overview-section">
-      {/* Section Summary Cards - Clickable to navigate to tabs */}
-      <h3 className="section-summaries-title">Section Summaries</h3>
-      <div className="section-summaries">
-        {/* Staff List Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('staff')}>
-          <div className="summary-header">
-            <h4>Staff List</h4>
-            <span className="summary-icon">👥</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">{pgData.physicians.length} Physicians</p>
-            <p className="summary-stat">{pgData.npp.length} NPPs</p>
-            <p className="summary-stat">{pgData.staff.length} Staff Members</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Proactive Outcomes Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('proactive-outcomes')}>
-          <div className="summary-header">
-            <h4>Proactive Outcomes</h4>
-            <span className="summary-icon">📈</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">{pgData.proactiveOutcomes?.length || 0} Active Programs</p>
-            <p className="summary-stat">85% Success Rate</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Reactive Outcomes Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('reactive-outcomes')}>
-          <div className="summary-header">
-            <h4>Reactive Outcomes</h4>
-            <span className="summary-icon">🚨</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">{pgData.reactiveOutcomes?.length || 0} Cases</p>
-            <p className="summary-stat">72% Resolution Rate</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Interaction Log Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('interaction-log')}>
-          <div className="summary-header">
-            <h4>Interaction Log</h4>
-            <span className="summary-icon">📝</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">Recent Interactions</p>
-            <p className="summary-stat">View interaction history</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Claims Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('claims')}>
-          <div className="summary-header">
-            <h4>Claims</h4>
-            <span className="summary-icon">📊</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">{pgData.claims?.length || 0} Total Claims</p>
-            <p className="summary-stat">{pgData.claims?.filter(c => c.status === 'Pending').length || 0} Pending</p>
-            <p className="summary-stat">${pgData.claims?.reduce((sum, claim) => sum + claim.amount, 0).toLocaleString() || 0} Total Value</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Value Communication Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('value-communication')}>
-          <div className="summary-header">
-            <h4>Value Communication</h4>
-            <span className="summary-icon">💬</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">Communications</p>
-            <p className="summary-stat">88% Engagement Rate</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-
-        {/* Rapport Summary */}
-        <div className="summary-card" onClick={() => setActiveSection('rapport')}>
-          <div className="summary-header">
-            <h4>Rapport</h4>
-            <span className="summary-icon">🤝</span>
-          </div>
-          <div className="summary-content">
-            <p className="summary-stat">{calculateAverageScore()}/10 Average Score</p>
-            <p className="summary-stat">{rapportState.records ? rapportState.records.filter(record => parseFloat(record.score) >= 8).length : 0} High Rapport Relationships</p>
-          </div>
-          <div className="summary-footer">
-            <span className="view-more">View Details →</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderMainContent = () => {
-    switch (activeSection) {
-      case 'overview':
-        return renderOverviewSection();
-      case 'proactive-outcomes':
-        return renderProactiveOutcomes();
-      case 'staff':
-        return renderStaffList();
-      case 'communication':
-        return renderValueCommunication();
-      case 'reactive-outcomes':
-        return renderReactiveOutcomes();
-      case 'interaction-log':
-        return renderInteractionLog();
-      case 'claims':
-        return renderClaimsSection();
-      case 'value-communication':
-        return renderValueCommunication();
-      case 'rapport':
-        return renderRapportManagement();
-      default:
-        return renderOverviewSection();
-    }
-  };
 
   return (
     <div className="pg-view-container">
