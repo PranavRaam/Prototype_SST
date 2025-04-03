@@ -143,7 +143,7 @@
 .ro-table th {
   background-color: #f8fafc;
   padding: 1rem;
-  text-align: center;
+  text-align: left;
   color: #1e293b;
   font-weight: 600;
   border-bottom: 2px solid #e2e8f0;
@@ -160,22 +160,23 @@
   vertical-align: middle;
   padding-top: 15px;
   padding-bottom: 15px;
+  text-align: left;
 }
 
 /* Set specific widths for some columns and align them properly */
 .ro-table th:nth-child(1), .ro-table td:nth-child(1) { 
   width: 15%; 
-  text-align: center;
+  text-align: left;
 } /* Number */
 
 .ro-table th:nth-child(2), .ro-table td:nth-child(2) { 
   width: 10%; 
-  text-align: center;
+  text-align: left;
 } /* Date */
 
 .ro-table th:nth-child(3), .ro-table td:nth-child(3) { 
   width: 10%; 
-  text-align: center; 
+  text-align: left; 
 } /* Status */
 
 .ro-table th:nth-child(4), .ro-table td:nth-child(4) { 
@@ -195,7 +196,7 @@
 
 .ro-table th:nth-child(7), .ro-table td:nth-child(7) { 
   width: 15%; 
-  text-align: center;
+  text-align: left;
 } /* Actions */
 
 /* Make sure the Description, Analysis, and Next Steps columns wrap text properly */

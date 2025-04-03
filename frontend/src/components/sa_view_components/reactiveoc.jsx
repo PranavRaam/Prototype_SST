@@ -427,7 +427,7 @@ const ReactiveOC = () => {
               <span className="ro-detail-value">{selectedItem.user}</span>
             </div>
             <div className="ro-detail-item">
-              <span className="ro-detail-label hhah-label">HHAH Map:</span>
+              <span className="ro-detail-label hhah-label">HHAH:</span>
               <span className="ro-detail-value">{selectedItem.hahhMap}</span>
             </div>
             <div className="ro-detail-item">
@@ -451,7 +451,7 @@ const ReactiveOC = () => {
               <span className="ro-detail-value">{selectedItem.actionTaken}</span>
             </div>
             <div className="ro-detail-item">
-              <span className="ro-detail-label interaction-label">Interaction Log:</span>
+              <span className="ro-detail-label interaction-label">Interaction:</span>
               <span className="ro-detail-value interaction-value">{selectedItem.interactionLog}</span>
             </div>
             <div className="ro-detail-item">
@@ -472,10 +472,6 @@ const ReactiveOC = () => {
     <div className="ro-container">
       {!selectedItem ? (
         <>
-          <div className="ro-header">
-            <h1>Reactive Outcome</h1>
-          </div>
-          
           <div className="ro-search-filters">
             <div className="ro-search-bar">
               <input
@@ -637,6 +633,45 @@ const ReactiveOC = () => {
                     rows="3"
                   ></textarea>
                 </div>
+                <div className="form-group">
+                  <label htmlFor="date">Date*</label>
+                  <input 
+                    type="text" 
+                    id="date" 
+                    name="date"
+                    value={newOutcome.date}
+                    onChange={handleInputChange}
+                    placeholder="MM/DD/YYYY"
+                    pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="timestamp">Time (CST)*</label>
+                  <input 
+                    type="text" 
+                    id="timestamp" 
+                    name="timestamp"
+                    value={newOutcome.timestamp}
+                    onChange={handleInputChange}
+                    placeholder="HH:MM:SS AM/PM"
+                    pattern="(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (AM|PM)"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receivedOn">Received On*</label>
+                  <input 
+                    type="text" 
+                    id="receivedOn" 
+                    name="receivedOn"
+                    value={newOutcome.receivedOn}
+                    onChange={handleInputChange}
+                    placeholder="MM/DD/YYYY"
+                    pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}"
+                    required
+                  />
+                </div>
               </div>
               <div className="form-actions">
                 <button onClick={handleAddOutcome} className="submit-button">
@@ -670,7 +705,7 @@ const ReactiveOC = () => {
             <table className="ro-table">
               <thead>
                 <tr>
-                  <th>Reactive Outcome No</th>
+                  <th>Reactive OC No</th>
                   <th>Date</th>
                   <th>Status</th>
                   <th>Description</th>
