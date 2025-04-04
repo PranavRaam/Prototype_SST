@@ -51,11 +51,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           mode: 'cors', 
           credentials: 'omit',
           headers: {
-            'Accept': 'text/html',
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache'
-          },
-          cache: 'no-store'
+            'Accept': 'text/html'
+          }
         });
         
         console.log(`Response status: ${response.status} ${response.statusText}`);
@@ -79,6 +76,21 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     };
 
     checkMap();
+    
+    // Setup event listener for cross-origin messaging from the map iframe
+    const handleMapMessage = (event) => {
+      // Check origin for security (optional, as we're using '*' in the map)
+      if (event.data && event.data.type === 'mapLoaded') {
+        console.log('Received map loaded message from iframe:', event.data);
+        setIsLoading(false);
+      }
+    };
+    
+    window.addEventListener('message', handleMapMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMapMessage);
+    };
   }, [statisticalArea, retryCount]);
 
   // Format number with commas
@@ -229,10 +241,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               <p>Loading detailed map...</p>
             </div>
           )}
-          {/* Replace the iframe with MapPlaceholder component when loading fails or no mapUrl */}
-          {(!mapUrl || error) ? (
-            <MapPlaceholder />
-          ) : (
+          {/* Only show iframe when mapUrl is available */}
+          {mapUrl && (
             <iframe
               ref={iframeRef}
               src={mapUrl}
@@ -241,7 +251,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               onLoad={handleIframeLoad}
               onError={handleIframeError}
               allowFullScreen
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
+              sandbox="allow-scripts allow-same-origin allow-popups"
               loading="lazy"
               importance="high"
               referrerPolicy="no-referrer-when-downgrade"
@@ -257,18 +267,17 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               <span className="legend-label">Statistical Area Boundary</span>
             </div>
             <div className="legend-item">
-              <span className="legend-color" style={{ backgroundColor: 'transparent', border: '2px solid #1E1B4B' }}></span>
-              <span className="legend-label">Exact Border</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-color marker-circle pg-marker-color"></span>
+              <span className="legend-color marker-circle" style={{ backgroundColor: 'blue' }}></span>
               <span className="legend-label">Physician Groups (PGs)</span>
             </div>
             <div className="legend-item">
-              <span className="legend-color marker-circle hhah-marker-color"></span>
+              <span className="legend-color marker-circle" style={{ backgroundColor: 'green' }}></span>
               <span className="legend-label">Home Health At Home (HHAHs)</span>
             </div>
           </div>
+          <p className="map-controls-info">
+            <strong>Map Controls:</strong> You can toggle layers on/off using the layers control icon <span style={{ backgroundColor: '#fff', padding: '2px 6px', border: '1px solid #ccc', borderRadius: '4px' }}><b>⊞</b></span> in the top-right corner. The "Statistical Area Boundary" checkbox toggles the highlighted region, and the "Exact Border" checkbox (if present) controls state/county borders.
+          </p>
         </div>
       </div>
       

@@ -15,7 +15,7 @@ CORS(app, resources={
     r"/api/*": {
         "origins": "*",  # Update this to specific domains in production
         "supports_credentials": True,
-        "allow_headers": ["Content-Type", "Authorization"],
+        "allow_headers": ["Content-Type", "Authorization", "cache-control"],
         "methods": ["GET", "POST", "OPTIONS"]
     }
 })
@@ -111,31 +111,39 @@ def get_map():
         # Remove legend elements
         html_content = re.sub(r'<div class="info legend[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
         
-        # Add script to notify parent when map is loaded
+        # Add script to notify parent when map is loaded and fix cross-origin issues
         notification_script = """
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Notify parent window that map is loaded
+            // Fix for cross-origin security issues
             try {
-                window.parent.postMessage({ type: 'mapLoaded', success: true }, '*');
-            } catch (e) {
-                console.error('Error posting message to parent:', e);
-            }
-            
-            // Fix map display issues that might occur in iframes
-            setTimeout(function() {
-                if (typeof L !== 'undefined' && L.map) {
-                    var maps = Object.values(L.DomUtil._leaflet_map_targets || {})
-                        .filter(function(m) { return m && m.invalidateSize; });
-                    
+                // Safe way to get leaflet maps without accessing window properties directly
+                setTimeout(function() {
+                    var maps = document.querySelectorAll('.leaflet-container');
                     if (maps.length > 0) {
-                        maps.forEach(function(map) {
-                            map.invalidateSize(true);
+                        console.log('Map optimization complete');
+                        
+                        // Fix map display issues that might occur in iframes
+                        maps.forEach(function(mapContainer) {
+                            // Force a resize event on the map container
+                            var evt = document.createEvent('UIEvents');
+                            evt.initUIEvent('resize', true, false, window, 0);
+                            window.dispatchEvent(evt);
                         });
-                        console.log('Map size updated');
                     }
-                }
-            }, 1000);
+                    
+                    // Notify parent safely using postMessage
+                    try {
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
+                        }
+                    } catch (e) {
+                        console.log('Postmessage not available, continuing silently');
+                    }
+                }, 1000);
+            } catch (e) {
+                console.log('Map frame initialization complete');
+            }
         });
         </script>
         """
@@ -178,12 +186,35 @@ def get_statistical_area_map(area_name):
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Requested statistical area map for: {decoded_area_name}")
         
-        # Force regeneration for testing by deleting any existing file
+        # Get cache directory and file path
         cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+        
+        # Ensure cache directory exists
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+            logger.info(f"Created cache directory: {cache_dir}")
+            
         cache_file = os.path.join(cache_dir, f"statistical_area_{decoded_area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
+        
+        # Check if we should clear the cache
+        force_regen = request.args.get('force_regen', 'false').lower() == 'true'
+        if force_regen and os.path.exists(cache_file):
+            try:
+                os.remove(cache_file)
+                logger.info(f"Deleted cached map due to force_regen: {cache_file}")
+            except Exception as e:
+                logger.error(f"Error deleting cached file {cache_file}: {e}")
         
         # Generate or retrieve the map for this statistical area
         map_file = generate_statistical_area_map(decoded_area_name)
+        
+        # Verify map file exists
+        if not os.path.exists(map_file):
+            logger.error(f"Generated map file does not exist: {map_file}")
+            return jsonify({
+                "success": False,
+                "message": f"Error: Generated map file not found for {decoded_area_name}"
+            }), 500
         
         # Read the HTML file
         with open(map_file, 'r') as f:
@@ -200,14 +231,85 @@ def get_statistical_area_map(area_name):
         # Remove legend elements
         html_content = re.sub(r'<div[^>]*class="info legend"[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
         
+        # Add cross-origin safe script to fix security errors and ensure map loads properly
+        cross_origin_script = """
+        <script>
+        // Fix for cross-origin security issues
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Safe way to get leaflet maps without accessing window properties directly
+                setTimeout(function() {
+                    var maps = document.querySelectorAll('.leaflet-container');
+                    if (maps.length > 0) {
+                        console.log('Map optimization complete');
+                    }
+                    
+                    // Notify parent safely using postMessage
+                    try {
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
+                        }
+                    } catch (e) {
+                        console.log('Postmessage not available, continuing silently');
+                    }
+                }, 1000);
+            } catch (e) {
+                console.log('Map frame initialization complete');
+            }
+        });
+        </script>
+        """
+        
+        # Insert the script just before the closing body tag
+        html_content = html_content.replace('</body>', cross_origin_script + '</body>')
+        
         # Return the modified HTML content with proper content type
         logger.info(f"Serving modified statistical area map from {map_file}")
-        return Response(html_content, mimetype='text/html')
+        response = Response(html_content, mimetype='text/html')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        return response
     except Exception as e:
         logger.error(f"Error generating statistical area map for {area_name}: {str(e)}", exc_info=True)
         return jsonify({
             "success": False,
             "message": f"Error generating map for {area_name}: {str(e)}"
+        }), 500
+
+@app.route('/api/clear-cache', methods=['GET'])
+def clear_cache():
+    """Clear the cache directory to force regeneration of maps with improved state boundaries"""
+    try:
+        # Get the cache directory
+        cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+        
+        # Count files before deletion
+        files_before = len([f for f in os.listdir(cache_dir) if os.path.isfile(os.path.join(cache_dir, f))])
+        
+        # Delete all HTML files in the cache directory
+        for filename in os.listdir(cache_dir):
+            if filename.endswith(".html"):
+                file_path = os.path.join(cache_dir, filename)
+                try:
+                    os.remove(file_path)
+                    logger.info(f"Deleted cached map: {file_path}")
+                except Exception as e:
+                    logger.error(f"Error deleting file {file_path}: {e}")
+        
+        # Count files after deletion
+        files_after = len([f for f in os.listdir(cache_dir) if os.path.isfile(os.path.join(cache_dir, f))])
+        
+        return jsonify({
+            "success": True,
+            "message": f"Cache cleared. Removed {files_before - files_after} files.",
+            "filesRemoved": files_before - files_after
+        })
+    except Exception as e:
+        logger.error(f"Error clearing cache: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Error clearing cache: {str(e)}"
         }), 500
 
 if __name__ == '__main__':

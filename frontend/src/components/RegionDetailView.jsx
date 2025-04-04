@@ -1,5 +1,3 @@
-// RegionDetailView.jsx
-
 import React, { useState, useRef } from 'react';
 import { 
   regionStatistics, 
@@ -13,7 +11,6 @@ import './RegionDetailView.css';
 const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, onSelectStatisticalArea }) => {
   const [activeTab, setActiveTab] = useState('table');
   const [selectedMetric, setSelectedMetric] = useState('patients');
-  const [searchQuery, setSearchQuery] = useState('');
   const printRef = useRef(null);
   
   // Use the statisticalAreas prop directly
@@ -60,7 +57,7 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
     patients: 'Patients',
     physicianGroups: 'Physician Groups',
     agencies: 'Agencies',
-    activeOutcomes: 'Active Reactive Outcomes'
+    activeOutcomes: 'Active Outcomes'
   };
   
   // Handle printing the data
@@ -173,8 +170,6 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
 
   // Handle statistical area click
   const handleStatisticalAreaClick = (area) => {
-    console.log('RegionDetailView: MSA clicked:', area);
-    console.log('RegionDetailView: onSelectStatisticalArea exists:', !!onSelectStatisticalArea);
     if (onSelectStatisticalArea) {
       onSelectStatisticalArea(area);
     }
@@ -243,15 +238,6 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
         {/* Statistical Areas Table view */}
         {activeTab === 'table' && (
           <div className="region-stats-container animate-fade-in">
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder="Search statistical areas..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
             <div className="click-instruction">
               <i className="instruction-icon">ℹ️</i>
               <span>Click on any statistical area to view detailed information</span>
@@ -263,23 +249,19 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
                   <th>No. of Patients</th>
                   <th>No. of Physician Groups</th>
                   <th>No. of Agencies</th>
-                  <th>No. of Active Reactive Outcomes</th>
+                  <th>No. of Active Outcomes</th>
                 </tr>
               </thead>
               <tbody>
-                {allStatisticalAreas
-                  .filter(area => 
-                    area.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .map(area => (
-                    <tr key={area} onClick={() => handleStatisticalAreaClick(area)} className="clickable-row">
-                      <td className="area-name">{area}</td>
-                      <td>{formatNumber(statisticalAreaStatistics[area]?.patients || 0)}</td>
-                      <td>{formatNumber(statisticalAreaStatistics[area]?.physicianGroups || 0)}</td>
-                      <td>{formatNumber(statisticalAreaStatistics[area]?.agencies || 0)}</td>
-                      <td>{formatNumber(statisticalAreaStatistics[area]?.activeOutcomes || 0)}</td>
-                    </tr>
-                  ))}
+                {allStatisticalAreas.map(area => (
+                  <tr key={area} onClick={() => handleStatisticalAreaClick(area)} className="clickable-row">
+                    <td className="area-name">{area}</td>
+                    <td>{formatNumber(statisticalAreaStatistics[area]?.patients || 0)}</td>
+                    <td>{formatNumber(statisticalAreaStatistics[area]?.physicianGroups || 0)}</td>
+                    <td>{formatNumber(statisticalAreaStatistics[area]?.agencies || 0)}</td>
+                    <td>{formatNumber(statisticalAreaStatistics[area]?.activeOutcomes || 0)}</td>
+                  </tr>
+                ))}
                 <tr className="total-row">
                   <td><strong>Totals</strong></td>
                   <td><strong>{formatNumber(areaTotals.patients)}</strong></td>

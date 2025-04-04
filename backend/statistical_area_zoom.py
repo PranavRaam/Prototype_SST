@@ -1,58 +1,19 @@
 import folium
-import logging
+import geopandas as gpd
+import numpy as np
 import os
 import tempfile
-import time
-import traceback
 import random
-import numpy as np
-from folium.plugins import MousePosition, Fullscreen, Draw
-from branca.element import MacroElement, Figure
-from shapely.geometry import Point
-from functools import lru_cache
-import main
 from branca.element import Figure, MacroElement
 from jinja2 import Template
+import main  # Import the main module to reuse existing functions
+import logging
+import traceback
 from folium import plugins
-from folium.plugins import MiniMap, Search
-from branca.element import JavascriptLink, CssLink
-from shapely.geometry import shape, Polygon
-from difflib import get_close_matches
-import re
-
-# Flag for available modules
-SHAPEFILE_AVAILABLE = False
-GEOPANDAS_AVAILABLE = False
-GEOPY_AVAILABLE = False
-
-# Try to import optional modules but don't fail if they're not available
-try:
-    import shapefile
-    SHAPEFILE_AVAILABLE = True
-    logger = logging.getLogger(__name__)
-    logger.info("Shapefile module is available")
-except ImportError:
-    logger = logging.getLogger(__name__)
-    logger.warning("Shapefile module not available, will use fallback methods")
-
-try:
-    import geopandas as gpd
-    GEOPANDAS_AVAILABLE = True
-    logger.info("GeoPandas module is available")
-except ImportError:
-    logger.warning("GeoPandas module not available, will use fallback methods")
-
-try:
-    from geopy.geocoders import Nominatim
-    GEOPY_AVAILABLE = True
-    logger.info("Geopy module is available")
-except ImportError:
-    logger.warning("Geopy module not available, will use address fallback")
-
-# Constants
-CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
-if not os.path.exists(CACHE_DIR):
-    os.makedirs(CACHE_DIR)
+from folium.plugins import MousePosition, Draw, Fullscreen, MiniMap, Search
+from branca.element import Figure, JavascriptLink, CssLink
+from shapely.geometry import shape, Point
+from functools import lru_cache
 
 # Create a subclass of MacroElement to add legend to map
 class LegendControl(MacroElement):
@@ -87,232 +48,270 @@ class LegendControl(MacroElement):
             {% endmacro %}
         """)
 
-# Add a geocode_area function that was missing
-def geocode_area(area_name):
-    """
-    Geocode an area by name, extracting state information if available.
-    Returns a tuple of (coordinates, state_abbr) where coordinates is [lat, lon].
-    """
+def create_fallback_map(area_name, output_path):
+    """Create a fallback map for a specific area"""
     logger = logging.getLogger(__name__)
-    logger.info(f"Geocoding area: {area_name}")
+    logger.info(f"Creating fallback map for {area_name} at {output_path}")
     
-    coords = [39.8283, -98.5795]  # Default to center of US
-    state_abbr = None
+    # Ensure the cache directory exists
+    cache_dir = os.path.dirname(output_path)
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir)
+        logger.info(f"Created cache directory: {cache_dir}")
     
-    # Try to extract state abbreviation
-    if ',' in area_name:
-        parts = area_name.split(',')
-        if len(parts) >= 2:
-            state_part = parts[1].strip()
-            # Check if it's a state abbreviation
-            if len(state_part) == 2:
-                state_abbr = state_part
-            elif len(state_part) > 2:
-                # Map common state names to abbreviations
-                state_map = {
-                    'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
-                    'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
-                    'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
-                    'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
-                    'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
-                    'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
-                    'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
-                    'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
-                    'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
-                    'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
-                    'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
-                    'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
-                    'wisconsin': 'WI', 'wyoming': 'WY'
-                }
-                state_abbr = state_map.get(state_part.lower(), None)
+    fig = Figure(width=800, height=600)
     
-    # Use a mapping of common MSAs to their coordinates, with a focus on areas that appear in the logs
-    msa_coords = {
-        # Florida areas
-        'deltona-daytona beach-ormond beach': {'coords': [29.1969, -81.0311], 'state': 'FL'},
-        'daytona beach': {'coords': [29.2108, -81.0228], 'state': 'FL'},
-        'deltona': {'coords': [28.9005, -81.2636], 'state': 'FL'},
-        'ormond beach': {'coords': [29.2858, -81.0559], 'state': 'FL'},
-        'tampa': {'coords': [27.9506, -82.4572], 'state': 'FL'},
-        'miami': {'coords': [25.7617, -80.1918], 'state': 'FL'},
-        'orlando': {'coords': [28.5383, -81.3792], 'state': 'FL'},
-        'jacksonville': {'coords': [30.3322, -81.6557], 'state': 'FL'},
+    # Default coordinates if area not recognized
+    coords = [40.7128, -74.0060]  # NYC default
+    zoom_level = 10
+    title = "New York Metro Area"
+    
+    # Special handling for some known areas
+    if "New York" in area_name or "Newark" in area_name or "Jersey City" in area_name:
+        coords = [40.7128, -74.0060]  # NYC coordinates
+        zoom_level = 10
+        title = "New York Metro Area"
+    elif "Los Angeles" in area_name or "Anaheim" in area_name or "Long Beach" in area_name:
+        coords = [34.0522, -118.2437]  # LA coordinates
+        zoom_level = 9
+        title = "Los Angeles Metro Area"
+    elif "Chicago" in area_name:
+        coords = [41.8781, -87.6298]  # Chicago coordinates
+        zoom_level = 9
+        title = "Chicago Metro Area"
+    elif "San Francisco" in area_name or "Oakland" in area_name or "San Jose" in area_name:
+        coords = [37.7749, -122.4194]  # SF coordinates
+        zoom_level = 9
+        title = "San Francisco Bay Area"
+    elif "Florida" in area_name or "Tampa" in area_name or "Orlando" in area_name or "Miami" in area_name or "Jacksonville" in area_name:
+        coords = [28.0000, -82.4800]  # Florida coordinates
+        zoom_level = 8
+        title = "Florida Metro Area"
+    elif "Lakeland" in area_name or "Winter Haven" in area_name:
+        coords = [28.0395, -81.9498]  # Lakeland coordinates
+        zoom_level = 9
+        title = "Lakeland-Winter Haven Area"
+    
+    folium_map = folium.Map(
+        location=coords,
+        zoom_start=zoom_level,
+        tiles='cartodbpositron'
+    )
+    
+    # Add marker for the center
+    folium.Marker(
+        coords,
+        popup=title,
+        icon=folium.Icon(color='blue')
+    ).add_to(folium_map)
+    
+    # Add a circle to represent the general metro area
+    circle = folium.Circle(
+        location=coords,
+        radius=20000,  # 20km radius
+        color='#4F46E5',
+        fill=True,
+        fill_color='#4F46E5',
+        fill_opacity=0.2,
+        weight=3,
+        opacity=0.9
+    ).add_to(folium_map)
+    
+    # Create mock PGs and HHAHs within the circle
+    # For fallback map, we'll create a fixed number of PGs and HHAHs
+    pg_groups = ["Group A", "Group B", "Group C", "Group D"]
+    num_pgs = 5
+    num_hhahs = 7
+    
+    # Create PG feature group
+    pg_group = folium.FeatureGroup(name="Physician Groups (PGs)")
+    
+    # Generate mock PGs
+    for i in range(num_pgs):
+        # Generate a random angle and distance within the circle radius
+        angle = random.uniform(0, 2 * np.pi)
+        # Scale distance to ensure points are within the circle
+        distance = random.uniform(2000, 18000)  # Between 2km and 18km from center
         
-        # Add Lake Havasu City-Kingman, AZ which was in previous logs
-        'lake havasu city-kingman': {'coords': [34.4839, -114.3225], 'state': 'AZ'},
-        'lake havasu city': {'coords': [34.4839, -114.3225], 'state': 'AZ'},
-        'kingman': {'coords': [35.1894, -114.0532], 'state': 'AZ'},
+        # Calculate the coordinates (remember folium uses [lat, lng])
+        lat = coords[0] + (distance / 111000) * np.cos(angle)  # 111000 meters is roughly 1 degree of latitude
+        lng = coords[1] + (distance / (111000 * np.cos(np.radians(coords[0])))) * np.sin(angle)
         
-        # Add some other common MSAs
-        'new york': {'coords': [40.7128, -74.0060], 'state': 'NY'},
-        'chicago': {'coords': [41.8781, -87.6298], 'state': 'IL'},
-        'los angeles': {'coords': [34.0522, -118.2437], 'state': 'CA'},
-        'san francisco': {'coords': [37.7749, -122.4194], 'state': 'CA'},
-        'dallas': {'coords': [32.7767, -96.7970], 'state': 'TX'},
-        'houston': {'coords': [29.7604, -95.3698], 'state': 'TX'},
-        'phoenix': {'coords': [33.4484, -112.0740], 'state': 'AZ'},
-        'philadelphia': {'coords': [39.9526, -75.1652], 'state': 'PA'},
-        'san antonio': {'coords': [29.4241, -98.4936], 'state': 'TX'},
-        'san diego': {'coords': [32.7157, -117.1611], 'state': 'CA'},
-        'austin': {'coords': [30.2672, -97.7431], 'state': 'TX'},
-        'jacksonville': {'coords': [30.3322, -81.6557], 'state': 'FL'},
-        'columbus': {'coords': [39.9612, -82.9988], 'state': 'OH'},
-        'indianapolis': {'coords': [39.7684, -86.1581], 'state': 'IN'},
-        'seattle': {'coords': [47.6062, -122.3321], 'state': 'WA'},
-        'denver': {'coords': [39.7392, -104.9903], 'state': 'CO'},
-        'boston': {'coords': [42.3601, -71.0589], 'state': 'MA'},
-        'portland': {'coords': [45.5051, -122.6750], 'state': 'OR'},
-        'las vegas': {'coords': [36.1699, -115.1398], 'state': 'NV'},
-        'detroit': {'coords': [42.3314, -83.0458], 'state': 'MI'},
+        pg_data = {
+            "id": i + 1,
+            "name": f"PG-{pg_groups[i % len(pg_groups)]}-{area_name[:3]}{i+1}",
+            "location": [lat, lng],
+            "group": pg_groups[i % len(pg_groups)],
+            "physicians": random.randint(3, 15),
+            "patients": random.randint(50, 300),
+            "status": random.choice(["Active", "Onboarding", "Inactive"]),
+            "address": f"{random.randint(100, 999)} Healthcare Ave, {area_name.split(',')[0]}",
+            "contact": f"(555) {random.randint(100, 999)}-{random.randint(1000, 9999)}"
+        }
+        
+        # Create popup with PG details
+        popup_html = f"""
+        <div style="min-width: 180px;">
+            <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">{pg_data['name']}</h4>
+            <p style="margin: 4px 0;"><strong>Group:</strong> {pg_data['group']}</p>
+            <p style="margin: 4px 0;"><strong>Physicians:</strong> {pg_data['physicians']}</p>
+            <p style="margin: 4px 0;"><strong>Patients:</strong> {pg_data['patients']}</p>
+            <p style="margin: 4px 0;"><strong>Status:</strong> {pg_data['status']}</p>
+            <p style="margin: 4px 0;"><strong>Address:</strong> {pg_data['address']}</p>
+            <p style="margin: 4px 0;"><strong>Contact:</strong> {pg_data['contact']}</p>
+        </div>
+        """
+        
+        # Create marker
+        folium.Marker(
+            location=pg_data['location'],
+            popup=folium.Popup(popup_html, max_width=300),
+            tooltip=f"PG: {pg_data['name']}",
+            icon=folium.Icon(color='blue', icon="user-md", prefix="fa")
+        ).add_to(pg_group)
+    
+    # Add PG group to map
+    pg_group.add_to(folium_map)
+    
+    # Create HHAH feature group
+    hhah_group = folium.FeatureGroup(name="Home Health At Home (HHAHs)")
+    
+    # HHAH name components
+    hhah_name_prefixes = ["HomeHealth", "CaringHands", "ComfortCare", "Elite", "Premier", "Wellness", "Guardian"]
+    hhah_name_suffixes = ["Services", "Agency", "Associates", "Partners", "Network", "Group", "Care"]
+    
+    # Generate mock HHAHs
+    for i in range(num_hhahs):
+        # Generate a random angle and distance within the circle radius
+        angle = random.uniform(0, 2 * np.pi)
+        # Scale distance to ensure points are within the circle
+        distance = random.uniform(2000, 18000)  # Between 2km and 18km from center
+        
+        # Calculate the coordinates (remember folium uses [lat, lng])
+        lat = coords[0] + (distance / 111000) * np.cos(angle)  # 111000 meters is roughly 1 degree of latitude
+        lng = coords[1] + (distance / (111000 * np.cos(np.radians(coords[0])))) * np.sin(angle)
+        
+        prefix = random.choice(hhah_name_prefixes)
+        suffix = random.choice(hhah_name_suffixes)
+        
+        hhah_data = {
+            "id": i + 1,
+            "name": f"{prefix} {suffix}",
+            "location": [lat, lng],
+            "services": random.randint(2, 8),
+            "patients": random.randint(20, 150),
+            "status": random.choice(["Active", "Onboarding", "Inactive"]),
+            "address": f"{random.randint(100, 999)} Medical Blvd, {area_name.split(',')[0]}",
+            "contact": f"(555) {random.randint(100, 999)}-{random.randint(1000, 9999)}"
+        }
+        
+        # Create popup with HHAH details
+        popup_html = f"""
+        <div style="min-width: 180px;">
+            <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">{hhah_data['name']}</h4>
+            <p style="margin: 4px 0;"><strong>Services:</strong> {hhah_data['services']}</p>
+            <p style="margin: 4px 0;"><strong>Patients:</strong> {hhah_data['patients']}</p>
+            <p style="margin: 4px 0;"><strong>Status:</strong> {hhah_data['status']}</p>
+            <p style="margin: 4px 0;"><strong>Address:</strong> {hhah_data['address']}</p>
+            <p style="margin: 4px 0;"><strong>Contact:</strong> {hhah_data['contact']}</p>
+        </div>
+        """
+        
+        # Create marker
+        folium.Marker(
+            location=hhah_data['location'],
+            popup=folium.Popup(popup_html, max_width=300),
+            tooltip=f"HHAH: {hhah_data['name']}",
+            icon=folium.Icon(color='green', icon="home", prefix="fa")
+        ).add_to(hhah_group)
+    
+    # Add HHAH group to map
+    hhah_group.add_to(folium_map)
+    
+    # Add legend for PGs and HHAHs
+    legend_colors = {
+        "Physician Groups (PGs)": "blue",
+        "Home Health At Home (HHAHs)": "green",
+        "Metro Area": "#4F46E5"
     }
     
-    # Normalize the area name for lookup
-    normalized_name = area_name.lower().split(',')[0].strip()
+    legend = LegendControl(
+        title="Map Legend",
+        color_dict=legend_colors,
+        position="bottomright"
+    )
+    folium_map.add_child(legend)
     
-    # Try to match the area name with one in our mapping
-    for area, data in msa_coords.items():
-        if area in normalized_name or normalized_name in area:
-            coords = data['coords']
-            if not state_abbr:  # Only set if not already extracted
-                state_abbr = data['state']
-            logger.info(f"Found coordinates for {area_name} in lookup table: {coords}")
-            return coords, state_abbr
+    # Add description box
+    title_html = f'''
+        <div style="position: fixed; 
+                    top: 10px; left: 50px; width: 300px; height: auto;
+                    background-color: white; border-radius: 8px;
+                    border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                    font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+            <h4 style="margin-top: 0; color: #1F2937;">{title}</h4>
+            <p style="font-size: 12px; margin-bottom: 0;">
+                Showing approximate location of {area_name}. The highlighted region shows the general area.
+            </p>
+            <p style="font-size: 12px; margin-bottom: 0;">
+                Showing {num_pgs} PGs and {num_hhahs} HHAHs in this area.
+            </p>
+        </div>
+    '''
+    folium_map.get_root().html.add_child(folium.Element(title_html))
     
-    # If no exact match, try to determine state from the area name as a fallback
-    if state_abbr:
-        logger.info(f"Using default coordinates for state: {state_abbr}")
-        # Use the state to provide more specific coordinates if possible
-        state_coords = {
-            'FL': [27.6648, -81.5158],  # Florida center
-            'CA': [36.7783, -119.4179],  # California center
-            'TX': [31.9686, -99.9018],  # Texas center
-            'NY': [42.9538, -75.5268],  # New York center
-            'AZ': [34.0489, -111.0937]   # Arizona center
-        }
-        if state_abbr in state_coords:
-            coords = state_coords[state_abbr]
+    # Add map controls
+    folium.plugins.Fullscreen().add_to(folium_map)
+    folium.plugins.MousePosition().add_to(folium_map)
+    folium.plugins.Draw(export=True).add_to(folium_map)
+    folium.plugins.MeasureControl(primary_length_unit='miles').add_to(folium_map)
+    folium_map.add_child(folium.LayerControl())
     
-    logger.info(f"Geocoded {area_name} to {coords}, state code: {state_abbr}")
-    return coords, state_abbr
+    # Add safe script for cross-origin communication
+    safe_script = """
+    <script>
+    // Safe cross-origin communication
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for map to fully render
+        setTimeout(function() {
+            console.log('Fallback map fully loaded and safe for cross-origin access');
+            
+            // Add protection for Leaflet objects to prevent cross-origin issues
+            try {
+                // Safely handle resize to avoid security errors
+                window.addEventListener('resize', function() {
+                    // Find map containers without accessing unsafe properties
+                    var mapContainers = document.querySelectorAll('.leaflet-container');
+                    if (mapContainers.length > 0) {
+                        // Trigger visible resize
+                        mapContainers.forEach(function(container) {
+                            // This is a safe way to trigger a resize
+                            var evt = document.createEvent('UIEvents');
+                            evt.initUIEvent('resize', true, false, window, 0);
+                            window.dispatchEvent(evt);
+                        });
+                    }
+                });
+            } catch (e) {
+                console.log('Continuing without advanced map handling');
+            }
+        }, 1000);
+    });
+    </script>
+    """
+    folium_map.get_root().html.add_child(folium.Element(safe_script))
+    
+    # Save to file
+    fig.add_child(folium_map)
+    folium_map.save(output_path)
+    
+    logger.info(f"Fallback map saved to {output_path}")
+    return output_path
 
-def create_fallback_map(area_name, output_path=None, use_alternative_loading=False):
-    """Create a fallback map for a specific area with boundary shapes when possible"""
-    logger = logging.getLogger(__name__)
-    
-    # Initialize variables
-    folium_map = None
-    coords = None
-    state_abbr = None
-    county_data = None
-    boundary_geometry = None
-    
-    try:
-        # Try to generate a more accurate representation with available data
-        logger.info(f"Creating fallback map for {area_name} (use_alternative_loading={use_alternative_loading})")
-        
-        # Attempt to get area coordinates from geocoding
-        geocode_result = handle_special_cities(area_name)
-        if geocode_result:
-            logger.info(f"Using special geocoding for {area_name}: {geocode_result}")
-            coords, state_abbr = geocode_result
-        else:
-            # Try external geocoding for more reliable coordinates
-            coords, state_abbr = geocode_area(area_name)
-            logger.info(f"Geocoded {area_name} to {coords} in state {state_abbr}")
-        
-        if not coords:
-            logger.warning(f"Failed to geocode {area_name}, using default US coordinates")
-            coords = [39.8283, -98.5795]  # Default to center of US
-        
-        # Create base map
-        folium_map = folium.Map(
-            location=coords,
-            zoom_start=9,
-            tiles='cartodbpositron',
-            prefer_canvas=True,
-            control_scale=True
-        )
-        
-        # Try simplified version without shapefile dependency
-        try:
-            # This is a basic default map that works without shapefile
-            # Add a circle to represent the general metro area
-            logger.info(f"Creating simplified map for {area_name} with circular boundary")
-            
-            circle = folium.Circle(
-                location=coords,
-                radius=20000,  # 20km radius
-                color='#4F46E5',
-                fill=True,
-                fill_color='#4F46E5',
-                fill_opacity=0.2,
-                weight=3,
-                dash_array='5, 5'
-            ).add_to(folium_map)
-            
-            # Add a marker at the center point
-            folium.Marker(
-                coords,
-                popup=f"{area_name}",
-                icon=folium.Icon(color='blue')
-            ).add_to(folium_map)
-            
-            # Add a title
-            title_html = f'''
-            <div style="position: fixed; 
-                        top: 10px; left: 50%; transform: translateX(-50%); 
-                        width: auto; min-width: 300px; height: auto;
-                        background-color: white; border-radius: 8px;
-                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
-                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
-                <h4 style="margin: 0; color: #1F2937; text-align: center;">Map View of {area_name}</h4>
-                <p style="font-size: 12px; margin: 5px 0 0 0; text-align: center;">
-                    Showing approximate area location.
-                </p>
-            </div>
-            '''
-            folium_map.get_root().html.add_child(folium.Element(title_html))
-            
-            # Add mouse position and fullscreen control
-            folium.plugins.MousePosition().add_to(folium_map)
-            folium.plugins.Fullscreen().add_to(folium_map)
-            
-            # Save to output file if provided
-            if output_path:
-                folium_map.save(output_path)
-                with open(output_path, 'r') as f:
-                    return f.read()
-                    
-            # If no output path provided, convert to HTML
-            html = folium_map._repr_html_()
-            return html
-            
-        except Exception as e:
-            logger.error(f"Error creating simplified map: {str(e)}")
-            # Create the most basic possible map
-            m = folium.Map(location=coords, zoom_start=10)
-            if output_path:
-                m.save(output_path)
-                with open(output_path, 'r') as f:
-                    return f.read()
-            return m._repr_html_()
-            
-    except Exception as e:
-        logger.error(f"Complete failure in map creation: {str(e)}")
-        logger.error(traceback.format_exc())
-        # Create an emergency fallback map
-        emergency_map = folium.Map(location=[39.8283, -98.5795], zoom_start=4)
-        emergency_map.get_root().html.add_child(folium.Element(
-            f'<div style="text-align:center;padding:10px;font-family:sans-serif">'
-            f'<h3>Map Unavailable</h3>'
-            f'<p>We apologize, but we could not generate a detailed map for {area_name}.</p>'
-            f'</div>'
-        ))
-        if output_path:
-            emergency_map.save(output_path)
-            with open(output_path, 'r') as f:
-                return f.read()
-        return emergency_map._repr_html_()
+# Cache directory setup
+CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+if not os.path.exists(CACHE_DIR):
+    os.makedirs(CACHE_DIR)
 
 # Cache for processed data
 @lru_cache(maxsize=1)
@@ -321,44 +320,13 @@ def get_processed_data():
     logger = logging.getLogger(__name__)
     try:
         logger.info("Loading MSA, county, and state data...")
-        
-        # Handle potential fiona errors
-        try:
-            import fiona
-            # Fix for "module 'fiona' has no attribute 'path'" error
-            if not hasattr(fiona, 'path'):
-                # Create a fallback implementation if needed
-                logger.warning("Fiona module missing 'path' attribute. Using alternative method.")
-                # For older versions of fiona/geopandas, use direct file access instead
-                from shapely.geometry import shape
-                import geopandas as gpd
-                
-                # Use geopandas without fiona.path dependency
-                msa_data = main.get_msa_data(use_alternative_loading=True)
-                county_data = main.get_county_data(use_alternative_loading=True)
-                states_data = main.get_states_data(use_alternative_loading=True)
-            else:
-                # Use standard data loading functions
-                msa_data = main.get_msa_data()
-                county_data = main.get_county_data()
-                states_data = main.get_states_data()
-                
-        except ImportError:
-            logger.warning("Fiona import error. Using direct loading methods.")
-            # Try to use alternative loading methods that don't rely on fiona directly
-            msa_data = main.get_msa_data(use_alternative_loading=True)
-            county_data = main.get_county_data(use_alternative_loading=True)
-            states_data = main.get_states_data(use_alternative_loading=True)
-            
-        # Get county to MSA relationships    
-        county_to_msa = main.get_county_msa_relationships()
-        
-        if msa_data is None or len(msa_data) == 0:
-            logger.error("Failed to load MSA data!")
-            return None, None, None, {}
-            
+        msa_data = main.get_msa_data()
         logger.info(f"Loaded MSA data with {len(msa_data)} entries")
         logger.info(f"Sample MSA names: {', '.join(msa_data['NAME'].head().tolist())}")
+        
+        county_data = main.get_county_data()
+        states_data = main.get_states_data()
+        county_to_msa = main.get_county_msa_relationships()
         
         # Pre-process and simplify geometries
         logger.info("Pre-processing and simplifying geometries...")
@@ -366,9 +334,11 @@ def get_processed_data():
             logger.error("No geometry column found in MSA data!")
             return None, None, None, {}
             
+        # Use different simplification levels based on geometry complexity
         msa_data['geometry'] = msa_data.geometry.simplify(0.01)
         county_data['geometry'] = county_data.geometry.simplify(0.01)
-        states_data['geometry'] = states_data.geometry.simplify(0.01)
+        # Use less simplification for states to preserve coastal boundaries
+        states_data['geometry'] = states_data.geometry.simplify(0.001)
         
         return msa_data, county_data, states_data, county_to_msa
     except Exception as e:
@@ -474,18 +444,12 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
         </div>
         """
         
-        # Create marker
-        color = "blue"  # Default color
-        if pg['status'] == "Onboarding":
-            color = "orange"
-        elif pg['status'] == "Inactive":
-            color = "gray"
-            
+        # Always use blue for PGs for better distinction
         folium.Marker(
             location=pg['location'],
             popup=folium.Popup(popup_html, max_width=300),
             tooltip=f"PG: {pg['name']}",
-            icon=folium.Icon(color=color, icon="user-md", prefix="fa")
+            icon=folium.Icon(color='blue', icon="user-md", prefix="fa")
         ).add_to(pg_group)
     
     # Add the PG group to the map
@@ -508,18 +472,12 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
         </div>
         """
         
-        # Create marker
-        color = "green"  # Default color
-        if hhah['status'] == "Onboarding":
-            color = "orange"
-        elif hhah['status'] == "Inactive":
-            color = "gray"
-            
+        # Always use green for HHAHs for better distinction
         folium.Marker(
             location=hhah['location'],
             popup=folium.Popup(popup_html, max_width=300),
             tooltip=f"HHAH: {hhah['name']}",
-            icon=folium.Icon(color=color, icon="home", prefix="fa")
+            icon=folium.Icon(color='green', icon="home", prefix="fa")
         ).add_to(hhah_group)
     
     # Add the HHAH group to the map
@@ -528,12 +486,9 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
     
     # Add legend for PGs and HHAHs
     legend_colors = {
-        "PG - Active": "blue",
-        "PG - Onboarding": "orange",
-        "PG - Inactive": "gray",
-        "HHAH - Active": "green",
-        "HHAH - Onboarding": "orange",
-        "HHAH - Inactive": "gray"
+        "Physician Groups (PGs)": "blue",
+        "Home Health At Home (HHAHs)": "green",
+        "Metro Area": "#4F46E5"
     }
     
     legend = LegendControl(
@@ -543,490 +498,233 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
     )
     m.add_child(legend)
 
-def handle_special_cities(area_name):
+def generate_statistical_area_map(area_name):
     """
-    Handle special cases for cities that need custom coordinates.
-    Returns a tuple of (coordinates, state_abbr) or None if not a special case.
+    Generate a map zoomed in on a specific statistical area (MSA)
     """
-    logger = logging.getLogger(__name__)
-    logger.info(f"Checking if {area_name} is a special case")
-    
-    # Lower case for case-insensitive matching
-    area_lower = area_name.lower()
-    
-    # Special case mapping
-    special_cases = {
-        'fairbanks': {'coords': [64.8378, -147.7164], 'state': 'AK'},
-        'flagstaff': {'coords': [35.1983, -111.6513], 'state': 'AZ'},
-        'sedona': {'coords': [34.8697, -111.7610], 'state': 'AZ'},
-        'prescott': {'coords': [34.5400, -112.4685], 'state': 'AZ'},
-        'gainesville': {'coords': [29.6516, -82.3248], 'state': 'FL'},
-        'lake havasu city': {'coords': [34.4839, -114.3225], 'state': 'AZ'},
-        'lake havasu city-kingman': {'coords': [34.8394, -114.1522], 'state': 'AZ'},
-        'deltona-daytona beach-ormond beach': {'coords': [29.1969, -81.0311], 'state': 'FL'},
-        'daytona beach': {'coords': [29.2108, -81.0228], 'state': 'FL'},
-        'deltona': {'coords': [28.9005, -81.2636], 'state': 'FL'}
-    }
-    
-    # Check for exact match
-    if area_lower in special_cases:
-        coords = special_cases[area_lower]['coords']
-        state = special_cases[area_lower]['state']
-        logger.info(f"Found exact match in special cases for {area_name}: {coords}, {state}")
-        return coords, state
-    
-    # Check for partial match
-    for city, data in special_cases.items():
-        if city in area_lower or area_lower in city:
-            coords = data['coords']
-            state = data['state']
-            logger.info(f"Found partial match in special cases for {area_name}: {coords}, {state}")
-            return coords, state
-    
-    # Special handling for MSAs with commas
-    if ',' in area_lower:
-        city_part = area_lower.split(',')[0].strip()
-        
-        # Check city part against special cases
-        for city, data in special_cases.items():
-            if city in city_part or city_part in city:
-                coords = data['coords']
-                state = data['state']
-                logger.info(f"Found match using city part '{city_part}' for {area_name}: {coords}, {state}")
-                return coords, state
-    
-    # No match found
-    logger.info(f"No special case match found for {area_name}")
-    return None
-
-def generate_statistical_area_map(area_name=None, lat=None, lon=None, zoom=10, force_detailed=False, 
-                            use_cached=True, exact_boundary=False, use_alternative_loading=False,
-                            display_pgs=False, display_hhahs=False):
-    """
-    Generate an HTML map visualization for a statistical area.
-    If area_name is provided, the function will look up the coordinates and generate a map for that area.
-    If lat and lon are provided, a map will be generated centered on those coordinates.
-    
-    Parameters:
-    - area_name: The name of the statistical area (e.g. 'Boston, MA')
-    - lat: Latitude for map center (used if area_name is None)
-    - lon: Longitude for map center (used if area_name is None)
-    - zoom: Zoom level for the map (1-18, higher values zoom in more)
-    - force_detailed: Force detailed statistical area boundaries
-    - use_cached: Use cached map if available
-    - exact_boundary: Show exact boundary rather than approximate
-    - use_alternative_loading: Use alternative loading method for shapefile data
-    - display_pgs: Show Physician Groups on the map
-    - display_hhahs: Show Home Health At Home agencies on the map
-    
-    Returns:
-    - HTML string containing the map visualization
-    """
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
-    # Create cache directory if it doesn't exist
-    if not os.path.exists(CACHE_DIR):
-        os.makedirs(CACHE_DIR)
+    logger.info(f"Generating map for statistical area: {area_name}")
     
-    # If coordinates are provided and area_name is not, generate map by coordinates
-    if area_name is None and lat is not None and lon is not None:
-        logger.info(f"Generating map for coordinates: lat={lat}, lon={lon}, zoom={zoom}")
-        try:
-            # Create a map centered on the specified coordinates
-            m = folium.Map(
-                location=[lat, lon],
-                zoom_start=zoom,
-                tiles='cartodbpositron',
-                prefer_canvas=True
-            )
-            
-            # Add a marker at the specified location
-            folium.Marker(
-                [lat, lon],
-                popup="Selected Location",
-                icon=folium.Icon(color='blue')
-            ).add_to(m)
-            
-            # Add essential controls
-            folium.plugins.Fullscreen().add_to(m)
-            folium.plugins.MousePosition().add_to(m)
-            
-            # Create temporary file for the map
-            fd, temp_path = tempfile.mkstemp(suffix='.html', prefix='coord_map_', dir=CACHE_DIR)
-            os.close(fd)
-            
-            # Save map to the temporary file
-            m.save(temp_path)
-            
-            # Read the content of the file
-            with open(temp_path, 'r') as f:
-                map_html = f.read()
-                
-            return map_html
-            
-        except Exception as e:
-            logger.error(f"Error generating map by coordinates: {str(e)}")
-            logger.error(traceback.format_exc())
-            # Create a fallback map
-            return create_fallback_map("Custom Location", None, use_alternative_loading)
+    # Generate cache filename
+    cache_file = os.path.join(CACHE_DIR, f"statistical_area_{area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
     
-    # If area_name is provided, generate map by area name
-    if area_name:
-        logger.info(f"Generating map for statistical area: {area_name}")
+    # Check cache first
+    if os.path.exists(cache_file):
+        logger.info(f"Using cached map from {cache_file}")
+        return cache_file
+    
+    # Get pre-processed data
+    msa_data, county_data, states_data, county_to_msa = get_processed_data()
+    if msa_data is None or len(msa_data) == 0:
+        logger.error("Failed to load MSA data or MSA data is empty")
+        return create_fallback_map(area_name, cache_file)
+    
+    try:
+        # Normalize the area name for comparison
+        normalized_area_name = area_name.lower().strip()
+        logger.info(f"Normalized area name: {normalized_area_name}")
         
-        # Always generate a new cache file in production with a timestamp to avoid caching issues
-        sanitized_name = area_name.replace(' ', '_').replace(',', '').replace('-', '_')
-        cache_file = os.path.join(CACHE_DIR, f"statistical_area_{sanitized_name}_{int(time.time())}.html")
-        logger.info(f"Using dynamic cache file: {cache_file}")
+        # Log available MSA names for debugging
+        logger.info("Available MSA names:")
+        for name in msa_data['NAME'].head(10).tolist():
+            logger.info(f"  - {name}")
         
-        # Skip cache check - always generate a fresh map
-        use_cached = False
+        # Create normalized versions of MSA names
+        msa_data['normalized_name'] = msa_data['NAME'].str.lower().str.strip()
         
-        # If we made it here, we need to generate a new map
-        # Get pre-processed data
-        try:
-            # Direct import to ensure we get the latest data
-            from main import get_msa_data, get_county_data, get_states_data
-            logger.info(f"Loading data (use_alternative_loading={use_alternative_loading})")
-            msa_data = get_msa_data(use_alternative_loading=use_alternative_loading)
-            county_data = get_county_data(use_alternative_loading=use_alternative_loading)
-            states_data = get_states_data(use_alternative_loading=use_alternative_loading)
-            county_to_msa = None  # We'll derive this if needed
+        # Try exact match first
+        target_area = None
+        exact_matches = msa_data[msa_data['normalized_name'] == normalized_area_name]
+        if not exact_matches.empty:
+            target_area = exact_matches.iloc[0]
+            logger.info(f"Found exact match: {target_area['NAME']}")
+        
+        # If no exact match, try matching main city name
+        if target_area is None:
+            city_name = normalized_area_name.split(',')[0].split('-')[0].strip()
+            logger.info(f"Trying to match city name: {city_name}")
             
-            if msa_data is None or len(msa_data) == 0:
-                logger.error("Failed to load MSA data directly")
-                return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-            logger.info(f"Successfully loaded {len(msa_data)} MSAs directly")
-        except Exception as e:
-            logger.error(f"Error loading MSA data directly: {str(e)}")
-            logger.error(traceback.format_exc())
-            
-            # Fallback to the pre-processed data method
-            msa_data, county_data, states_data, county_to_msa = get_processed_data()
-            if msa_data is None or len(msa_data) == 0:
-                logger.error("Failed to load MSA data from processed data")
-                return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-        try:
-            # Check if this is a special city that needs custom handling
-            special_city_area = handle_special_cities(area_name)
-            if special_city_area is not None:
-                logger.info(f"Using special city handler for {area_name}")
-                target_area = special_city_area
+            # Try exact city match first
+            city_matches = msa_data[msa_data['normalized_name'].str.startswith(city_name + ',', na=False)]
+            if not city_matches.empty:
+                target_area = city_matches.iloc[0]
+                logger.info(f"Found exact city match: {target_area['NAME']}")
             else:
-                # Normalize the area name for comparison
-                normalized_area_name = area_name.lower().strip()
-                logger.info(f"Normalized area name: {normalized_area_name}")
-                
-                # Log available MSA names for debugging
-                logger.info("Available MSA names:")
-                for name in msa_data['NAME'].head(10).tolist():
-                    logger.info(f"  - {name}")
-                
-                # Create normalized versions of MSA names
-                msa_data['normalized_name'] = msa_data['NAME'].str.lower().str.strip()
-                
-                # First, try to extract the city name to improve matching
-                if ',' in area_name:
-                    city_part = area_name.split(',')[0].strip()
-                    state_part = area_name.split(',')[1].strip() if len(area_name.split(',')) > 1 else ""
-                    logger.info(f"City part: {city_part}, State part: {state_part}")
-                else:
-                    city_part = area_name
-                    state_part = ""
-                
-                # Try exact match first
-                target_area = None
-                exact_matches = msa_data[msa_data['normalized_name'] == normalized_area_name]
-                if not exact_matches.empty:
-                    target_area = exact_matches.iloc[0]
-                    logger.info(f"Found exact match: {target_area['NAME']}")
-                
-                # If no exact match, try matching with city and state parts
-                if target_area is None and city_part and state_part:
-                    logger.info(f"Trying city and state match for {city_part}, {state_part}")
-                    # Try to find MSAs that contain both the city and state
-                    city_state_matches = msa_data[
-                        msa_data['normalized_name'].str.contains(city_part.lower(), case=False, na=False) & 
-                        msa_data['normalized_name'].str.contains(state_part.lower(), case=False, na=False)
-                    ]
-                    if not city_state_matches.empty:
-                        target_area = city_state_matches.iloc[0]
-                        logger.info(f"Found city+state match: {target_area['NAME']}")
-                
-                # If still no match, try matching on city name only
-                if target_area is None and city_part:
-                    # Extract city name, handling various formats
-                    city_name = city_part.lower()
-                    logger.info(f"Trying to match city name: {city_name}")
-                    
-                    # Try exact city match first (at the beginning of the name)
-                    city_matches = msa_data[msa_data['normalized_name'].str.startswith(city_name + ',', na=False)]
-                    if not city_matches.empty:
-                        target_area = city_matches.iloc[0]
-                        logger.info(f"Found exact city match: {target_area['NAME']}")
-                    else:
-                        # Try fuzzy city match with word boundaries
-                        city_matches = msa_data[msa_data['normalized_name'].str.contains(r'\b' + city_name + r'\b', regex=True, case=False, na=False)]
-                        if not city_matches.empty:
-                            target_area = city_matches.iloc[0]
-                            logger.info(f"Found fuzzy city match: {target_area['NAME']}")
-                
-                # If still no match, try partial match with word boundaries
-                if target_area is None:
-                    partial_matches = msa_data[msa_data['normalized_name'].str.contains(r'\b' + normalized_area_name + r'\b', regex=True, case=False, na=False)]
-                    if not partial_matches.empty:
-                        target_area = partial_matches.iloc[0]
-                        logger.info(f"Found partial match: {target_area['NAME']}")
-                
-                # If still no match, try fuzzy matching with the entire name or city name
-                if target_area is None:
-                    from difflib import get_close_matches
-                    # Try with the full name first
-                    available_names = msa_data['normalized_name'].tolist()
-                    close_matches = get_close_matches(normalized_area_name, available_names, n=3, cutoff=0.6)
-                    
-                    # If we have close matches, use the first one
-                    if close_matches:
-                        target_area = msa_data[msa_data['normalized_name'] == close_matches[0]].iloc[0]
-                        logger.info(f"Found fuzzy match: {target_area['NAME']}")
-                    # If no close matches with the full name, try with just the city part
-                    elif city_part:
-                        close_matches = get_close_matches(city_part.lower(), available_names, n=3, cutoff=0.6)
-                        if close_matches:
-                            target_area = msa_data[msa_data['normalized_name'] == close_matches[0]].iloc[0]
-                            logger.info(f"Found fuzzy match with city part: {target_area['NAME']}")
-                
-                # Last resort: look for any MSA in the same state (if we have a state part)
-                if target_area is None and state_part:
-                    state_matches = msa_data[msa_data['normalized_name'].str.contains(state_part.lower(), case=False, na=False)]
-                    if not state_matches.empty:
-                        # Find the largest MSA in that state (likely to be more recognizable)
-                        target_area = state_matches.iloc[0]
-                        logger.info(f"Using state match as last resort: {target_area['NAME']}")
-                
-                if target_area is None:
-                    logger.error(f"Could not find any matching MSA for: {area_name}")
-                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-                # Verify geometry
-                if not hasattr(target_area, 'geometry') or target_area.geometry is None:
-                    logger.error(f"No geometry data for MSA: {target_area['NAME']}")
-                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-                # Validate and fix geometry if needed
-                logger.info("Validating geometry...")
+                # Try fuzzy city match
+                city_matches = msa_data[msa_data['normalized_name'].str.contains(f"^{city_name}", regex=True, case=False, na=False)]
+                if not city_matches.empty:
+                    target_area = city_matches.iloc[0]
+                    logger.info(f"Found fuzzy city match: {target_area['NAME']}")
+        
+        # If still no match, try partial match
+        if target_area is None:
+            partial_matches = msa_data[msa_data['normalized_name'].str.contains(normalized_area_name, case=False, na=False)]
+            if not partial_matches.empty:
+                target_area = partial_matches.iloc[0]
+                logger.info(f"Found partial match: {target_area['NAME']}")
+        
+        if target_area is None:
+            logger.error(f"Could not find any matching MSA for: {area_name}")
+            fallback_file = create_fallback_map(area_name, cache_file)
+            logger.info(f"Created fallback map at: {fallback_file}")
+            return fallback_file
+        
+        # Verify geometry
+        if not hasattr(target_area, 'geometry') or target_area.geometry is None:
+            logger.error(f"No geometry data for MSA: {target_area['NAME']}")
+            fallback_file = create_fallback_map(area_name, cache_file)
+            logger.info(f"Created fallback map at: {fallback_file}")
+            return fallback_file
+        
+        # Validate and fix geometry if needed
+        logger.info("Validating geometry...")
+        if not target_area.geometry.is_valid:
+            try:
+                logger.info("Attempting to fix invalid geometry...")
+                target_area.geometry = target_area.geometry.buffer(0)
                 if not target_area.geometry.is_valid:
-                    try:
-                        logger.info("Attempting to fix invalid geometry...")
-                        target_area.geometry = target_area.geometry.buffer(0)
-                        if not target_area.geometry.is_valid:
-                            logger.error("Failed to fix invalid geometry")
-                            return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                    except Exception as e:
-                        logger.error(f"Error fixing geometry: {str(e)}")
-                        return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-                # Get centroid and bounds with error handling
-                try:
-                    center_lng, center_lat = target_area.geometry.centroid.x, target_area.geometry.centroid.y
-                    min_x, min_y, max_x, max_y = target_area.geometry.bounds
-                    
-                    # Validate coordinates
-                    if not (-180 <= center_lng <= 180 and -90 <= center_lat <= 90):
-                        logger.error(f"Invalid coordinates: {center_lat}, {center_lng}")
-                        return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                    
-                    # Generate mock PGs and HHAHs data for this statistical area
-                    pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
-                    
-                    logger.info(f"Center: {center_lat}, {center_lng}")
-                    logger.info(f"Bounds: {min_x}, {min_y}, {max_x}, {max_y}")
-                except Exception as e:
-                    logger.error(f"Error calculating centroid or bounds: {str(e)}")
-                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-                # Create base map with error handling
-                try:
-                    m = folium.Map(
-                        location=[center_lat, center_lng],
-                        zoom_start=zoom,  # Use the provided zoom parameter
-                        tiles='cartodbpositron',
-                        prefer_canvas=True,
-                        control_scale=True  # Add scale for better context
-                    )
-                except Exception as e:
-                    logger.error(f"Error creating base map: {str(e)}")
-                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
-                # Add state boundaries with error handling
-                try:
-                    states_in_view = states_data[
-                        (states_data.geometry.bounds.maxx >= min_x) & 
-                        (states_data.geometry.bounds.minx <= max_x) & 
-                        (states_data.geometry.bounds.maxy >= min_y) & 
-                        (states_data.geometry.bounds.miny <= max_y)
-                    ]
-                    
-                    if not states_in_view.empty:
-                        folium.GeoJson(
-                            states_in_view.__geo_interface__,
-                            style_function=lambda x: {
-                                'fillColor': 'transparent',
-                                'color': '#6B7280',
-                                'weight': 1.5,
-                                'fillOpacity': 0
-                            },
-                            name='State Boundaries'
-                        ).add_to(m)
-                except Exception as e:
-                    logger.error(f"Error adding state boundaries: {str(e)}")
-                
-                # Add boundaries, markers, and additional functionality with error handling
-                try:
-                    # Add more visible and distinct boundary
-                    folium.GeoJson(
-                        target_area.geometry.__geo_interface__,
-                        style_function=lambda x: {
-                            'fillColor': '#4F46E5',
-                            'color': '#312E81',
-                            'weight': 5,
-                            'fillOpacity': 0.2,  # Reduced opacity for better visibility
-                            'dashArray': '3, 3'  # Smaller dash for more precise appearance
-                        },
-                        highlight_function=lambda x: {
-                            'weight': 6,
-                            'fillColor': '#6366F1',
-                            'color': '#1E1B4B',
-                            'fillOpacity': 0.4,  # Adjusted for better highlight
-                            'dashArray': ''
-                        },
-                        tooltip=folium.Tooltip(f"{target_area['NAME']} Boundary"),
-                        name=f"{target_area['NAME']} Boundary"
-                    ).add_to(m)
-                    
-                    # Add a more precise boundary outline on top
-                    folium.GeoJson(
-                        target_area.geometry.__geo_interface__,
-                        style_function=lambda x: {
-                            'fillColor': 'transparent',
-                            'color': '#1E1B4B',
-                            'weight': 2,  # Increased weight for better visibility
-                            'fillOpacity': 0,
-                            'dashArray': ''
-                        },
-                        name=f"{target_area['NAME']} Outline"
-                    ).add_to(m)
-                except Exception as e:
-                    logger.error(f"Error adding MSA boundary: {str(e)}")
-                    logger.error(traceback.format_exc())
-                
-                # Add PGs and HHAHs to the map with error handling
-                try:
-                    # Only add PGs and HHAHs if display parameters are true
-                    if display_pgs or display_hhahs:
-                        logger.info(f"Adding PGs and HHAHs to map: display_pgs={display_pgs}, display_hhahs={display_hhahs}")
-                        add_pgs_hhahs_to_map(m, 
-                                            pgs_data if display_pgs else [], 
-                                            hhahs_data if display_hhahs else [])
-                    else:
-                        logger.info("Skipping PGs and HHAHs display as both display flags are false")
-                except Exception as e:
-                    logger.error(f"Error adding PGs and HHAHs: {str(e)}")
-                    logger.error(traceback.format_exc())
-                
-                # Add controls with error handling
-                try:
-                    folium.plugins.Fullscreen().add_to(m)
-                    folium.plugins.MousePosition().add_to(m)
-                    folium.LayerControl().add_to(m)
-                except Exception as e:
-                    logger.error(f"Error adding controls: {str(e)}")
-                
-                # Set bounds with error handling - ensure proper zoom to the MSA boundary
-                try:
-                    # Create a slightly larger bounding box for better context
-                    # Use smaller buffer when exact_boundary is requested
-                    buffer_factor = 0.05 if exact_boundary else 0.1  # 5% or 10% buffer around the MSA
-                    
-                    # Calculate width and height
-                    width = max_x - min_x
-                    height = max_y - min_y
-                    
-                    # Add buffer to the bounds
-                    buffered_min_x = min_x - (width * buffer_factor)
-                    buffered_max_x = max_x + (width * buffer_factor)
-                    buffered_min_y = min_y - (height * buffer_factor)
-                    buffered_max_y = max_y + (height * buffer_factor)
-                    
-                    # Fit to the buffered bounds
-                    m.fit_bounds([[buffered_min_y, buffered_min_x], [buffered_max_y, buffered_max_x]])
-                    
-                    # Add a note about the exact boundary
-                    note_message = "exact boundary" if exact_boundary else "boundary"
-                    note_html = f'''
-                        <div style="position: fixed; 
-                                    bottom: 20px; left: 50px; width: 300px; height: auto;
-                                    background-color: white; border-radius: 8px;
-                                    border: 1px solid #4F46E5; z-index: 9998; padding: 8px;
-                                    font-family: Arial; box-shadow: 0 0 5px rgba(0,0,0,0.2);">
-                            <p style="font-size: 12px; margin: 0;">
-                                <strong>Note:</strong> This map shows the {note_message} of {target_area['NAME']}.
-                            </p>
-                        </div>
-                    '''
-                    m.get_root().html.add_child(folium.Element(note_html))
-                except Exception as e:
-                    logger.error(f"Error setting bounds: {str(e)}")
-                
-                # Add title with error handling
-                try:
-                    # Create title content based on whether PGs and HHAHs are displayed
-                    if display_pgs and display_hhahs:
-                        pg_count = len(pgs_data)
-                        hhah_count = len(hhahs_data)
-                        subtitle = f"Showing {pg_count} PGs and {hhah_count} HHAHs in this area."
-                    elif display_pgs:
-                        pg_count = len(pgs_data)
-                        subtitle = f"Showing {pg_count} Physician Groups in this area."
-                    elif display_hhahs:
-                        hhah_count = len(hhahs_data)
-                        subtitle = f"Showing {hhah_count} Home Health At Home agencies in this area."
-                    else:
-                        subtitle = "Detailed boundary view of this statistical area."
-                    
-                    title_html = f'''
-                        <div style="position: fixed; 
-                                    top: 10px; left: 50px; width: 300px; height: auto;
-                                    background-color: white; border-radius: 8px;
-                                    border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
-                                    font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
-                            <h4 style="margin-top: 0; color: #1F2937;">Map View of {target_area['NAME']}</h4>
-                            <p style="font-size: 12px; margin-bottom: 0;">
-                                {subtitle}
-                            </p>
-                        </div>
-                    '''
-                    m.get_root().html.add_child(folium.Element(title_html))
-                except Exception as e:
-                    logger.error(f"Error adding title: {str(e)}")
-                
-                # Save map with error handling
-                try:
-                    m.save(cache_file)
-                    logger.info(f"Map saved to {cache_file}")
-                    with open(cache_file, 'r') as f:
-                        return f.read()
-                except Exception as e:
-                    logger.error(f"Error saving map: {str(e)}")
-                    return create_fallback_map(area_name, cache_file, use_alternative_loading)
-                
+                    logger.error("Failed to fix invalid geometry")
+                    fallback_file = create_fallback_map(area_name, cache_file)
+                    logger.info(f"Created fallback map at: {fallback_file}")
+                    return fallback_file
+            except Exception as e:
+                logger.error(f"Error fixing geometry: {str(e)}")
+                fallback_file = create_fallback_map(area_name, cache_file)
+                logger.info(f"Created fallback map at: {fallback_file}")
+                return fallback_file
+        
+        # Get centroid and bounds
+        try:
+            center_lng, center_lat = target_area.geometry.centroid.x, target_area.geometry.centroid.y
+            min_x, min_y, max_x, max_y = target_area.geometry.bounds
+            
+            # Generate mock PGs and HHAHs data for this statistical area
+            pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
+            
+            logger.info(f"Center: {center_lat}, {center_lng}")
+            logger.info(f"Bounds: {min_x}, {min_y}, {max_x}, {max_y}")
         except Exception as e:
-            logger.error(f"Error generating map: {e}")
-            logger.error(traceback.format_exc())
-            return create_fallback_map(area_name, cache_file, use_alternative_loading)
-    
-    # If neither area_name nor coordinates are provided, return a default map
-    logger.error("No area name or coordinates provided")
-    return create_fallback_map("Unknown Location", None, use_alternative_loading) 
+            logger.error(f"Error calculating centroid or bounds: {str(e)}")
+            fallback_file = create_fallback_map(area_name, cache_file)
+            logger.info(f"Created fallback map at: {fallback_file}")
+            return fallback_file
+        
+        # Create base map
+        m = folium.Map(
+            location=[center_lat, center_lng],
+            zoom_start=9,
+            tiles='cartodbpositron',
+            prefer_canvas=True
+        )
+        
+        # Add state boundaries
+        states_in_view = states_data[
+            (states_data.geometry.bounds.maxx >= min_x) & 
+            (states_data.geometry.bounds.minx <= max_x) & 
+            (states_data.geometry.bounds.maxy >= min_y) & 
+            (states_data.geometry.bounds.miny <= max_y)
+        ]
+        
+        if not states_in_view.empty:
+            folium.GeoJson(
+                states_in_view.__geo_interface__,
+                style_function=lambda x: {
+                    'fillColor': 'transparent',
+                    'color': '#6B7280',
+                    'weight': 1.5,
+                    'opacity': 0.8,
+                    'fillOpacity': 0,
+                    'dashArray': '3,3'
+                },
+                name='State Boundaries'
+            ).add_to(m)
+        
+        # Add MSA boundary
+        folium.GeoJson(
+            target_area.geometry.__geo_interface__,
+            style_function=lambda x: {
+                'fillColor': '#4F46E5',
+                'color': '#312E81',
+                'weight': 3,
+                'fillOpacity': 0.2,
+                'opacity': 0.9
+            },
+            name=f"{target_area['NAME']} Boundary"
+        ).add_to(m)
+        
+        # Add PGs and HHAHs to the map
+        add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+        
+        # Add essential controls
+        folium.plugins.Fullscreen().add_to(m)
+        folium.plugins.MousePosition().add_to(m)
+        folium.LayerControl().add_to(m)
+        
+        # Set bounds
+        m.fit_bounds([[min_y, min_x], [max_y, max_x]])
+        
+        # Add title
+        title_html = f'''
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of {target_area['NAME']}</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing {len(pgs_data)} PGs and {len(hhahs_data)} HHAHs in this area.
+                </p>
+            </div>
+        '''
+        m.get_root().html.add_child(folium.Element(title_html))
+        
+        # Add safe script for cross-origin communication
+        safe_script = """
+        <script>
+        // Safe cross-origin communication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for map to fully render
+            setTimeout(function() {
+                console.log('Map fully loaded and safe for cross-origin access');
+                
+                // Add protection for Leaflet objects to prevent cross-origin issues
+                var originalGet = Object.prototype.__lookupGetter__;
+                var originalSet = Object.prototype.__lookupSetter__;
+                
+                try {
+                    // Safely handle resize to avoid security errors
+                    window.addEventListener('resize', function() {
+                        // Find map containers without accessing unsafe properties
+                        var mapContainers = document.querySelectorAll('.leaflet-container');
+                        if (mapContainers.length > 0) {
+                            // Trigger visible resize
+                            mapContainers.forEach(function(container) {
+                                // This is a safe way to trigger a resize
+                                var evt = document.createEvent('UIEvents');
+                                evt.initUIEvent('resize', true, false, window, 0);
+                                window.dispatchEvent(evt);
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.log('Continuing without advanced map handling');
+                }
+            }, 1000);
+        });
+        </script>
+        """
+        m.get_root().html.add_child(folium.Element(safe_script))
+        
+        # Save map
+        m.save(cache_file)
+        logger.info(f"Map saved to {cache_file}")
+        return cache_file
+        
+    except Exception as e:
+        logger.error(f"Error generating map: {e}")
+        logger.error(traceback.format_exc())
+        fallback_file = create_fallback_map(area_name, cache_file)
+        logger.info(f"Created fallback map at: {fallback_file}")
+        return fallback_file 
