@@ -106,6 +106,10 @@ def create_fallback_map(area_name, output_path):
         tiles='cartodbpositron'
     )
     
+    # Explicitly include FontAwesome for icons
+    font_awesome = CssLink("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css")
+    folium_map.get_root().header.add_child(font_awesome)
+    
     # Add marker for the center
     folium.Marker(
         coords,
@@ -170,7 +174,7 @@ def create_fallback_map(area_name, output_path):
         </div>
         """
         
-        # Create marker
+        # Create marker with FontAwesome icon
         folium.Marker(
             location=pg_data['location'],
             popup=folium.Popup(popup_html, max_width=300),
@@ -225,7 +229,7 @@ def create_fallback_map(area_name, output_path):
         </div>
         """
         
-        # Create marker
+        # Create marker with FontAwesome icon
         folium.Marker(
             location=hhah_data['location'],
             popup=folium.Popup(popup_html, max_width=300),
@@ -733,13 +737,8 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
             center_lng, center_lat = target_area.geometry.centroid.x, target_area.geometry.centroid.y
             min_x, min_y, max_x, max_y = target_area.geometry.bounds
             
-            # Generate mock PGs and HHAHs data for this statistical area - reduce count for lightweight version
-            if lightweight:
-                num_pgs = min(3, random.randint(2, 4))  # Reduced number of PGs
-                num_hhahs = min(5, random.randint(3, 6))  # Reduced number of HHAHs
-                pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry, num_pgs=num_pgs, num_hhahs=num_hhahs)
-            else:
-                pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
+            # Generate mock PGs and HHAHs data for this statistical area - always generate full data
+            pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
             
             logger.info(f"Center: {center_lat}, {center_lng}")
             logger.info(f"Bounds: {min_x}, {min_y}, {max_x}, {max_y}")
@@ -748,6 +747,9 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
             fallback_file = create_fallback_map(area_name, cache_file)
             logger.info(f"Created fallback map at: {fallback_file}")
             return fallback_file
+        
+        # Create figure to hold the map
+        fig = Figure(width=800, height=600)
         
         # Create base map
         m = folium.Map(
@@ -758,84 +760,155 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
             control_scale=True
         )
         
-        # Add state boundaries (only if not lightweight or if detailed is True)
-        if not lightweight or detailed:
-            states_in_view = states_data[
-                (states_data.geometry.bounds.maxx >= min_x) & 
-                (states_data.geometry.bounds.minx <= max_x) & 
-                (states_data.geometry.bounds.maxy >= min_y) & 
-                (states_data.geometry.bounds.miny <= max_y)
-            ]
-            
-            if not states_in_view.empty:
-                folium.GeoJson(
-                    states_in_view.__geo_interface__,
-                    style_function=lambda x: {
-                        'fillColor': 'transparent',
-                        'color': '#6B7280',
-                        'weight': 1.5,
-                        'opacity': 0.8,
-                        'fillOpacity': 0,
-                        'dashArray': '3,3'
-                    },
-                    name='State Boundaries'
-                ).add_to(m)
+        # Explicitly include FontAwesome for icons
+        font_awesome = CssLink("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css")
+        m.get_root().header.add_child(font_awesome)
         
-        # Add MSA boundary (simpler style for lightweight version)
+        # Add state boundaries
+        states_in_view = states_data[
+            (states_data.geometry.bounds.maxx >= min_x) & 
+            (states_data.geometry.bounds.minx <= max_x) & 
+            (states_data.geometry.bounds.maxy >= min_y) & 
+            (states_data.geometry.bounds.miny <= max_y)
+        ]
+        
+        if not states_in_view.empty:
+            folium.GeoJson(
+                states_in_view.__geo_interface__,
+                style_function=lambda x: {
+                    'fillColor': 'transparent',
+                    'color': '#6B7280',
+                    'weight': 1.5,
+                    'opacity': 0.8,
+                    'fillOpacity': 0,
+                    'dashArray': '3,3'
+                },
+                name='State Boundaries'
+            ).add_to(m)
+        
+        # Add MSA boundary
         style_params = {
             'fillColor': '#4F46E5',
             'color': '#312E81',
-            'weight': 3 if not lightweight else 2,
-            'fillOpacity': 0.2 if not lightweight else 0.15,
-            'opacity': 0.9 if not lightweight else 0.8
+            'weight': 3,
+            'fillOpacity': 0.2,
+            'opacity': 0.9
         }
         
-        folium.GeoJson(
+        # Add MSA boundary with more explicit rendering approach
+        boundary_geojson = folium.GeoJson(
             target_area.geometry.__geo_interface__,
             style_function=lambda x: style_params,
-            name=f"{target_area['NAME']} Boundary"
+            name=f"{target_area['NAME']} Boundary",
+            tooltip=folium.GeoJsonTooltip(
+                fields=["NAME"] if hasattr(target_area, "NAME") else None,
+                aliases=["Area:"] if hasattr(target_area, "NAME") else None,
+                style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;")
+            ),
+            highlight_function=lambda x: {'weight': 5, 'color': '#0000FF', 'fillOpacity': 0.3},
+            embed=False,  # Don't embed the GeoJSON in the HTML to reduce size
+            overlay=True,  # Make sure it's an overlay
+            control=True,  # Show in layer control
+            smooth_factor=1.0  # Smooth the boundaries
+        )
+        boundary_geojson.add_to(m)
+        
+        # Also add a simpler representation that is more likely to render in limited environments
+        folium.GeoJson(
+            target_area.geometry.__geo_interface__,
+            style_function=lambda x: {
+                'fillColor': '#4F46E5',
+                'color': '#312E81',
+                'weight': 3,
+                'fillOpacity': 0.2,
+                'opacity': 0.9,
+                'className': 'msa-boundary-backup'  # Add a class for JavaScript targeting
+            },
+            name=f"{target_area['NAME']} Boundary (Backup)",
+            embed=True,  # Embed this one to ensure it's available
+            overlay=False,  # Don't show in layer control as a separate item
         ).add_to(m)
         
-        # Add PGs and HHAHs to the map - use simplified markers for lightweight version
-        if lightweight:
-            # Simplified markers for lightweight version
-            for i, pg in enumerate(pgs_data):
-                folium.CircleMarker(
-                    location=[pg['lat'], pg['lng']],
-                    radius=5,
-                    color='blue',
-                    fill=True,
-                    fill_color='blue',
-                    fill_opacity=0.7,
-                    popup=f"PG: {pg['name']}",
-                    name=f"PG_{i+1}"
-                ).add_to(m)
-            
-            for i, hhah in enumerate(hhahs_data):
-                folium.CircleMarker(
-                    location=[hhah['lat'], hhah['lng']],
-                    radius=5,
-                    color='green',
-                    fill=True,
-                    fill_color='green',
-                    fill_opacity=0.7,
-                    popup=f"HHAH: {hhah['name']}",
-                    name=f"HHAH_{i+1}"
-                ).add_to(m)
-        else:
-            # Detailed markers for full version
-            add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+        # Create feature group for PGs
+        pg_group = folium.FeatureGroup(name="Physician Groups (PGs)")
         
-        # Add essential controls - minimal for lightweight
-        if not lightweight:
-            folium.plugins.Fullscreen().add_to(m)
-            folium.plugins.MousePosition().add_to(m)
+        # Add PG markers with FontAwesome icons
+        for pg in pgs_data:
+            # Create popup with PG details
+            popup_html = f"""
+            <div style="min-width: 180px;">
+                <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">{pg['name']}</h4>
+                <p style="margin: 4px 0;"><strong>Group:</strong> {pg['group']}</p>
+                <p style="margin: 4px 0;"><strong>Physicians:</strong> {pg['physicians']}</p>
+                <p style="margin: 4px 0;"><strong>Patients:</strong> {pg['patients']}</p>
+                <p style="margin: 4px 0;"><strong>Status:</strong> {pg['status']}</p>
+                <p style="margin: 4px 0;"><strong>Address:</strong> {pg['address']}</p>
+                <p style="margin: 4px 0;"><strong>Contact:</strong> {pg['contact']}</p>
+            </div>
+            """
+            
+            # Always use blue for PGs for better distinction
+            folium.Marker(
+                location=pg['location'],
+                popup=folium.Popup(popup_html, max_width=300),
+                tooltip=f"PG: {pg['name']}",
+                icon=folium.Icon(color='blue', icon="user-md", prefix="fa")
+            ).add_to(pg_group)
+        
+        # Add the PG group to the map
+        pg_group.add_to(m)
+        
+        # Create feature group for HHAHs
+        hhah_group = folium.FeatureGroup(name="Home Health At Home (HHAHs)")
+        
+        # Add HHAH markers with FontAwesome icons
+        for hhah in hhahs_data:
+            # Create popup with HHAH details
+            popup_html = f"""
+            <div style="min-width: 180px;">
+                <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">{hhah['name']}</h4>
+                <p style="margin: 4px 0;"><strong>Services:</strong> {hhah['services']}</p>
+                <p style="margin: 4px 0;"><strong>Patients:</strong> {hhah['patients']}</p>
+                <p style="margin: 4px 0;"><strong>Status:</strong> {hhah['status']}</p>
+                <p style="margin: 4px 0;"><strong>Address:</strong> {hhah['address']}</p>
+                <p style="margin: 4px 0;"><strong>Contact:</strong> {hhah['contact']}</p>
+            </div>
+            """
+            
+            # Always use green for HHAHs for better distinction
+            folium.Marker(
+                location=hhah['location'],
+                popup=folium.Popup(popup_html, max_width=300),
+                tooltip=f"HHAH: {hhah['name']}",
+                icon=folium.Icon(color='green', icon="home", prefix="fa")
+            ).add_to(hhah_group)
+        
+        # Add the HHAH group to the map
+        hhah_group.add_to(m)
+        
+        # Add legend for PGs and HHAHs
+        legend_colors = {
+            "Physician Groups (PGs)": "blue",
+            "Home Health At Home (HHAHs)": "green",
+            "Metro Area": "#4F46E5"
+        }
+        
+        legend = LegendControl(
+            title="Map Legend",
+            color_dict=legend_colors,
+            position="bottomright"
+        )
+        m.add_child(legend)
+        
+        # Add essential controls
+        folium.plugins.Fullscreen().add_to(m)
+        folium.plugins.MousePosition().add_to(m)
         folium.LayerControl().add_to(m)
         
         # Set bounds
         m.fit_bounds([[min_y, min_x], [max_y, max_x]])
         
-        # Add title - simpler version for lightweight
+        # Add title
         title_html = f'''
             <div style="position: fixed; 
                         top: 10px; left: 50px; width: 300px; height: auto;
@@ -850,11 +923,58 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
         '''
         m.get_root().html.add_child(folium.Element(title_html))
         
-        # Add safe script for cross-origin communication - simplified for lightweight
+        # Add safe script for cross-origin communication and boundary fix
         safe_script = """
         <script>
         // Safe cross-origin communication
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Map initializing, preparing boundaries and markers');
+            
+            // Fix for boundary visibility issues
+            function ensureBoundariesAreVisible() {
+                try {
+                    // Find all SVG paths in the overlay pane (where GeoJSON boundaries are rendered)
+                    var paths = document.querySelectorAll('.leaflet-overlay-pane path');
+                    console.log('Found ' + paths.length + ' boundary elements');
+                    
+                    // Apply explicit styling to ensure visibility
+                    paths.forEach(function(path) {
+                        // MSA boundary paths generally have this color
+                        if (path.getAttribute('stroke') === '#312E81') {
+                            console.log('Fixing MSA boundary style');
+                            path.setAttribute('stroke-width', '3');
+                            path.setAttribute('stroke-opacity', '0.9');
+                            path.setAttribute('fill', '#4F46E5');
+                            path.setAttribute('fill-opacity', '0.2');
+                            // Add a class for easier targeting
+                            path.classList.add('msa-boundary');
+                        }
+                    });
+                    
+                    // Also check any backup elements
+                    var backupPaths = document.querySelectorAll('.msa-boundary-backup path');
+                    if (backupPaths.length > 0) {
+                        console.log('Found backup boundary elements, ensuring visibility');
+                        backupPaths.forEach(function(path) {
+                            path.setAttribute('stroke-width', '3');
+                            path.setAttribute('stroke-opacity', '0.9');
+                            path.setAttribute('fill', '#4F46E5');
+                            path.setAttribute('fill-opacity', '0.2');
+                        });
+                    }
+                } catch (e) {
+                    console.log('Error fixing boundaries:', e);
+                }
+            }
+            
+            // Run boundary fix after map is loaded
+            setTimeout(ensureBoundariesAreVisible, 1000);
+            
+            // Also run after resize to ensure boundaries stay visible
+            window.addEventListener('resize', function() {
+                setTimeout(ensureBoundariesAreVisible, 300);
+            });
+            
             // Notify parent when map is loaded
             setTimeout(function() {
                 try {
@@ -862,10 +982,13 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
                     if (window.parent && window.parent !== window) {
                         window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
                     }
+                    
+                    // Run boundary check again after notification
+                    setTimeout(ensureBoundariesAreVisible, 500);
                 } catch (e) {
                     console.error('Error in cross-origin communication:', e);
                 }
-            }, 500);
+            }, 1500);
         });
         </script>
         """
@@ -875,8 +998,9 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
         if not os.path.exists(CACHE_DIR):
             os.makedirs(CACHE_DIR)
         
-        # Save the map
-        m.save(cache_file)
+        # Add the map to the figure and save
+        fig.add_child(m)
+        fig.save(cache_file)
         logger.info(f"Map saved to {cache_file}")
         
         return cache_file

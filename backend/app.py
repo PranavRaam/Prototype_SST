@@ -380,16 +380,52 @@ def get_statistical_area_map(area_name):
             html_content = f.read()
         
         # Add cross-origin safe script to fix security errors and ensure map loads properly
+        # but preserve all FontAwesome and icon-related content
         cross_origin_script = """
         <script>
         // Fix for cross-origin security issues
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // Ensure all FontAwesome icons are loaded correctly
+                document.querySelectorAll('i.fa, i.fas, i.far, i.fab').forEach(function(icon) {
+                    if (window.getComputedStyle(icon).fontFamily.indexOf('Font Awesome') < 0) {
+                        console.log('Fixing FontAwesome icon:', icon);
+                        // Force reload of icon font
+                        icon.style.fontFamily = 'FontAwesome';
+                    }
+                });
+                
+                // Fix GeoJSON boundaries
+                var geoJsonLayers = document.querySelectorAll('.leaflet-overlay-pane path');
+                if (geoJsonLayers.length > 0) {
+                    console.log('Found GeoJSON layers:', geoJsonLayers.length);
+                    geoJsonLayers.forEach(function(path) {
+                        // Ensure paths are visible with correct styling
+                        if (path.getAttribute('stroke') === '#312E81') {
+                            // This is our MSA boundary - ensure it's visible and styled correctly
+                            path.setAttribute('stroke-opacity', '0.9');
+                            path.setAttribute('fill-opacity', '0.2');
+                            path.setAttribute('stroke-width', '3');
+                        }
+                    });
+                } else {
+                    console.log('No GeoJSON layers found');
+                }
+                
                 // Safe way to get leaflet maps without accessing window properties directly
                 setTimeout(function() {
                     var maps = document.querySelectorAll('.leaflet-container');
                     if (maps.length > 0) {
                         console.log('Map optimization complete');
+                        
+                        // Force a resize to ensure all elements render properly
+                        try {
+                            var evt = document.createEvent('UIEvents');
+                            evt.initUIEvent('resize', true, false, window, 0);
+                            window.dispatchEvent(evt);
+                        } catch (e) {
+                            console.log('Resize event failed, continuing');
+                        }
                     }
                     
                     // Notify parent safely using postMessage
@@ -400,7 +436,7 @@ def get_statistical_area_map(area_name):
                     } catch (e) {
                         console.log('Postmessage not available, continuing silently');
                     }
-                }, 500); // Reduced timeout for faster notification
+                }, 1000); // Give FontAwesome time to load
             } catch (e) {
                 console.log('Map frame initialization complete');
             }
@@ -416,6 +452,10 @@ def get_statistical_area_map(area_name):
         logger.info(f"Serving modified statistical area map from {map_file}")
         response = Response(html_content, mimetype='text/html')
         
+        # Special headers to ensure proper font loading and geojson rendering
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-Type, Content-Length, Content-Disposition, X-Frame-Options'
+        
         # Set specific CORS headers for this response
         origin = request.headers.get('Origin')
         if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
@@ -423,7 +463,8 @@ def get_statistical_area_map(area_name):
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
-        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        # Update CSP to allow geojson rendering and all needed resources
+        response.headers['Content-Security-Policy'] = "frame-ancestors *; font-src * data:; style-src * 'unsafe-inline'; img-src * data:; connect-src *; script-src * 'unsafe-inline'"
         response.headers['Cache-Control'] = 'max-age=86400' if use_cached else 'no-cache'  # Cache for 24h if using cache
         return response
     except Exception as e:
@@ -435,20 +476,30 @@ def get_statistical_area_map(area_name):
 
 @app.route('/api/clear-cache', methods=['GET'])
 def clear_cache():
-    """Clear the cache directory to force regeneration of maps with improved state boundaries"""
+    """Clear the cache directory to force regeneration of maps with improved boundaries and icons"""
     try:
         # Get the cache directory
         cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
         
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+            logger.info(f"Created cache directory: {cache_dir}")
+            return jsonify({
+                "success": True,
+                "message": "Cache directory created, no files to remove."
+            })
+            
         # Count files before deletion
         files_before = len([f for f in os.listdir(cache_dir) if os.path.isfile(os.path.join(cache_dir, f))])
         
         # Delete all HTML files in the cache directory
+        deleted_files = []
         for filename in os.listdir(cache_dir):
             if filename.endswith(".html"):
                 file_path = os.path.join(cache_dir, filename)
                 try:
                     os.remove(file_path)
+                    deleted_files.append(filename)
                     logger.info(f"Deleted cached map: {file_path}")
                 except Exception as e:
                     logger.error(f"Error deleting file {file_path}: {e}")
@@ -456,10 +507,17 @@ def clear_cache():
         # Count files after deletion
         files_after = len([f for f in os.listdir(cache_dir) if os.path.isfile(os.path.join(cache_dir, f))])
         
+        # Create a placeholder file indicating when cache was last cleared
+        with open(os.path.join(cache_dir, "cache_cleared.txt"), "w") as f:
+            f.write(f"Cache cleared at: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"Maps will be regenerated with improved boundaries and icons\n")
+            f.write(f"Files deleted: {', '.join(deleted_files)}\n")
+        
         return jsonify({
             "success": True,
             "message": f"Cache cleared. Removed {files_before - files_after} files.",
-            "filesRemoved": files_before - files_after
+            "filesRemoved": files_before - files_after,
+            "deletedFiles": deleted_files
         })
     except Exception as e:
         logger.error(f"Error clearing cache: {e}")
@@ -494,6 +552,70 @@ def health_check():
     response.headers['Access-Control-Max-Age'] = '86400'
     
     return response
+
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint showing server status and providing links to API endpoints"""
+    return f"""
+    <html>
+    <head>
+        <title>SST Backend API</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }}
+            h1 {{ color: #4F46E5; }}
+            h2 {{ color: #4F46E5; margin-top: 20px; }}
+            a {{ color: #4F46E5; text-decoration: none; }}
+            a:hover {{ text-decoration: underline; }}
+            .button {{ display: inline-block; background: #4F46E5; color: white; padding: 10px 15px; border-radius: 4px; margin: 10px 0; }}
+            .button:hover {{ background: #312E81; }}
+            code {{ background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }}
+            .endpoints {{ margin-top: 20px; }}
+            .endpoint {{ margin-bottom: 15px; }}
+            .timestamp {{ color: #666; font-size: 0.9em; }}
+        </style>
+    </head>
+    <body>
+        <h1>SST Backend API</h1>
+        <p>Server is running. Current time: <span class="timestamp">{time.strftime('%Y-%m-%d %H:%M:%S')}</span></p>
+        
+        <div class="actions">
+            <h2>Actions</h2>
+            <a href="/api/health" class="button">Server Health Check</a>
+            <a href="/api/clear-cache" class="button">Clear Map Cache</a>
+        </div>
+        
+        <div class="endpoints">
+            <h2>Available Endpoints</h2>
+            
+            <div class="endpoint">
+                <strong>GET /api/health</strong>
+                <p>Check server health status</p>
+            </div>
+            
+            <div class="endpoint">
+                <strong>GET /api/clear-cache</strong>
+                <p>Clear cached maps to force regeneration with latest improvements</p>
+            </div>
+            
+            <div class="endpoint">
+                <strong>GET /api/statistical-area-map/:area_name</strong>
+                <p>Get an interactive map for a specific statistical area</p>
+                <p>Example: <a href="/api/statistical-area-map/Prescott, AZ">/api/statistical-area-map/Prescott, AZ</a></p>
+            </div>
+            
+            <div class="endpoint">
+                <strong>GET /api/map</strong>
+                <p>Get the national regions map</p>
+            </div>
+            
+            <div class="endpoint">
+                <strong>GET /api/regions</strong>
+                <p>Get region definitions</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_db52ece3c9487383215b7d70d0f7ff3c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Prescott Valley-Prescott, AZ</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 5 PGs and 7 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+        <script>
+        // Safe cross-origin communication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notify parent when map is loaded
+            setTimeout(function() {
+                try {
+                    console.log('Map loaded, sending message to parent');
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
+                    }
+                } catch (e) {
+                    console.error('Error in cross-origin communication:', e);
+                }
+            }, 500);
+        });
+        </script>
+        
+    
+            <div class="folium-map" id="map_db52ece3c9487383215b7d70d0f7ff3c" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_db52ece3c9487383215b7d70d0f7ff3c = L.map(
+                "map_db52ece3c9487383215b7d70d0f7ff3c",
+                {
+                    center: [34.59957715408181, -112.55361896716288],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+
+            
+
+        
+    
+            var tile_layer_3b17971173145214c8f841fbbe60e09a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3b17971173145214c8f841fbbe60e09a.addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+        function geo_json_222506b729382f0e997172e8a59102e9_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "dashArray": "3,3", "fillColor": "transparent", "fillOpacity": 0, "opacity": 0.8, "weight": 1.5};
+            }
+        }
+
+        function geo_json_222506b729382f0e997172e8a59102e9_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_222506b729382f0e997172e8a59102e9 = L.geoJson(null, {
+                onEachFeature: geo_json_222506b729382f0e997172e8a59102e9_onEachFeature,
+            
+                style: geo_json_222506b729382f0e997172e8a59102e9_styler,
+            ...{
+}
+        });
+
+        function geo_json_222506b729382f0e997172e8a59102e9_add (data) {
+            geo_json_222506b729382f0e997172e8a59102e9
+                .addData(data);
+        }
+            geo_json_222506b729382f0e997172e8a59102e9_add({"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "features": [{"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "geometry": {"coordinates": [[[-110.75069, 37.003007], [-109.045172, 36.998977], [-109.050033, 31.332348], [-111.07498, 31.332342], [-114.813692, 32.494069], [-114.805678, 32.546332], [-114.791408, 32.556461], [-114.792808, 32.569524], [-114.813934, 32.562213], [-114.799402, 32.592618], [-114.80844, 32.619426], [-114.763784, 32.643403], [-114.70294, 32.744793], [-114.617395, 32.728257], [-114.539224, 32.749812], [-114.526856, 32.757094], [-114.529633, 32.795477], [-114.468971, 32.845155], [-114.462929, 32.907944], [-114.480925, 32.936276], [-114.468379, 32.970745], [-114.492938, 32.971781], [-114.511343, 33.023455], [-114.571653, 33.036624], [-114.618788, 33.027202], [-114.645979, 33.048902], [-114.662317, 33.03267], [-114.68902, 33.084035], [-114.706488, 33.08816], [-114.675359, 33.185488], [-114.673626, 33.223121], [-114.689541, 33.246428], [-114.672088, 33.258499], [-114.731223, 33.302433], [-114.698035, 33.352442], [-114.725282, 33.405048], [-114.643302, 33.416746], [-114.592369, 33.498675], [-114.524215, 33.553068], [-114.540617, 33.591412], [-114.521845, 33.612544], [-114.533194, 33.65166], [-114.514057, 33.660179], [-114.531523, 33.675108], [-114.494197, 33.707922], [-114.52805, 33.814963], [-114.529883, 33.857563], [-114.503017, 33.867998], [-114.525872, 33.901008], [-114.50792, 33.903807], [-114.535478, 33.934651], [-114.438266, 34.022609], [-114.434181, 34.087379], [-114.415908, 34.107636], [-114.229715, 34.186928], [-114.164648, 34.259699], [-114.131211, 34.26273], [-114.138282, 34.30323], [-114.176909, 34.349306], [-114.226107, 34.365916], [-114.335372, 34.450038], [-114.386699, 34.457911], [-114.380838, 34.529724], [-114.43681, 34.596074], [-114.424202, 34.610453], [-114.457985, 34.657113], [-114.470477, 34.711368], [-114.552682, 34.766871], [-114.586842, 34.835672], [-114.635176, 34.875003], [-114.637524, 35.027053], [-114.602908, 35.068588], [-114.646764, 35.101868], [-114.578263, 35.12881], [-114.569258, 35.183424], [-114.604607, 35.355239], [-114.678642, 35.497628], [-114.65677, 35.534964], [-114.675667, 35.580033], [-114.653534, 35.609672], [-114.689507, 35.651429], [-114.680631, 35.684046], [-114.705597, 35.708274], [-114.694267, 35.756633], [-114.712026, 35.805529], [-114.695277, 35.831091], [-114.705856, 35.850508], [-114.661636, 35.871233], [-114.708112, 35.909933], [-114.740536, 35.975545], [-114.743005, 36.00845], [-114.722096, 36.028952], [-114.741262, 36.038044], [-114.735285, 36.056648], [-114.754508, 36.086171], [-114.630474, 36.142218], [-114.615455, 36.129653], [-114.57109, 36.151099], [-114.511218, 36.150576], [-114.504715, 36.127188], [-114.4626, 36.139644], [-114.445042, 36.125346], [-114.405624, 36.146983], [-114.370181, 36.142624], [-114.306939, 36.082487], [-114.313591, 36.059048], [-114.270862, 36.045523], [-114.243865, 36.015266], [-114.15139, 36.023133], [-114.137112, 36.038491], [-114.111998, 36.09491], [-114.120865, 36.11085], [-114.096994, 36.120823], [-114.066798, 36.179087], [-114.043944, 36.19335], [-114.050616, 37.000167], [-110.75069, 37.003007]]], "type": "Polygon"}, "id": "55", "properties": {"ALAND": 294366106734, "AWATER": 854003932, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "04", "GEOIDFQ": "0400000US04", "INTPTLAT": "+34.2039362", "INTPTLON": "-111.6063449", "LSAD": "00", "MTFCC": "G4000", "NAME": "Arizona", "REGION": "4", "STATEFP": "04", "STATENS": "01779777", "STUSPS": "AZ"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_222506b729382f0e997172e8a59102e9.addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+        function geo_json_8b8cd449c1382a48c8f4aab389b68ac8_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "fillColor": "#4F46E5", "fillOpacity": 0.2, "opacity": 0.9, "weight": 3};
+            }
+        }
+
+        function geo_json_8b8cd449c1382a48c8f4aab389b68ac8_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_8b8cd449c1382a48c8f4aab389b68ac8 = L.geoJson(null, {
+                onEachFeature: geo_json_8b8cd449c1382a48c8f4aab389b68ac8_onEachFeature,
+            
+                style: geo_json_8b8cd449c1382a48c8f4aab389b68ac8_styler,
+            ...{
+}
+        });
+
+        function geo_json_8b8cd449c1382a48c8f4aab389b68ac8_add (data) {
+            geo_json_8b8cd449c1382a48c8f4aab389b68ac8
+                .addData(data);
+        }
+            geo_json_8b8cd449c1382a48c8f4aab389b68ac8_add({"features": [{"geometry": {"coordinates": [[[-112.065318, 34.037394], [-112.164758, 34.04817], [-112.153647, 34.040909], [-112.161128, 34.017717], [-112.182912, 34.012483], [-112.196771, 33.973935], [-112.240348, 33.956643], [-112.235051, 33.916408], [-112.276168, 33.882469], [-112.743951, 33.999898], [-113.333313, 34.000039], [-113.334161, 35.528217], [-113.266808, 35.53095], [-113.171645, 35.505506], [-113.147041, 35.478522], [-112.975042, 35.39165], [-112.953209, 35.352902], [-112.75487, 35.306204], [-112.631423, 35.300232], [-112.577399, 35.243394], [-112.541818, 35.236426], [-112.47286, 35.238188], [-112.442389, 35.25917], [-112.442289, 35.149238], [-112.335791, 35.148234], [-112.334536, 34.973024], [-111.777623, 34.981001], [-111.778265, 34.803304], [-111.552106, 34.8025], [-111.554152, 34.439423], [-111.659622, 34.386342], [-111.663328, 34.31796], [-111.684652, 34.298154], [-111.665049, 34.286535], [-111.685177, 34.282026], [-111.676141, 34.269124], [-111.705488, 34.213985], [-111.690186, 34.200001], [-111.712017, 34.197119], [-111.694482, 34.182026], [-111.720728, 34.161704], [-111.711982, 34.151073], [-111.476971, 34.15086], [-111.492829, 34.132356], [-111.478844, 34.12989], [-111.470828, 34.111579], [-111.485391, 34.094867], [-111.460605, 34.063035], [-111.492554, 34.037728], [-111.494719, 34.000047], [-111.726334, 34.000041], [-112.065318, 34.037394]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_8b8cd449c1382a48c8f4aab389b68ac8.addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+            var feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_3c1bbce3c66f945db9a5a9cfc71b5680 = L.marker(
+                [34.886843082697, -112.14925904941686],
+                {
+}
+            ).addTo(feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada);
+        
+    
+            var icon_2307e6c55c32b2ca141cd356b9e77c49 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c69197305875cc1a33c38067b7703c0d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5738ee3e468ba19a09e95bd5283e5227 = $(`<div id="html_5738ee3e468ba19a09e95bd5283e5227" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pre1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 179</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 428 Healthcare Ave, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 608-9912</p>         </div>         </div>`)[0];
+                popup_c69197305875cc1a33c38067b7703c0d.setContent(html_5738ee3e468ba19a09e95bd5283e5227);
+            
+        
+
+        marker_3c1bbce3c66f945db9a5a9cfc71b5680.bindPopup(popup_c69197305875cc1a33c38067b7703c0d)
+        ;
+
+        
+    
+    
+            marker_3c1bbce3c66f945db9a5a9cfc71b5680.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Pre1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3c1bbce3c66f945db9a5a9cfc71b5680.setIcon(icon_2307e6c55c32b2ca141cd356b9e77c49);
+            
+    
+            var marker_38eaee64f8764c93fca14eefccaffe7a = L.marker(
+                [34.38556869566013, -112.47985369335571],
+                {
+}
+            ).addTo(feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada);
+        
+    
+            var icon_61ff48549b92449b5f4af499f3a01429 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0381bac5925f415255438fcdc9cb2a00 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eaef29383f7fd222cd396812e4a46f33 = $(`<div id="html_eaef29383f7fd222cd396812e4a46f33" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Pre2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 193</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 572 Healthcare Ave, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 554-6784</p>         </div>         </div>`)[0];
+                popup_0381bac5925f415255438fcdc9cb2a00.setContent(html_eaef29383f7fd222cd396812e4a46f33);
+            
+        
+
+        marker_38eaee64f8764c93fca14eefccaffe7a.bindPopup(popup_0381bac5925f415255438fcdc9cb2a00)
+        ;
+
+        
+    
+    
+            marker_38eaee64f8764c93fca14eefccaffe7a.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Pre2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_38eaee64f8764c93fca14eefccaffe7a.setIcon(icon_61ff48549b92449b5f4af499f3a01429);
+            
+    
+            var marker_26de2eec125aa3fbac2ba34ac356b3ec = L.marker(
+                [34.809128650699925, -112.14217545644412],
+                {
+}
+            ).addTo(feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada);
+        
+    
+            var icon_6e7de8cd33da14399070ba5171949582 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d13c96a781b5bbb84e660735b9bedc5b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c58907116e87c90196fab34cf3e200b8 = $(`<div id="html_c58907116e87c90196fab34cf3e200b8" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Pre3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 141</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 913 Healthcare Ave, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 528-3444</p>         </div>         </div>`)[0];
+                popup_d13c96a781b5bbb84e660735b9bedc5b.setContent(html_c58907116e87c90196fab34cf3e200b8);
+            
+        
+
+        marker_26de2eec125aa3fbac2ba34ac356b3ec.bindPopup(popup_d13c96a781b5bbb84e660735b9bedc5b)
+        ;
+
+        
+    
+    
+            marker_26de2eec125aa3fbac2ba34ac356b3ec.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Pre3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_26de2eec125aa3fbac2ba34ac356b3ec.setIcon(icon_6e7de8cd33da14399070ba5171949582);
+            
+    
+            var marker_689997b2da009f15a9e9577a5add889f = L.marker(
+                [34.45559297078011, -112.69821735249212],
+                {
+}
+            ).addTo(feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada);
+        
+    
+            var icon_c3f3ee7de0ba60202d66afc61d17eb93 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_87092e927cdbfc4e29b50f11d7714041 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3ef72e641b09244c756f43f9e8ca3177 = $(`<div id="html_3ef72e641b09244c756f43f9e8ca3177" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Pre4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 53</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 963 Healthcare Ave, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 419-1432</p>         </div>         </div>`)[0];
+                popup_87092e927cdbfc4e29b50f11d7714041.setContent(html_3ef72e641b09244c756f43f9e8ca3177);
+            
+        
+
+        marker_689997b2da009f15a9e9577a5add889f.bindPopup(popup_87092e927cdbfc4e29b50f11d7714041)
+        ;
+
+        
+    
+    
+            marker_689997b2da009f15a9e9577a5add889f.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Pre4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_689997b2da009f15a9e9577a5add889f.setIcon(icon_c3f3ee7de0ba60202d66afc61d17eb93);
+            
+    
+            var marker_59e70b89b4e84a32c8175824a905ec2a = L.marker(
+                [35.147078994224685, -112.4293597963289],
+                {
+}
+            ).addTo(feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada);
+        
+    
+            var icon_946db26ad4915f534daf0968e31c10cb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_851586b2c822fa0821721a35f7e4d494 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b60023045a0cc48171b2620d1b0dda70 = $(`<div id="html_b60023045a0cc48171b2620d1b0dda70" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pre5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 178</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 974 Healthcare Ave, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 358-4910</p>         </div>         </div>`)[0];
+                popup_851586b2c822fa0821721a35f7e4d494.setContent(html_b60023045a0cc48171b2620d1b0dda70);
+            
+        
+
+        marker_59e70b89b4e84a32c8175824a905ec2a.bindPopup(popup_851586b2c822fa0821721a35f7e4d494)
+        ;
+
+        
+    
+    
+            marker_59e70b89b4e84a32c8175824a905ec2a.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Pre5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_59e70b89b4e84a32c8175824a905ec2a.setIcon(icon_946db26ad4915f534daf0968e31c10cb);
+            
+    
+            feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada.addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+            var feature_group_3f0ce6a3244147cdf99224097b3a2156 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_fba26083c4f36c4de0bc43a83fa042ae = L.marker(
+                [34.50287864071473, -112.69055569149076],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_ed657ce5c5482576440bceeaa4c4f317 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b1b3af4114196c59a195045d6e9094c3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d6a857c5c671b63315f575b9fe19daac = $(`<div id="html_d6a857c5c671b63315f575b9fe19daac" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 94</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 162 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 721-5037</p>         </div>         </div>`)[0];
+                popup_b1b3af4114196c59a195045d6e9094c3.setContent(html_d6a857c5c671b63315f575b9fe19daac);
+            
+        
+
+        marker_fba26083c4f36c4de0bc43a83fa042ae.bindPopup(popup_b1b3af4114196c59a195045d6e9094c3)
+        ;
+
+        
+    
+    
+            marker_fba26083c4f36c4de0bc43a83fa042ae.bindTooltip(
+                `<div>
+                     HHAH: Premier Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fba26083c4f36c4de0bc43a83fa042ae.setIcon(icon_ed657ce5c5482576440bceeaa4c4f317);
+            
+    
+            var marker_593f1db210a31a317b0296f5b48d9e0f = L.marker(
+                [34.44842274777392, -112.68889966795415],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_072690ec096efc1e38ca7c2264bbfa16 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_58c94c877fdc8e170f9480a2c5da840f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6efef9a9ec633f51eddcfb6ab0f3ca6a = $(`<div id="html_6efef9a9ec633f51eddcfb6ab0f3ca6a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 41</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 251 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 756-2342</p>         </div>         </div>`)[0];
+                popup_58c94c877fdc8e170f9480a2c5da840f.setContent(html_6efef9a9ec633f51eddcfb6ab0f3ca6a);
+            
+        
+
+        marker_593f1db210a31a317b0296f5b48d9e0f.bindPopup(popup_58c94c877fdc8e170f9480a2c5da840f)
+        ;
+
+        
+    
+    
+            marker_593f1db210a31a317b0296f5b48d9e0f.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_593f1db210a31a317b0296f5b48d9e0f.setIcon(icon_072690ec096efc1e38ca7c2264bbfa16);
+            
+    
+            var marker_db3330cd984e220e3a0b5a14dd623dcf = L.marker(
+                [34.52173993240915, -112.79231754470017],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_fc2fbc68038fa4bda35774ddd0a6e909 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_903dc01eea4e196f635a75202602579f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b521956d1e829266c434a3d3e78287ef = $(`<div id="html_b521956d1e829266c434a3d3e78287ef" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 77</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 634 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 274-9442</p>         </div>         </div>`)[0];
+                popup_903dc01eea4e196f635a75202602579f.setContent(html_b521956d1e829266c434a3d3e78287ef);
+            
+        
+
+        marker_db3330cd984e220e3a0b5a14dd623dcf.bindPopup(popup_903dc01eea4e196f635a75202602579f)
+        ;
+
+        
+    
+    
+            marker_db3330cd984e220e3a0b5a14dd623dcf.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_db3330cd984e220e3a0b5a14dd623dcf.setIcon(icon_fc2fbc68038fa4bda35774ddd0a6e909);
+            
+    
+            var marker_5844c79488a2f811adcea3261035c93d = L.marker(
+                [34.48095366530518, -112.89708824518043],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_ab9b96e7ae9bb628ad9213cc0969d579 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0426883ccc374f4ece4c37b3dbcfdec9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7a5498a2c5bbaded8a3be8f14307026c = $(`<div id="html_7a5498a2c5bbaded8a3be8f14307026c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 59</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 288 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 115-7974</p>         </div>         </div>`)[0];
+                popup_0426883ccc374f4ece4c37b3dbcfdec9.setContent(html_7a5498a2c5bbaded8a3be8f14307026c);
+            
+        
+
+        marker_5844c79488a2f811adcea3261035c93d.bindPopup(popup_0426883ccc374f4ece4c37b3dbcfdec9)
+        ;
+
+        
+    
+    
+            marker_5844c79488a2f811adcea3261035c93d.bindTooltip(
+                `<div>
+                     HHAH: Guardian Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5844c79488a2f811adcea3261035c93d.setIcon(icon_ab9b96e7ae9bb628ad9213cc0969d579);
+            
+    
+            var marker_e2d3346fa84c78d8e126740988bd2105 = L.marker(
+                [35.02385165967964, -112.9063492283316],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_1b9797db6eaaa792c9a4084b9e53927b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3e85019f67f6811682c169ae6b5ceba4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8c85fb04af0a532b871dc35fa8a21252 = $(`<div id="html_8c85fb04af0a532b871dc35fa8a21252" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 83</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 187 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 109-7847</p>         </div>         </div>`)[0];
+                popup_3e85019f67f6811682c169ae6b5ceba4.setContent(html_8c85fb04af0a532b871dc35fa8a21252);
+            
+        
+
+        marker_e2d3346fa84c78d8e126740988bd2105.bindPopup(popup_3e85019f67f6811682c169ae6b5ceba4)
+        ;
+
+        
+    
+    
+            marker_e2d3346fa84c78d8e126740988bd2105.bindTooltip(
+                `<div>
+                     HHAH: Guardian Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e2d3346fa84c78d8e126740988bd2105.setIcon(icon_1b9797db6eaaa792c9a4084b9e53927b);
+            
+    
+            var marker_5413c23d4a0fb6aa58dc32d8843e2aef = L.marker(
+                [34.973525927355276, -112.77141225978379],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_fffdee994ec2b06297d239aea096d170 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ee073a5439a3ca2bee8a1806ea6f2003 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3086190a2b57dfe92356a35994d0b5f4 = $(`<div id="html_3086190a2b57dfe92356a35994d0b5f4" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Care</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 76</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 977 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 656-1617</p>         </div>         </div>`)[0];
+                popup_ee073a5439a3ca2bee8a1806ea6f2003.setContent(html_3086190a2b57dfe92356a35994d0b5f4);
+            
+        
+
+        marker_5413c23d4a0fb6aa58dc32d8843e2aef.bindPopup(popup_ee073a5439a3ca2bee8a1806ea6f2003)
+        ;
+
+        
+    
+    
+            marker_5413c23d4a0fb6aa58dc32d8843e2aef.bindTooltip(
+                `<div>
+                     HHAH: Guardian Care
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5413c23d4a0fb6aa58dc32d8843e2aef.setIcon(icon_fffdee994ec2b06297d239aea096d170);
+            
+    
+            var marker_62b582ebe3037aedcc0a5ba405682e9a = L.marker(
+                [35.186224333536295, -112.46654647062394],
+                {
+}
+            ).addTo(feature_group_3f0ce6a3244147cdf99224097b3a2156);
+        
+    
+            var icon_d643b0a813b9ead2c226cb04c15d2b5a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_464f18076a202c3b5fb07bc397f76198 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7da0ab399f2bd11ce8cf9df5a42bb91e = $(`<div id="html_7da0ab399f2bd11ce8cf9df5a42bb91e" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 144</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 894 Medical Blvd, Prescott</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 770-6562</p>         </div>         </div>`)[0];
+                popup_464f18076a202c3b5fb07bc397f76198.setContent(html_7da0ab399f2bd11ce8cf9df5a42bb91e);
+            
+        
+
+        marker_62b582ebe3037aedcc0a5ba405682e9a.bindPopup(popup_464f18076a202c3b5fb07bc397f76198)
+        ;
+
+        
+    
+    
+            marker_62b582ebe3037aedcc0a5ba405682e9a.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_62b582ebe3037aedcc0a5ba405682e9a.setIcon(icon_d643b0a813b9ead2c226cb04c15d2b5a);
+            
+    
+            feature_group_3f0ce6a3244147cdf99224097b3a2156.addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+        
+    
+            var mouse_position_64cd419d2a9d82a257b2125b4442e5f8 = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_64cd419d2a9d82a257b2125b4442e5f8.options["latFormatter"] =
+                undefined;
+            mouse_position_64cd419d2a9d82a257b2125b4442e5f8.options["lngFormatter"] =
+                undefined;
+            map_db52ece3c9487383215b7d70d0f7ff3c.addControl(mouse_position_64cd419d2a9d82a257b2125b4442e5f8);
+        
+    
+            var layer_control_8f52b2a740a57e5cadcc198c51ee7d23_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_3b17971173145214c8f841fbbe60e09a,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_222506b729382f0e997172e8a59102e9,
+                    "Prescott Valley-Prescott, AZ Boundary" : geo_json_8b8cd449c1382a48c8f4aab389b68ac8,
+                    "Physician Groups (PGs)" : feature_group_fc8bbdfd298f1787ab0c618fdf3d3ada,
+                    "Home Health At Home (HHAHs)" : feature_group_3f0ce6a3244147cdf99224097b3a2156,
+                },
+            };
+            let layer_control_8f52b2a740a57e5cadcc198c51ee7d23 = L.control.layers(
+                layer_control_8f52b2a740a57e5cadcc198c51ee7d23_layers.base_layers,
+                layer_control_8f52b2a740a57e5cadcc198c51ee7d23_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_db52ece3c9487383215b7d70d0f7ff3c);
+
+        
+    
+            map_db52ece3c9487383215b7d70d0f7ff3c.fitBounds(
+                [[33.882469, -113.334161], [35.53095, -111.460605]],
+                {}
+            );
+        
+</script>
+</html>
