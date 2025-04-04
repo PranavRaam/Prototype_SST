@@ -38,21 +38,22 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Enhanced parameters to ensure we get the detailed map with PGs and HHAHs
-        // Ensure exact_boundary is true to highlight the statistical area's border
-        // and add display=all to show all PGs and HHAHs data
+        // Optimize map loading: prefer cached maps, reduce quality for faster loading
+        // Set use_cached=true to prioritize speed
         const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
-          `?force_regen=true&use_cached=false&detailed=true&zoom=11&exact_boundary=true&display_pgs=true&display_hhahs=true&t=${Date.now()}&r=${Math.random()}`;
+          `?force_regen=false&use_cached=true&detailed=false&zoom=10&exact_boundary=true&display_pgs=true&display_hhahs=true&lightweight=true&t=${Date.now()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Use the full backend URL with specific options
+        // Use the full backend URL with specific options and no-cors mode for cross-origin
         const response = await fetch(apiUrl, {
           method: 'GET',
-          mode: 'cors', 
+          mode: 'cors',
           credentials: 'omit',
           headers: {
-            'Accept': 'text/html'
-          }
+            'Accept': 'text/html',
+            'Cache-Control': 'max-age=3600'
+          },
+          timeout: 8000 // 8 second timeout
         });
         
         console.log(`Response status: ${response.status} ${response.statusText}`);
@@ -75,7 +76,10 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
       }
     };
 
-    checkMap();
+    // Start loading map with a short delay to prioritize UI rendering
+    const timer = setTimeout(() => {
+      checkMap();
+    }, 100);
     
     // Setup event listener for cross-origin messaging from the map iframe
     const handleMapMessage = (event) => {
@@ -89,6 +93,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     window.addEventListener('message', handleMapMessage);
     
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('message', handleMapMessage);
     };
   }, [statisticalArea, retryCount]);
@@ -238,7 +243,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           {isLoading && (
             <div className="map-loading">
               <div className="spinner"></div>
-              <p>Loading detailed map...</p>
+              <p>Loading map of {statisticalArea}...</p>
+              <p className="map-loading-info">This may take a few seconds</p>
             </div>
           )}
           {/* Only show iframe when mapUrl is available */}
@@ -252,7 +258,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
               onError={handleIframeError}
               allowFullScreen
               sandbox="allow-scripts allow-same-origin allow-popups"
-              loading="lazy"
+              loading="eager"
               importance="high"
               referrerPolicy="no-referrer-when-downgrade"
               style={{ width: '100%', height: '100%', border: 'none' }}

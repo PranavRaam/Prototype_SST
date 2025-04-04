@@ -15,8 +15,9 @@ CORS(app, resources={
     r"/api/*": {
         "origins": "*",  # Update this to specific domains in production
         "supports_credentials": True,
-        "allow_headers": ["Content-Type", "Authorization", "cache-control"],
-        "methods": ["GET", "POST", "OPTIONS"]
+        "allow_headers": ["Content-Type", "Authorization", "Cache-Control", "X-Requested-With"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "expose_headers": ["Content-Type", "Content-Length", "Content-Disposition", "X-Frame-Options"]
     }
 })
 
@@ -37,6 +38,21 @@ map_data = None
 if not os.path.exists(CACHE_DIR):
     os.makedirs(CACHE_DIR)
     logger.info(f"Created cache directory: {CACHE_DIR}")
+
+# Custom middleware to handle CORS for HTML responses
+@app.after_request
+def add_cors_headers(response):
+    # Add CORS headers to all responses
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
+    
+    # For iframe embedding
+    if response.mimetype == 'text/html':
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+    
+    return response
 
 @app.route('/api/generate-map', methods=['GET'])
 def generate_map():
@@ -186,27 +202,35 @@ def get_statistical_area_map(area_name):
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Requested statistical area map for: {decoded_area_name}")
         
-        # Get cache directory and file path
-        cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
-        
-        # Ensure cache directory exists
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
-            logger.info(f"Created cache directory: {cache_dir}")
-            
-        cache_file = os.path.join(cache_dir, f"statistical_area_{decoded_area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
-        
-        # Check if we should clear the cache
+        # Parse URL parameters with defaults optimized for performance
         force_regen = request.args.get('force_regen', 'false').lower() == 'true'
-        if force_regen and os.path.exists(cache_file):
-            try:
-                os.remove(cache_file)
-                logger.info(f"Deleted cached map due to force_regen: {cache_file}")
-            except Exception as e:
-                logger.error(f"Error deleting cached file {cache_file}: {e}")
+        use_cached = request.args.get('use_cached', 'true').lower() == 'true'
+        detailed = request.args.get('detailed', 'false').lower() == 'true'
+        lightweight = request.args.get('lightweight', 'true').lower() == 'true'
         
-        # Generate or retrieve the map for this statistical area
-        map_file = generate_statistical_area_map(decoded_area_name)
+        # Parse zoom level (default to 10 for better performance)
+        try:
+            zoom = int(request.args.get('zoom', '10'))
+        except ValueError:
+            zoom = 10
+            
+        # Parse boundary options
+        exact_boundary = request.args.get('exact_boundary', 'true').lower() == 'true'
+        
+        logger.info(f"Map options: force_regen={force_regen}, use_cached={use_cached}, " 
+                    f"detailed={detailed}, lightweight={lightweight}, zoom={zoom}, "
+                    f"exact_boundary={exact_boundary}")
+        
+        # Generate or retrieve the map for this statistical area with the specified options
+        map_file = generate_statistical_area_map(
+            decoded_area_name,
+            zoom=zoom,
+            exact_boundary=exact_boundary,
+            detailed=detailed,
+            use_cached=use_cached,
+            force_regen=force_regen,
+            lightweight=lightweight
+        )
         
         # Verify map file exists
         if not os.path.exists(map_file):
@@ -219,17 +243,6 @@ def get_statistical_area_map(area_name):
         # Read the HTML file
         with open(map_file, 'r') as f:
             html_content = f.read()
-            
-        # Remove control elements completely instead of hiding them with CSS
-        
-        # Remove control layer HTML elements 
-        html_content = re.sub(r'<div[^>]*class="leaflet-control-layers"[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
-        
-        # Remove top-right control elements
-        html_content = re.sub(r'<div[^>]*class="leaflet-top leaflet-right"[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
-        
-        # Remove legend elements
-        html_content = re.sub(r'<div[^>]*class="info legend"[^>]*>.*?</div>', '', html_content, flags=re.DOTALL)
         
         # Add cross-origin safe script to fix security errors and ensure map loads properly
         cross_origin_script = """
@@ -252,7 +265,7 @@ def get_statistical_area_map(area_name):
                     } catch (e) {
                         console.log('Postmessage not available, continuing silently');
                     }
-                }, 1000);
+                }, 500); // Reduced timeout for faster notification
             } catch (e) {
                 console.log('Map frame initialization complete');
             }
@@ -260,15 +273,17 @@ def get_statistical_area_map(area_name):
         </script>
         """
         
-        # Insert the script just before the closing body tag
-        html_content = html_content.replace('</body>', cross_origin_script + '</body>')
+        # Insert the script just before the closing body tag if not already present
+        if "</script>\n</body>" not in html_content:
+            html_content = html_content.replace('</body>', cross_origin_script + '</body>')
         
-        # Return the modified HTML content with proper content type
+        # Return the modified HTML content with proper content type and CORS headers
         logger.info(f"Serving modified statistical area map from {map_file}")
         response = Response(html_content, mimetype='text/html')
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        response.headers['Cache-Control'] = 'max-age=86400' if use_cached else 'no-cache'  # Cache for 24h if using cache
         return response
     except Exception as e:
         logger.error(f"Error generating statistical area map for {area_name}: {str(e)}", exc_info=True)

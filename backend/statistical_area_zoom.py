@@ -14,6 +14,7 @@ from folium.plugins import MousePosition, Draw, Fullscreen, MiniMap, Search
 from branca.element import Figure, JavascriptLink, CssLink
 from shapely.geometry import shape, Point
 from functools import lru_cache
+import time
 
 # Create a subclass of MacroElement to add legend to map
 class LegendControl(MacroElement):
@@ -346,7 +347,7 @@ def get_processed_data():
         logger.error(traceback.format_exc())
         return None, None, None, {}
 
-def generate_mock_pgs_hhahs(area_name, target_area_geometry):
+def generate_mock_pgs_hhahs(area_name, target_area_geometry, num_pgs=5, num_hhahs=7):
     """Generate mock PGs and HHAHs for the given statistical area"""
     logger = logging.getLogger(__name__)
     logger.info(f"Generating mock PGs and HHAHs for {area_name}")
@@ -358,7 +359,6 @@ def generate_mock_pgs_hhahs(area_name, target_area_geometry):
     pg_groups = ["Group A", "Group B", "Group C", "Group D"]
     
     # Mock PGs data
-    num_pgs = random.randint(3, 8)  # Random number of PGs
     pgs_data = []
     
     for i in range(num_pgs):
@@ -387,7 +387,6 @@ def generate_mock_pgs_hhahs(area_name, target_area_geometry):
         pgs_data.append(pg_data)
     
     # Mock HHAHs data
-    num_hhahs = random.randint(4, 10)  # Random number of HHAHs
     hhahs_data = []
     
     hhah_name_prefixes = ["HomeHealth", "CaringHands", "ComfortCare", "Elite", "Premier", "Wellness", "Guardian"]
@@ -498,9 +497,18 @@ def add_pgs_hhahs_to_map(m, pgs_data, hhahs_data):
     )
     m.add_child(legend)
 
-def generate_statistical_area_map(area_name):
+def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detailed=True, use_cached=True, force_regen=False, lightweight=False):
     """
     Generate a map zoomed in on a specific statistical area (MSA)
+    
+    Parameters:
+    - area_name: Name of the statistical area/MSA
+    - zoom: Initial zoom level (default: 9)
+    - exact_boundary: Whether to show exact boundaries (default: True)
+    - detailed: Whether to show detailed features (default: True)
+    - use_cached: Whether to use cached maps if available (default: True) 
+    - force_regen: Whether to force regeneration of the map (default: False)
+    - lightweight: Whether to generate a lightweight version for faster loading (default: False)
     """
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -510,10 +518,19 @@ def generate_statistical_area_map(area_name):
     # Generate cache filename
     cache_file = os.path.join(CACHE_DIR, f"statistical_area_{area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
     
-    # Check cache first
-    if os.path.exists(cache_file):
-        logger.info(f"Using cached map from {cache_file}")
-        return cache_file
+    # Add suffix for lightweight version
+    if lightweight:
+        cache_file = cache_file.replace('.html', '_lightweight.html')
+    
+    # Check cache first if use_cached is True and force_regen is False
+    if use_cached and not force_regen and os.path.exists(cache_file):
+        file_age = time.time() - os.path.getmtime(cache_file)
+        # Use cache if file exists and is less than 24 hours old
+        if file_age < 86400:  # 24 hours in seconds
+            logger.info(f"Using cached map from {cache_file} (age: {file_age/3600:.1f} hours)")
+            return cache_file
+        else:
+            logger.info(f"Cached map is {file_age/3600:.1f} hours old, regenerating...")
     
     # Get pre-processed data
     msa_data, county_data, states_data, county_to_msa = get_processed_data()
@@ -525,11 +542,6 @@ def generate_statistical_area_map(area_name):
         # Normalize the area name for comparison
         normalized_area_name = area_name.lower().strip()
         logger.info(f"Normalized area name: {normalized_area_name}")
-        
-        # Log available MSA names for debugging
-        logger.info("Available MSA names:")
-        for name in msa_data['NAME'].head(10).tolist():
-            logger.info(f"  - {name}")
         
         # Create normalized versions of MSA names
         msa_data['normalized_name'] = msa_data['NAME'].str.lower().str.strip()
@@ -600,8 +612,13 @@ def generate_statistical_area_map(area_name):
             center_lng, center_lat = target_area.geometry.centroid.x, target_area.geometry.centroid.y
             min_x, min_y, max_x, max_y = target_area.geometry.bounds
             
-            # Generate mock PGs and HHAHs data for this statistical area
-            pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
+            # Generate mock PGs and HHAHs data for this statistical area - reduce count for lightweight version
+            if lightweight:
+                num_pgs = min(3, random.randint(2, 4))  # Reduced number of PGs
+                num_hhahs = min(5, random.randint(3, 6))  # Reduced number of HHAHs
+                pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry, num_pgs=num_pgs, num_hhahs=num_hhahs)
+            else:
+                pgs_data, hhahs_data = generate_mock_pgs_hhahs(area_name, target_area.geometry)
             
             logger.info(f"Center: {center_lat}, {center_lng}")
             logger.info(f"Bounds: {min_x}, {min_y}, {max_x}, {max_y}")
@@ -614,58 +631,90 @@ def generate_statistical_area_map(area_name):
         # Create base map
         m = folium.Map(
             location=[center_lat, center_lng],
-            zoom_start=9,
+            zoom_start=zoom,
             tiles='cartodbpositron',
-            prefer_canvas=True
+            prefer_canvas=True,
+            control_scale=True
         )
         
-        # Add state boundaries
-        states_in_view = states_data[
-            (states_data.geometry.bounds.maxx >= min_x) & 
-            (states_data.geometry.bounds.minx <= max_x) & 
-            (states_data.geometry.bounds.maxy >= min_y) & 
-            (states_data.geometry.bounds.miny <= max_y)
-        ]
+        # Add state boundaries (only if not lightweight or if detailed is True)
+        if not lightweight or detailed:
+            states_in_view = states_data[
+                (states_data.geometry.bounds.maxx >= min_x) & 
+                (states_data.geometry.bounds.minx <= max_x) & 
+                (states_data.geometry.bounds.maxy >= min_y) & 
+                (states_data.geometry.bounds.miny <= max_y)
+            ]
+            
+            if not states_in_view.empty:
+                folium.GeoJson(
+                    states_in_view.__geo_interface__,
+                    style_function=lambda x: {
+                        'fillColor': 'transparent',
+                        'color': '#6B7280',
+                        'weight': 1.5,
+                        'opacity': 0.8,
+                        'fillOpacity': 0,
+                        'dashArray': '3,3'
+                    },
+                    name='State Boundaries'
+                ).add_to(m)
         
-        if not states_in_view.empty:
-            folium.GeoJson(
-                states_in_view.__geo_interface__,
-                style_function=lambda x: {
-                    'fillColor': 'transparent',
-                    'color': '#6B7280',
-                    'weight': 1.5,
-                    'opacity': 0.8,
-                    'fillOpacity': 0,
-                    'dashArray': '3,3'
-                },
-                name='State Boundaries'
-            ).add_to(m)
+        # Add MSA boundary (simpler style for lightweight version)
+        style_params = {
+            'fillColor': '#4F46E5',
+            'color': '#312E81',
+            'weight': 3 if not lightweight else 2,
+            'fillOpacity': 0.2 if not lightweight else 0.15,
+            'opacity': 0.9 if not lightweight else 0.8
+        }
         
-        # Add MSA boundary
         folium.GeoJson(
             target_area.geometry.__geo_interface__,
-            style_function=lambda x: {
-                'fillColor': '#4F46E5',
-                'color': '#312E81',
-                'weight': 3,
-                'fillOpacity': 0.2,
-                'opacity': 0.9
-            },
+            style_function=lambda x: style_params,
             name=f"{target_area['NAME']} Boundary"
         ).add_to(m)
         
-        # Add PGs and HHAHs to the map
-        add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
+        # Add PGs and HHAHs to the map - use simplified markers for lightweight version
+        if lightweight:
+            # Simplified markers for lightweight version
+            for i, pg in enumerate(pgs_data):
+                folium.CircleMarker(
+                    location=[pg['lat'], pg['lng']],
+                    radius=5,
+                    color='blue',
+                    fill=True,
+                    fill_color='blue',
+                    fill_opacity=0.7,
+                    popup=f"PG: {pg['name']}",
+                    name=f"PG_{i+1}"
+                ).add_to(m)
+            
+            for i, hhah in enumerate(hhahs_data):
+                folium.CircleMarker(
+                    location=[hhah['lat'], hhah['lng']],
+                    radius=5,
+                    color='green',
+                    fill=True,
+                    fill_color='green',
+                    fill_opacity=0.7,
+                    popup=f"HHAH: {hhah['name']}",
+                    name=f"HHAH_{i+1}"
+                ).add_to(m)
+        else:
+            # Detailed markers for full version
+            add_pgs_hhahs_to_map(m, pgs_data, hhahs_data)
         
-        # Add essential controls
-        folium.plugins.Fullscreen().add_to(m)
-        folium.plugins.MousePosition().add_to(m)
+        # Add essential controls - minimal for lightweight
+        if not lightweight:
+            folium.plugins.Fullscreen().add_to(m)
+            folium.plugins.MousePosition().add_to(m)
         folium.LayerControl().add_to(m)
         
         # Set bounds
         m.fit_bounds([[min_y, min_x], [max_y, max_x]])
         
-        # Add title
+        # Add title - simpler version for lightweight
         title_html = f'''
             <div style="position: fixed; 
                         top: 10px; left: 50px; width: 300px; height: auto;
@@ -680,51 +729,39 @@ def generate_statistical_area_map(area_name):
         '''
         m.get_root().html.add_child(folium.Element(title_html))
         
-        # Add safe script for cross-origin communication
+        # Add safe script for cross-origin communication - simplified for lightweight
         safe_script = """
         <script>
         // Safe cross-origin communication
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait for map to fully render
+            // Notify parent when map is loaded
             setTimeout(function() {
-                console.log('Map fully loaded and safe for cross-origin access');
-                
-                // Add protection for Leaflet objects to prevent cross-origin issues
-                var originalGet = Object.prototype.__lookupGetter__;
-                var originalSet = Object.prototype.__lookupSetter__;
-                
                 try {
-                    // Safely handle resize to avoid security errors
-                    window.addEventListener('resize', function() {
-                        // Find map containers without accessing unsafe properties
-                        var mapContainers = document.querySelectorAll('.leaflet-container');
-                        if (mapContainers.length > 0) {
-                            // Trigger visible resize
-                            mapContainers.forEach(function(container) {
-                                // This is a safe way to trigger a resize
-                                var evt = document.createEvent('UIEvents');
-                                evt.initUIEvent('resize', true, false, window, 0);
-                                window.dispatchEvent(evt);
-                            });
-                        }
-                    });
+                    console.log('Map loaded, sending message to parent');
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
+                    }
                 } catch (e) {
-                    console.log('Continuing without advanced map handling');
+                    console.error('Error in cross-origin communication:', e);
                 }
-            }, 1000);
+            }, 500);
         });
         </script>
         """
         m.get_root().html.add_child(folium.Element(safe_script))
         
-        # Save map
+        # Ensure the cache directory exists
+        if not os.path.exists(CACHE_DIR):
+            os.makedirs(CACHE_DIR)
+        
+        # Save the map
         m.save(cache_file)
         logger.info(f"Map saved to {cache_file}")
+        
         return cache_file
         
     except Exception as e:
-        logger.error(f"Error generating map: {e}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error generating map: {str(e)}")
         fallback_file = create_fallback_map(area_name, cache_file)
         logger.info(f"Created fallback map at: {fallback_file}")
         return fallback_file 
