@@ -40,15 +40,53 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Set high-quality parameters for all environments
-        const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
-          `?force_regen=false&use_cached=true&detailed=true&zoom=11&exact_boundary=true&display_pgs=true&display_hhahs=true&t=${Date.now()}`;
+        // First do a quick check if the backend is responding
+        try {
+          const healthCheckUrl = getApiUrl('/api/health');
+          const healthResponse = await fetch(healthCheckUrl, { 
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            mode: 'cors',
+            cache: 'no-cache'
+          });
+          
+          if (!healthResponse.ok) {
+            console.warn(`Backend health check failed with status: ${healthResponse.status}`);
+            // Continue anyway, but log the warning
+          } else {
+            console.log('Backend health check passed');
+          }
+        } catch (healthErr) {
+          console.warn(`Backend health check error: ${healthErr.message}`);
+          // Continue anyway, health check is just informational
+        }
+        
+        // Build URL with fallback options
+        let apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
+        
+        // Add parameters based on retry count to gradually simplify if we're having issues
+        const params = new URLSearchParams({
+          force_regen: retryCount > 0 ? 'true' : 'false',
+          use_cached: 'true',
+          detailed: retryCount > 2 ? 'false' : 'true',
+          lightweight: retryCount > 1 ? 'true' : 'false',
+          zoom: retryCount > 1 ? '9' : '11',
+          exact_boundary: 'true',
+          t: Date.now() // Add timestamp to prevent caching
+        });
+        
+        apiUrl += `?${params.toString()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
         // Just set the map URL and let it load however long it takes
         setMapUrl(apiUrl);
         
-        // Don't set isLoading to false here - we'll let the iframe onLoad handler manage that
+        // Start a timeout to check if we're taking too long - only for diagnostic purposes
+        const timeoutId = setTimeout(() => {
+          console.log(`Map request has been pending for 15 seconds - this is normal but indicates slow generation`);
+        }, 15000);
+        
+        return () => clearTimeout(timeoutId);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
         setError(err.message);
@@ -81,18 +119,44 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
   };
 
   const handleIframeLoad = () => {
+    // Check if the iframe loaded successfully
     setIsLoading(false);
     console.log('Map iframe loaded successfully');
+    
+    // Reset error state if we successfully loaded
+    setError(null);
   };
 
   const handleIframeError = (e) => {
     console.error('Map iframe failed to load', e);
-    setError('The map could not be loaded. Please try again.');
-    setIsLoading(false);
+    
+    // Check if we should retry with more lightweight options
+    if (retryCount < 3) {
+      console.log(`Automatically retrying with simplified options (attempt ${retryCount + 1}/3)`);
+      setRetryCount(prev => prev + 1);
+    } else {
+      setError('The map could not be loaded after multiple attempts. The server may be experiencing high load.');
+      setIsLoading(false);
+    }
   };
 
+  // Add a manual retry handler
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
+  };
+
+  // Add a direct map reload handler with fallback options
+  const handleTryFallbackMap = () => {
+    console.log('Trying fallback map options');
+    
+    // Create a simplified URL for fallback
+    const encodedArea = encodeURIComponent(statisticalArea);
+    const fallbackUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) + 
+      `?force_regen=true&use_cached=false&detailed=false&lightweight=true&zoom=8&exact_boundary=true&t=${Date.now()}`;
+    
+    setMapUrl(fallbackUrl);
+    setIsLoading(true);
+    setError(null);
   };
 
   // Get color for metric cards
@@ -154,15 +218,25 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         <div className="area-map-container">
           <h3>Map View of {statisticalArea}</h3>
           <div className="area-map-wrapper" style={{ position: 'relative' }}>
-            <MapPlaceholder />
+            <MapPlaceholder areaName={statisticalArea} />
             <div className="map-error-overlay">
-              <button className="retry-button" onClick={handleRetry}>
-                Retry Loading Map
-              </button>
+              <div className="map-error-message">
+                <h4>Map Loading Error</h4>
+                <p>{error}</p>
+                <p className="map-error-note">The server may be under high load or experiencing temporary issues.</p>
+                <div className="map-error-buttons">
+                  <button className="retry-button" onClick={handleRetry}>
+                    Retry with Standard Settings
+                  </button>
+                  <button className="fallback-button" onClick={handleTryFallbackMap}>
+                    Try Simplified Map Version
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="area-map-info">
-            <p>The highlighted area shows the boundaries of {statisticalArea}. Use the zoom controls to explore further.</p>
+            <p>The map would show the boundaries of {statisticalArea}. You can try again by clicking one of the buttons above.</p>
           </div>
         </div>
         
