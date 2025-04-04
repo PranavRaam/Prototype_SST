@@ -24,6 +24,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const [mapUrl, setMapUrl] = useState('');
+  const [useFallbackMap, setUseFallbackMap] = useState(false);
   const iframeRef = useRef(null);
   const stats = statisticalAreaStatistics[statisticalArea] || {};
 
@@ -33,6 +34,31 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
       try {
         setIsLoading(true);
         setError(null);
+        setUseFallbackMap(false);
+        
+        // First check server health to see if we can connect at all
+        try {
+          const healthCheckUrl = getApiUrl('/api/health');
+          console.log(`Checking server health at: ${healthCheckUrl}`);
+          
+          const healthResponse = await fetch(healthCheckUrl, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {'Accept': 'application/json'},
+            timeout: 5000
+          });
+          
+          if (!healthResponse.ok) {
+            console.warn('Health check failed, server may be down or unreachable');
+            throw new Error('Backend server is not responding correctly');
+          } else {
+            const health = await healthResponse.json();
+            console.log('Server health check passed:', health);
+          }
+        } catch (healthError) {
+          console.error(`Health check failed: ${healthError.message}`);
+          // Continue anyway, but with a warning
+        }
         
         // Encode the statistical area name for URL
         const encodedArea = encodeURIComponent(statisticalArea);
@@ -44,35 +70,65 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           `?force_regen=false&use_cached=true&detailed=false&zoom=10&exact_boundary=true&display_pgs=true&display_hhahs=true&lightweight=true&t=${Date.now()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Use the full backend URL with specific options and no-cors mode for cross-origin
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'omit',
-          headers: {
-            'Accept': 'text/html',
-            'Cache-Control': 'max-age=3600'
-          },
-          timeout: 8000 // 8 second timeout
-        });
+        // Use a timeout to abort the fetch if it takes too long
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
         
-        console.log(`Response status: ${response.status} ${response.statusText}`);
-        
-        if (!response.ok) {
-          // Try to get the error message from the response
-          const errorText = await response.text();
-          console.error(`Map request failed: ${errorText}`);
-          throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
+        try {
+          // First try with CORS mode
+          const response = await fetch(apiUrl, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+              'Accept': 'text/html',
+              'Cache-Control': 'max-age=3600',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          console.log(`Response status: ${response.status} ${response.statusText}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
+          }
+          
+          // Map was successfully accessed
+          console.log(`Setting map URL to: ${apiUrl}`);
+          setMapUrl(apiUrl);
+          setIsLoading(false);
+        } catch (initialError) {
+          console.warn(`Initial fetch attempt failed: ${initialError.message}`);
+          
+          // First try direct embedding
+          console.log("Falling back to direct iframe embedding");
+          setMapUrl(apiUrl);
+          
+          // Set a timer to check if the iframe load fails and switch to fallback
+          const fallbackTimer = setTimeout(() => {
+            if (isLoading) {
+              console.log("Direct embedding timeout reached, switching to static fallback map");
+              const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
+              setMapUrl(fallbackUrl);
+              setUseFallbackMap(true);
+            }
+          }, 8000); // Wait 8 seconds before switching to fallback
+          
+          return () => clearTimeout(fallbackTimer);
         }
-        
-        // Map was successfully accessed
-        console.log(`Setting map URL to: ${apiUrl}`);
-        setMapUrl(apiUrl);
-        setIsLoading(false);
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
         setError(err.message);
         setIsLoading(false);
+        
+        // Try to load the fallback static map as last resort
+        const encodedArea = encodeURIComponent(statisticalArea);
+        const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
+        setMapUrl(fallbackUrl);
+        setUseFallbackMap(true);
       }
     };
 
@@ -83,7 +139,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     
     // Setup event listener for cross-origin messaging from the map iframe
     const handleMapMessage = (event) => {
-      // Check origin for security (optional, as we're using '*' in the map)
+      // Check for mapLoaded message from iframe
       if (event.data && event.data.type === 'mapLoaded') {
         console.log('Received map loaded message from iframe:', event.data);
         setIsLoading(false);
@@ -108,8 +164,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     console.log('Map iframe loaded successfully');
   };
 
-  const handleIframeError = () => {
-    console.error('Map iframe failed to load');
+  const handleIframeError = (e) => {
+    console.error('Map iframe failed to load', e);
     setError('The map could not be loaded. Please try again.');
     setIsLoading(false);
   };
@@ -267,23 +323,39 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         </div>
         <div className="area-map-info">
           <p>The highlighted area shows the exact boundaries of {statisticalArea}. Use the zoom controls to explore further.</p>
-          <div className="map-info-legend">
-            <div className="legend-item">
-              <span className="legend-color" style={{ backgroundColor: 'rgba(79, 70, 229, 0.2)', border: '2px solid #312E81' }}></span>
-              <span className="legend-label">Statistical Area Boundary</span>
+          {useFallbackMap && (
+            <div className="fallback-notice">
+              <p><strong>Note:</strong> Using simplified map view. The interactive map could not be loaded at this time.</p>
+              <button 
+                className="retry-button" 
+                onClick={() => setRetryCount(prev => prev + 1)}
+                style={{ padding: '5px 10px', marginTop: '5px' }}
+              >
+                Try Interactive Map
+              </button>
             </div>
-            <div className="legend-item">
-              <span className="legend-color marker-circle" style={{ backgroundColor: 'blue' }}></span>
-              <span className="legend-label">Physician Groups (PGs)</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-color marker-circle" style={{ backgroundColor: 'green' }}></span>
-              <span className="legend-label">Home Health At Home (HHAHs)</span>
-            </div>
-          </div>
-          <p className="map-controls-info">
-            <strong>Map Controls:</strong> You can toggle layers on/off using the layers control icon <span style={{ backgroundColor: '#fff', padding: '2px 6px', border: '1px solid #ccc', borderRadius: '4px' }}><b>⊞</b></span> in the top-right corner. The "Statistical Area Boundary" checkbox toggles the highlighted region, and the "Exact Border" checkbox (if present) controls state/county borders.
-          </p>
+          )}
+          {!useFallbackMap && (
+            <>
+              <div className="map-info-legend">
+                <div className="legend-item">
+                  <span className="legend-color" style={{ backgroundColor: 'rgba(79, 70, 229, 0.2)', border: '2px solid #312E81' }}></span>
+                  <span className="legend-label">Statistical Area Boundary</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-color marker-circle" style={{ backgroundColor: 'blue' }}></span>
+                  <span className="legend-label">Physician Groups (PGs)</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-color marker-circle" style={{ backgroundColor: 'green' }}></span>
+                  <span className="legend-label">Home Health At Home (HHAHs)</span>
+                </div>
+              </div>
+              <p className="map-controls-info">
+                <strong>Map Controls:</strong> You can toggle layers on/off using the layers control icon <span style={{ backgroundColor: '#fff', padding: '2px 6px', border: '1px solid #ccc', borderRadius: '4px' }}><b>⊞</b></span> in the top-right corner. The "Statistical Area Boundary" checkbox toggles the highlighted region, and the "Exact Border" checkbox (if present) controls state/county borders.
+              </p>
+            </>
+          )}
         </div>
       </div>
       

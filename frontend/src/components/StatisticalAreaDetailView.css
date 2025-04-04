@@ -322,6 +322,36 @@
   z-index: 20;
 }
 
+/* Fallback notice styling */
+.fallback-notice {
+  background-color: #FEF3C7;
+  border: 1px solid #F59E0B;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.fallback-notice p {
+  color: #92400E;
+  margin: 0 0 8px 0;
+}
+
+.fallback-notice .retry-button {
+  background-color: #F59E0B;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fallback-notice .retry-button:hover {
+  background-color: #D97706;
+}
+
 .retry-button {
   background-color: #4F46E5;
   color: white;

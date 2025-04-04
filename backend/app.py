@@ -11,15 +11,17 @@ import re
 
 app = Flask(__name__)
 # Enable CORS with specific options for production
-CORS(app, resources={
-    r"/api/*": {
-        "origins": "*",  # Update this to specific domains in production
+CORS(app, 
+    resources={r"/api/*": {
+        "origins": ["https://sst-frontend-swart.vercel.app", "http://localhost:3000", "*"],
         "supports_credentials": True,
         "allow_headers": ["Content-Type", "Authorization", "Cache-Control", "X-Requested-With"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "expose_headers": ["Content-Type", "Content-Length", "Content-Disposition", "X-Frame-Options"]
-    }
-})
+        "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+        "expose_headers": ["Content-Type", "Content-Length", "Content-Disposition", "X-Frame-Options"],
+        "max_age": 86400  # Cache preflight requests for 24 hours
+    }},
+    send_wildcard=True  # This helps with some CORS implementations
+)
 
 # Configure logging
 logging.basicConfig(
@@ -43,15 +45,41 @@ if not os.path.exists(CACHE_DIR):
 @app.after_request
 def add_cors_headers(response):
     # Add CORS headers to all responses
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    origin = request.headers.get('Origin', '*')
+    
+    # Allow specific origins or use wildcard
+    if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+        response.headers['Access-Control-Allow-Origin'] = origin
+    else:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Max-Age'] = '86400'  # 24 hours in seconds
     
     # For iframe embedding
     if response.mimetype == 'text/html':
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
     
+    return response
+
+# Specific route for handling preflight CORS OPTIONS requests
+@app.route('/api/statistical-area-map/<area_name>', methods=['OPTIONS'])
+def options_statistical_area_map(area_name):
+    response = Response()
+    origin = request.headers.get('Origin', '*')
+    
+    # Allow specific origins or use wildcard
+    if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+        response.headers['Access-Control-Allow-Origin'] = origin
+    else:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
+    response.headers['Access-Control-Max-Age'] = '86400'  # 24 hours
     return response
 
 @app.route('/api/generate-map', methods=['GET'])
@@ -195,6 +223,94 @@ def get_regions():
     
     return jsonify(region_data)
 
+@app.route('/api/static-fallback-map/<area_name>', methods=['GET'])
+def get_static_fallback_map(area_name):
+    """Provide a simple HTML static map as fallback for areas with CORS/loading issues"""
+    try:
+        # Decode the URL-encoded area name
+        decoded_area_name = urllib.parse.unquote(area_name)
+        logger.info(f"Serving static fallback map for: {decoded_area_name}")
+        
+        # Create a very simple static HTML with minimal dependencies
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Map of {decoded_area_name}</title>
+            <style>
+                body {{ margin: 0; padding: 0; font-family: Arial, sans-serif; }}
+                .map-container {{ 
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 100vh;
+                    background-color: #f5f5f5;
+                    text-align: center;
+                }}
+                .area-info {{
+                    background-color: white;
+                    border-radius: 8px;
+                    border: 2px solid #4F46E5;
+                    padding: 20px;
+                    max-width: 80%;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                }}
+                h2 {{ color: #1F2937; margin-top: 0; }}
+                p {{ color: #4B5563; }}
+            </style>
+        </head>
+        <body>
+            <div class="map-container">
+                <div class="area-info">
+                    <h2>Map of {decoded_area_name}</h2>
+                    <p>This is a simplified view of the {decoded_area_name} area.</p>
+                    <p>This static map is shown when the interactive map cannot be loaded.</p>
+                    <script>
+                        // Notify parent that the map is loaded
+                        document.addEventListener('DOMContentLoaded', function() {{
+                            try {{
+                                setTimeout(function() {{
+                                    if (window.parent && window.parent !== window) {{
+                                        window.parent.postMessage({{type: 'mapLoaded', status: 'success'}}, '*');
+                                    }}
+                                }}, 500);
+                            }} catch(e) {{
+                                console.error('Error sending message to parent:', e);
+                            }}
+                        }});
+                    </script>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Return the HTML content with appropriate headers
+        response = Response(html_content, mimetype='text/html')
+        
+        # Set CORS headers for this response
+        origin = request.headers.get('Origin', '*')
+        if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        else:
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
+        response.headers['Content-Security-Policy'] = "frame-ancestors *"
+        response.headers['Cache-Control'] = 'max-age=86400'  # Cache for 24h
+        
+        return response
+    except Exception as e:
+        logger.error(f"Error generating static fallback map: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "message": f"Error generating static fallback map: {str(e)}"
+        }), 500
+
 @app.route('/api/statistical-area-map/<area_name>', methods=['GET'])
 def get_statistical_area_map(area_name):
     try:
@@ -280,7 +396,14 @@ def get_statistical_area_map(area_name):
         # Return the modified HTML content with proper content type and CORS headers
         logger.info(f"Serving modified statistical area map from {map_file}")
         response = Response(html_content, mimetype='text/html')
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        
+        # Set specific CORS headers for this response
+        origin = request.headers.get('Origin', '*')
+        if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        else:
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
         response.headers['Cache-Control'] = 'max-age=86400' if use_cached else 'no-cache'  # Cache for 24h if using cache
@@ -326,6 +449,34 @@ def clear_cache():
             "success": False,
             "message": f"Error clearing cache: {str(e)}"
         }), 500
+
+@app.route('/api/health', methods=['GET', 'OPTIONS'])
+def health_check():
+    """A simple health check endpoint to test CORS and server status"""
+    if request.method == 'OPTIONS':
+        response = Response()
+    else:
+        response = jsonify({
+            "status": "healthy",
+            "message": "Backend server is operational",
+            "timestamp": time.time(),
+            "cors_enabled": True,
+            "cache_dir_exists": os.path.exists(CACHE_DIR),
+            "cached_maps": len([f for f in os.listdir(CACHE_DIR) if f.endswith('.html')]) if os.path.exists(CACHE_DIR) else 0
+        })
+    
+    # Set CORS headers
+    origin = request.headers.get('Origin', '*')
+    if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+        response.headers['Access-Control-Allow-Origin'] = origin
+    else:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Max-Age'] = '86400'
+    
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
