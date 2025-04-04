@@ -61,16 +61,17 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           // Continue anyway, health check is just informational
         }
         
-        // Build URL with fallback options
+        // Build URL with optimized parameters for complex areas
         let apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`);
         
-        // Add parameters based on retry count to gradually simplify if we're having issues
+        // Add parameters - adjust defaults for faster map loading
+        // For complex areas like Norwich-New London, our server will use extra optimizations
         const params = new URLSearchParams({
           force_regen: retryCount > 0 ? 'true' : 'false',
           use_cached: 'true',
-          detailed: retryCount > 2 ? 'false' : 'true',
-          lightweight: retryCount > 1 ? 'true' : 'false',
-          zoom: retryCount > 1 ? '9' : '11',
+          detailed: retryCount > 1 ? 'false' : 'true',  // Less detail on retry
+          lightweight: retryCount > 0 ? 'true' : 'false',  // Lightweight on retry
+          zoom: 10,  // Default to zoom 10 for better performance
           exact_boundary: 'true',
           t: Date.now() // Add timestamp to prevent caching
         });
@@ -147,9 +148,9 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
 
   // Add a direct map reload handler with fallback options
   const handleTryFallbackMap = () => {
-    console.log('Trying fallback map options');
+    console.log('Trying extremely simplified map options');
     
-    // Create a simplified URL for fallback
+    // Create a simplified URL for fallback - absolute minimal settings for problematic areas
     const encodedArea = encodeURIComponent(statisticalArea);
     const fallbackUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) + 
       `?force_regen=true&use_cached=false&detailed=false&lightweight=true&zoom=8&exact_boundary=true&t=${Date.now()}`;

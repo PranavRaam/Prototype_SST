@@ -333,26 +333,58 @@ def get_statistical_area_map(area_name):
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Requested statistical area map for: {decoded_area_name}")
         
-        # Parse URL parameters with defaults for detailed maps
+        # Parse URL parameters with defaults for performance-optimized maps
         force_regen = request.args.get('force_regen', 'false').lower() == 'true'
         use_cached = request.args.get('use_cached', 'true').lower() == 'true'
         detailed = request.args.get('detailed', 'true').lower() == 'true'
         lightweight = request.args.get('lightweight', 'false').lower() == 'true'
         
-        # Parse zoom level (default to 11 for better detail)
+        # Parse zoom level (default to 10 for better performance while maintaining detail)
         try:
-            zoom = int(request.args.get('zoom', '11'))
+            zoom = int(request.args.get('zoom', '10'))
         except ValueError:
-            zoom = 11
+            zoom = 10
             
         # Parse boundary options
         exact_boundary = request.args.get('exact_boundary', 'true').lower() == 'true'
         
-        logger.info(f"Map options: force_regen={force_regen}, use_cached={use_cached}, " 
+        logger.info(f"Map request parameters: force_regen={force_regen}, use_cached={use_cached}, " 
                     f"detailed={detailed}, lightweight={lightweight}, zoom={zoom}, "
                     f"exact_boundary={exact_boundary}")
         
+        # Special handling for known large/complex areas
+        complex_areas = ['New York', 'Los Angeles', 'Chicago', 'San Francisco', 'Dallas', 'Houston',
+                         'Miami', 'Washington', 'Boston', 'Philadelphia', 'Norwich-New London']
+        
+        for complex_area in complex_areas:
+            if complex_area.lower() in decoded_area_name.lower():
+                logger.info(f"Detected complex area ({complex_area}), optimizing parameters")
+                # Force more aggressive optimizations for complex areas
+                detailed = request.args.get('detailed', 'true').lower() == 'true' and not force_regen
+                
+                # If this is Norwich-New London, which is causing 502s, be extra conservative
+                if 'Norwich-New London' in decoded_area_name:
+                    logger.info("Applying extra optimizations for Norwich-New London area")
+                    detailed = False  # Force less detailed for this problematic area
+                    lightweight = True  # Force lightweight mode
+        
+        # Check if the cache directory exists
+        cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+            logger.info(f"Created cache directory: {cache_dir}")
+        
+        # Check if we're hitting memory limits (simple heuristic)
+        memory_status = os.popen('free -m').readlines()[1].split()
+        free_memory = int(memory_status[3])
+        # If we have less than 200MB free memory, use lighter options
+        if free_memory < 200:
+            logger.warning(f"Low memory detected ({free_memory}MB free), using lightweight options")
+            detailed = False
+            lightweight = True
+        
         # Generate or retrieve the map for this statistical area with the specified options
+        start_time = time.time()
         map_file = generate_statistical_area_map(
             decoded_area_name,
             zoom=zoom,
@@ -375,70 +407,51 @@ def get_statistical_area_map(area_name):
                 "message": f"Error: Generated map file not found for {decoded_area_name}"
             }), 500
         
+        logger.info(f"Map generation took {time.time() - start_time:.2f} seconds")
+        
         # Read the HTML file
         with open(map_file, 'r') as f:
             html_content = f.read()
         
         # Add cross-origin safe script to fix security errors and ensure map loads properly
-        # but preserve all FontAwesome and icon-related content
         cross_origin_script = """
         <script>
-        // Fix for cross-origin security issues
+        // Map optimizations and fixes
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                // Ensure all FontAwesome icons are loaded correctly
-                document.querySelectorAll('i.fa, i.fas, i.far, i.fab').forEach(function(icon) {
-                    if (window.getComputedStyle(icon).fontFamily.indexOf('Font Awesome') < 0) {
-                        console.log('Fixing FontAwesome icon:', icon);
-                        // Force reload of icon font
-                        icon.style.fontFamily = 'FontAwesome';
-                    }
-                });
-                
-                // Fix GeoJSON boundaries
+                // Fix GeoJSON layers if present
                 var geoJsonLayers = document.querySelectorAll('.leaflet-overlay-pane path');
                 if (geoJsonLayers.length > 0) {
-                    console.log('Found GeoJSON layers:', geoJsonLayers.length);
                     geoJsonLayers.forEach(function(path) {
-                        // Ensure paths are visible with correct styling
+                        // This helps with making sure the boundary is visible
                         if (path.getAttribute('stroke') === '#312E81') {
-                            // This is our MSA boundary - ensure it's visible and styled correctly
-                            path.setAttribute('stroke-opacity', '0.9');
-                            path.setAttribute('fill-opacity', '0.2');
-                            path.setAttribute('stroke-width', '3');
+                            path.setAttribute('stroke-opacity', '0.8');
+                            path.setAttribute('fill-opacity', '0.15');
                         }
                     });
-                } else {
-                    console.log('No GeoJSON layers found');
                 }
                 
-                // Safe way to get leaflet maps without accessing window properties directly
+                // Notify parent safely using postMessage
                 setTimeout(function() {
-                    var maps = document.querySelectorAll('.leaflet-container');
-                    if (maps.length > 0) {
-                        console.log('Map optimization complete');
-                        
-                        // Force a resize to ensure all elements render properly
-                        try {
-                            var evt = document.createEvent('UIEvents');
-                            evt.initUIEvent('resize', true, false, window, 0);
-                            window.dispatchEvent(evt);
-                        } catch (e) {
-                            console.log('Resize event failed, continuing');
-                        }
-                    }
-                    
-                    // Notify parent safely using postMessage
                     try {
                         if (window.parent && window.parent !== window) {
                             window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
                         }
                     } catch (e) {
-                        console.log('Postmessage not available, continuing silently');
+                        console.log('PostMessage not available');
                     }
-                }, 1000); // Give FontAwesome time to load
+                }, 100);
             } catch (e) {
-                console.log('Map frame initialization complete');
+                console.log('Map optimizations not applied');
+                
+                // Still try to notify parent
+                setTimeout(function() {
+                    try {
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({type: 'mapLoaded', status: 'success'}, '*');
+                        }
+                    } catch (e) {}
+                }, 100);
             }
         });
         </script>
@@ -448,11 +461,15 @@ def get_statistical_area_map(area_name):
         if "</script>\n</body>" not in html_content:
             html_content = html_content.replace('</body>', cross_origin_script + '</body>')
         
+        # Optimize the HTML content size
+        # This can make a big difference for large maps
+        html_content = html_content.replace('    ', ' ')  # Reduce indentation
+        
         # Return the modified HTML content with proper content type and CORS headers
         logger.info(f"Serving modified statistical area map from {map_file}")
         response = Response(html_content, mimetype='text/html')
         
-        # Special headers to ensure proper font loading and geojson rendering
+        # Special headers to ensure proper font loading
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
         response.headers['Access-Control-Expose-Headers'] = 'Content-Type, Content-Length, Content-Disposition, X-Frame-Options'
         
@@ -463,12 +480,33 @@ def get_statistical_area_map(area_name):
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
-        # Update CSP to allow geojson rendering and all needed resources
         response.headers['Content-Security-Policy'] = "frame-ancestors *; font-src * data:; style-src * 'unsafe-inline'; img-src * data:; connect-src *; script-src * 'unsafe-inline'"
-        response.headers['Cache-Control'] = 'max-age=86400' if use_cached else 'no-cache'  # Cache for 24h if using cache
+        
+        # Add cache control headers - cache only if explicitly requested
+        if use_cached:
+            response.headers['Cache-Control'] = 'max-age=86400'  # Cache for 24h if using cache
+        else:
+            response.headers['Cache-Control'] = 'no-cache, must-revalidate'
+            
         return response
     except Exception as e:
         logger.error(f"Error generating statistical area map for {area_name}: {str(e)}", exc_info=True)
+        
+        # Try to create a very simple fallback on error
+        try:
+            fallback_file = create_fallback_map(area_name, 
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                            "cache", 
+                            f"fallback_{area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html"))
+            
+            with open(fallback_file, 'r') as f:
+                fallback_html = f.read()
+                
+            logger.info(f"Serving fallback map after error")
+            return Response(fallback_html, mimetype='text/html')
+        except Exception as fallback_error:
+            logger.error(f"Failed to create fallback map: {str(fallback_error)}")
+            
         return jsonify({
             "success": False,
             "message": f"Error generating map for {area_name}: {str(e)}"
