@@ -36,45 +36,45 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         setError(null);
         setUseFallbackMap(false);
         
-        // First check server health to see if we can connect at all
-        try {
-          const healthCheckUrl = getApiUrl('/api/health');
-          console.log(`Checking server health at: ${healthCheckUrl}`);
-          
-          const healthResponse = await fetch(healthCheckUrl, {
-            method: 'GET',
-            mode: 'cors',
-            headers: {'Accept': 'application/json'},
-            timeout: 5000
-          });
-          
-          if (!healthResponse.ok) {
-            console.warn('Health check failed, server may be down or unreachable');
-            throw new Error('Backend server is not responding correctly');
-          } else {
-            const health = await healthResponse.json();
-            console.log('Server health check passed:', health);
-          }
-        } catch (healthError) {
-          console.error(`Health check failed: ${healthError.message}`);
-          // Continue anyway, but with a warning
-        }
+        // Detect if we're on localhost or production
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        console.log(`Running on ${isLocalhost ? 'localhost' : 'production'}`);
         
         // Encode the statistical area name for URL
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // Optimize map loading: prefer cached maps, reduce quality for faster loading
-        // Set use_cached=true to prioritize speed
+        // If in production, reduce quality further and prioritize lightweight mode
+        // On localhost, we can use higher quality settings
         const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
-          `?force_regen=false&use_cached=true&detailed=false&zoom=10&exact_boundary=true&display_pgs=true&display_hhahs=true&lightweight=true&t=${Date.now()}`;
+          `?force_regen=false&use_cached=true&detailed=${isLocalhost}&zoom=${isLocalhost ? 11 : 9}` +
+          `&exact_boundary=true&display_pgs=true&display_hhahs=true&lightweight=${!isLocalhost}&t=${Date.now()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Use a timeout to abort the fetch if it takes too long
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        // Set a shorter timeout for production environments
+        const requestTimeout = isLocalhost ? 15000 : 8000;
         
+        // On production, check if direct iframe works first before doing a fetch
+        if (!isLocalhost) {
+          console.log("Production environment detected, using direct iframe embedding");
+          setMapUrl(apiUrl);
+          
+          // Set a timer for fallback if iframe doesn't load quickly
+          const fallbackTimer = setTimeout(() => {
+            console.log("Iframe loading taking too long, switching to static fallback");
+            const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
+            setMapUrl(fallbackUrl);
+            setUseFallbackMap(true);
+          }, 7000); // 7 seconds before fallback
+          
+          return () => clearTimeout(fallbackTimer);
+        }
+        
+        // Only do fetch on localhost
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
+          
           // First try with CORS mode
           const response = await fetch(apiUrl, {
             method: 'GET',
@@ -102,22 +102,8 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
           setIsLoading(false);
         } catch (initialError) {
           console.warn(`Initial fetch attempt failed: ${initialError.message}`);
-          
-          // First try direct embedding
           console.log("Falling back to direct iframe embedding");
           setMapUrl(apiUrl);
-          
-          // Set a timer to check if the iframe load fails and switch to fallback
-          const fallbackTimer = setTimeout(() => {
-            if (isLoading) {
-              console.log("Direct embedding timeout reached, switching to static fallback map");
-              const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
-              setMapUrl(fallbackUrl);
-              setUseFallbackMap(true);
-            }
-          }, 8000); // Wait 8 seconds before switching to fallback
-          
-          return () => clearTimeout(fallbackTimer);
         }
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
