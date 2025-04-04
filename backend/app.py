@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Enable CORS with specific options for production
 CORS(app, 
     resources={r"/api/*": {
-        "origins": ["https://sst-frontend-swart.vercel.app", "http://localhost:3000", "*"],
+        "origins": ["https://sst-frontend-swart.vercel.app", "http://localhost:3000"],
         "supports_credentials": True,
         "allow_headers": ["Content-Type", "Authorization", "Cache-Control", "X-Requested-With"],
         "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
@@ -45,17 +45,15 @@ if not os.path.exists(CACHE_DIR):
 @app.after_request
 def add_cors_headers(response):
     # Add CORS headers to all responses
-    origin = request.headers.get('Origin', '*')
+    origin = request.headers.get('Origin')
     
-    # Allow specific origins or use wildcard
+    # Allow specific origins only (no wildcard when using credentials)
     if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
         response.headers['Access-Control-Allow-Origin'] = origin
-    else:
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+    
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     response.headers['Access-Control-Max-Age'] = '86400'  # 24 hours in seconds
     
     # For iframe embedding
@@ -69,13 +67,12 @@ def add_cors_headers(response):
 @app.route('/api/statistical-area-map/<area_name>', methods=['OPTIONS'])
 def options_statistical_area_map(area_name):
     response = Response()
-    origin = request.headers.get('Origin', '*')
+    origin = request.headers.get('Origin')
     
-    # Allow specific origins or use wildcard
+    # Allow specific origins only (no wildcard when using credentials)
     if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
         response.headers['Access-Control-Allow-Origin'] = origin
-    else:
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
         
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cache-Control, X-Requested-With'
@@ -197,7 +194,13 @@ def get_map():
         
         # Set the appropriate headers for cross-origin iframe embedding
         response = Response(html_content, mimetype='text/html')
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        
+        # Set specific CORS headers
+        origin = request.headers.get('Origin')
+        if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
         return response
@@ -293,11 +296,10 @@ def get_static_fallback_map(area_name):
         response = Response(html_content, mimetype='text/html')
         
         # Set CORS headers for this response
-        origin = request.headers.get('Origin', '*')
+        origin = request.headers.get('Origin')
         if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
             response.headers['Access-Control-Allow-Origin'] = origin
-        else:
-            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
             
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
@@ -398,11 +400,10 @@ def get_statistical_area_map(area_name):
         response = Response(html_content, mimetype='text/html')
         
         # Set specific CORS headers for this response
-        origin = request.headers.get('Origin', '*')
+        origin = request.headers.get('Origin')
         if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
             response.headers['Access-Control-Allow-Origin'] = origin
-        else:
-            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
             
         response.headers['X-Frame-Options'] = 'ALLOW-FROM *'
         response.headers['Content-Security-Policy'] = "frame-ancestors *"
@@ -466,11 +467,10 @@ def health_check():
         })
     
     # Set CORS headers
-    origin = request.headers.get('Origin', '*')
+    origin = request.headers.get('Origin')
     if origin in ['https://sst-frontend-swart.vercel.app', 'http://localhost:3000']:
         response.headers['Access-Control-Allow-Origin'] = origin
-    else:
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
         
     response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
