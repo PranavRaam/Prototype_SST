@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_2ecf3f5eaf4d7f8be9565bedc1fdf36b {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Greeley, CO</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 3 PGs and 6 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_2ecf3f5eaf4d7f8be9565bedc1fdf36b" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_2ecf3f5eaf4d7f8be9565bedc1fdf36b = L.map(
+                "map_2ecf3f5eaf4d7f8be9565bedc1fdf36b",
+                {
+                    center: [40.55395529138955, -104.39341671606202],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1e41f42ebc95cd1768a57780f83775b9 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1e41f42ebc95cd1768a57780f83775b9.addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+        function geo_json_c20952f9f8bd7485ced25fb2a134e7f7_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+            }
+        }
+
+        function geo_json_c20952f9f8bd7485ced25fb2a134e7f7_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_c20952f9f8bd7485ced25fb2a134e7f7 = L.geoJson(null, {
+                onEachFeature: geo_json_c20952f9f8bd7485ced25fb2a134e7f7_onEachFeature,
+            
+                style: geo_json_c20952f9f8bd7485ced25fb2a134e7f7_styler,
+            ...{
+}
+        });
+
+        function geo_json_c20952f9f8bd7485ced25fb2a134e7f7_add (data) {
+            geo_json_c20952f9f8bd7485ced25fb2a134e7f7
+                .addData(data);
+        }
+            geo_json_c20952f9f8bd7485ced25fb2a134e7f7_add({"bbox": [-111.054556, 36.993016, -95.30829, 45.000955], "features": [{"bbox": [-104.053249, 39.999998, -95.30829, 42.999968], "geometry": {"coordinates": [[[-95.937791, 41.390752], [-95.929681, 41.367058], [-95.955294, 41.341896], [-95.871871, 41.301813], [-95.90284, 41.274374], [-95.905899, 41.301038], [-95.927642, 41.29844], [-95.910629, 41.234579], [-95.927975, 41.200069], [-95.916119, 41.185279], [-95.842188, 41.177421], [-95.88254, 41.155881], [-95.862427, 41.089687], [-95.882342, 41.059419], [-95.859654, 41.035695], [-95.866951, 41.001085], [-95.829792, 40.977344], [-95.839743, 40.93278], [-95.809379, 40.893279], [-95.847785, 40.864328], [-95.834881, 40.78021], [-95.881529, 40.750611], [-95.885349, 40.721093], [-95.854456, 40.704164], [-95.842316, 40.677171], [-95.783822, 40.654974], [-95.749685, 40.606842], [-95.774704, 40.573574], [-95.762857, 40.528371], [-95.708591, 40.521551], [-95.678715, 40.562561], [-95.655848, 40.546609], [-95.661681, 40.517312], [-95.699969, 40.505275], [-95.694651, 40.471452], [-95.656575, 40.438701], [-95.660602, 40.412409], [-95.622684, 40.342323], [-95.657328, 40.310856], [-95.562157, 40.297359], [-95.552473, 40.261904], [-95.478694, 40.243661], [-95.479193, 40.185652], [-95.393347, 40.119212], [-95.42134, 40.060746], [-95.415106, 40.040341], [-95.348777, 40.029297], [-95.30829, 39.999998], [-102.051744, 40.003078], [-102.051717, 41.002359], [-104.053249, 41.001406], [-104.053152, 42.999968], [-98.49855, 42.998559], [-98.444145, 42.929242], [-98.42074, 42.931924], [-98.189811, 42.841643], [-98.147109, 42.839631], [-98.056684, 42.770676], [-98.013072, 42.762219], [-97.934827, 42.776878], [-97.888647, 42.817177], [-97.875531, 42.858656], [-97.845393, 42.86772], [-97.686477, 42.842212], [-97.611811, 42.858367], [-97.444905, 42.845932], [-97.410847, 42.867984], [-97.359569, 42.854816], [-97.306677, 42.867604], [-97.218825, 42.845848], [-97.210126, 42.809296], [-97.150763, 42.795566], [-97.130257, 42.771541], [-96.97912, 42.76009], [-96.961576, 42.719841], [-96.906797, 42.7338], [-96.806213, 42.704154], [-96.793235, 42.666021], [-96.691268, 42.656198], [-96.709824, 42.6051], [-96.643585, 42.557607], [-96.611488, 42.506086], [-96.548789, 42.520547], [-96.501319, 42.482749], [-96.445483, 42.49063], [-96.386003, 42.474496], [-96.380705, 42.446393], [-96.415186, 42.404203], [-96.417786, 42.351449], [-96.328897, 42.254723], [-96.323723, 42.229887], [-96.35987, 42.210553], [-96.348602, 42.168027], [-96.269459, 42.114216], [-96.274393, 42.049244], [-96.221901, 42.029558], [-96.240713, 41.999351], [-96.194556, 42.008662], [-96.187219, 41.977946], [-96.130355, 41.972863], [-96.144583, 41.941544], [-96.136743, 41.920826], [-96.161756, 41.90182], [-96.110548, 41.849199], [-96.106565, 41.819613], [-96.065327, 41.797173], [-96.10638, 41.737762], [-96.073225, 41.704062], [-96.122604, 41.68304], [-96.095221, 41.650114], [-96.118277, 41.614967], [-96.08139, 41.5779], [-96.094437, 41.539463], [-96.040613, 41.506893], [-96.02349, 41.543438], [-95.999966, 41.53948], [-95.99328, 41.512314], [-96.019543, 41.491592], [-96.013585, 41.478469], [-95.919989, 41.452604], [-95.937791, 41.390752]]], "type": "Polygon"}, "id": "17", "properties": {"ALAND": 198949602728, "AWATER": 1379309601, "DIVISION": "4", "FUNCSTAT": "A", "GEOID": "31", "GEOIDFQ": "0400000US31", "INTPTLAT": "+41.5433053", "INTPTLON": "-099.8118646", "LSAD": "00", "MTFCC": "G4000", "NAME": "Nebraska", "REGION": "2", "STATEFP": "31", "STATENS": "01779792", "STUSPS": "NE"}, "type": "Feature"}, {"bbox": [-109.060204, 36.993016, -102.042089, 41.002359], "geometry": {"coordinates": [[[-105.155042, 36.995262], [-109.045172, 36.998977], [-109.042572, 38.157016], [-109.060204, 38.278238], [-109.050026, 41.000691], [-102.051717, 41.002359], [-102.042089, 36.993016], [-105.155042, 36.995262]]], "type": "Polygon"}, "id": "26", "properties": {"ALAND": 268418756810, "AWATER": 1185758065, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "08", "GEOIDFQ": "0400000US08", "INTPTLAT": "+38.9937669", "INTPTLON": "-105.5087122", "LSAD": "00", "MTFCC": "G4000", "NAME": "Colorado", "REGION": "4", "STATEFP": "08", "STATENS": "01779779", "STUSPS": "CO"}, "type": "Feature"}, {"bbox": [-111.054556, 40.997875, -104.053249, 45.000955], "geometry": {"coordinates": [[[-106.321165, 40.999123], [-111.046815, 40.997875], [-111.054556, 45.000955], [-104.057879, 44.997605], [-104.053249, 41.001406], [-106.321165, 40.999123]]], "type": "Polygon"}, "id": "30", "properties": {"ALAND": 251458162746, "AWATER": 1868053273, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "56", "GEOIDFQ": "0400000US56", "INTPTLAT": "+42.9896591", "INTPTLON": "-107.5443922", "LSAD": "00", "MTFCC": "G4000", "NAME": "Wyoming", "REGION": "4", "STATEFP": "56", "STATENS": "01779807", "STUSPS": "WY"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_c20952f9f8bd7485ced25fb2a134e7f7.addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+        function geo_json_003941efcdd77430718f0a6dfa191e79_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+            }
+        }
+
+        function geo_json_003941efcdd77430718f0a6dfa191e79_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_003941efcdd77430718f0a6dfa191e79 = L.geoJson(null, {
+                onEachFeature: geo_json_003941efcdd77430718f0a6dfa191e79_onEachFeature,
+            
+                style: geo_json_003941efcdd77430718f0a6dfa191e79_styler,
+            ...{
+}
+        });
+
+        function geo_json_003941efcdd77430718f0a6dfa191e79_add (data) {
+            geo_json_003941efcdd77430718f0a6dfa191e79
+                .addData(data);
+        }
+            geo_json_003941efcdd77430718f0a6dfa191e79_add({"features": [{"geometry": {"coordinates": [[[[-104.979911, 40.032844], [-104.97305, 40.033037], [-104.973074, 40.029512], [-104.979917, 40.029486], [-104.979911, 40.032844]]], [[[-104.753728, 40.000471], [-104.961405, 40.000337], [-104.961157, 40.044144], [-104.999007, 40.025776], [-104.989647, 40.007679], [-105.055518, 40.000251], [-105.05672, 40.349281], [-104.945551, 40.349099], [-104.943371, 40.998213], [-103.573774, 41.001716], [-103.581837, 40.52316], [-104.147714, 40.524389], [-104.150332, 40.000856], [-104.753728, 40.000471]]]], "type": "MultiPolygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_003941efcdd77430718f0a6dfa191e79.addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+            var feature_group_8a4cd5f74d9dae3ef723db57eda761d1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_acd2ab5844bb5919acc0dbc174141fcd = L.marker(
+                [40.11975775906647, -104.25965711591284],
+                {
+}
+            ).addTo(feature_group_8a4cd5f74d9dae3ef723db57eda761d1);
+        
+    
+            var icon_be810f1f16666198bc01fd1e5ded340c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a6bb33102d08076c113dfbe0bf4748ca = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_78eac10ca9bba2a1118e5eb03b74c2a8 = $(`<div id="html_78eac10ca9bba2a1118e5eb03b74c2a8" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Gre1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 295</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 801 Healthcare Ave, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 885-2893</p>         </div>         </div>`)[0];
+                popup_a6bb33102d08076c113dfbe0bf4748ca.setContent(html_78eac10ca9bba2a1118e5eb03b74c2a8);
+            
+        
+
+        marker_acd2ab5844bb5919acc0dbc174141fcd.bindPopup(popup_a6bb33102d08076c113dfbe0bf4748ca)
+        ;
+
+        
+    
+    
+            marker_acd2ab5844bb5919acc0dbc174141fcd.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Gre1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_acd2ab5844bb5919acc0dbc174141fcd.setIcon(icon_be810f1f16666198bc01fd1e5ded340c);
+            
+    
+            var marker_9e78bcd67291434cc619c4ff0e4a2787 = L.marker(
+                [40.76301841966954, -104.65302291472199],
+                {
+}
+            ).addTo(feature_group_8a4cd5f74d9dae3ef723db57eda761d1);
+        
+    
+            var icon_1937f9efd5a5f47865f8e79cc29c7284 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ba0d5b1212268ceb71b1a07d3c547c8f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ed91445367be0034d5893f656cec1a0f = $(`<div id="html_ed91445367be0034d5893f656cec1a0f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Gre2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 14</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 128</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 805 Healthcare Ave, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 152-4066</p>         </div>         </div>`)[0];
+                popup_ba0d5b1212268ceb71b1a07d3c547c8f.setContent(html_ed91445367be0034d5893f656cec1a0f);
+            
+        
+
+        marker_9e78bcd67291434cc619c4ff0e4a2787.bindPopup(popup_ba0d5b1212268ceb71b1a07d3c547c8f)
+        ;
+
+        
+    
+    
+            marker_9e78bcd67291434cc619c4ff0e4a2787.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Gre2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9e78bcd67291434cc619c4ff0e4a2787.setIcon(icon_1937f9efd5a5f47865f8e79cc29c7284);
+            
+    
+            var marker_5873b8b366279450e185f49d5252203f = L.marker(
+                [40.30002504883906, -104.46255538427405],
+                {
+}
+            ).addTo(feature_group_8a4cd5f74d9dae3ef723db57eda761d1);
+        
+    
+            var icon_ab89a8be35e23aba1b1b32f946a0cf33 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8b94202fa1366d40107e083a4b8559da = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0bf6d66c7609536b445960a1aba0e783 = $(`<div id="html_0bf6d66c7609536b445960a1aba0e783" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Gre3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 86</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 914 Healthcare Ave, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 471-4432</p>         </div>         </div>`)[0];
+                popup_8b94202fa1366d40107e083a4b8559da.setContent(html_0bf6d66c7609536b445960a1aba0e783);
+            
+        
+
+        marker_5873b8b366279450e185f49d5252203f.bindPopup(popup_8b94202fa1366d40107e083a4b8559da)
+        ;
+
+        
+    
+    
+            marker_5873b8b366279450e185f49d5252203f.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Gre3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5873b8b366279450e185f49d5252203f.setIcon(icon_ab89a8be35e23aba1b1b32f946a0cf33);
+            
+    
+            feature_group_8a4cd5f74d9dae3ef723db57eda761d1.addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+            var feature_group_009060b3a8c39956b68f2b1cf2d811cf = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_17bf3c840fca519955e7fa549e80fa88 = L.marker(
+                [40.283264933551486, -104.56000457545203],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_508240d8a6b70d0daab50c22165087d5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3b9ae3659124a7cb8d3550f7b759db3b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4d9bbe28d2ed2148f14b4b5c01cbef62 = $(`<div id="html_4d9bbe28d2ed2148f14b4b5c01cbef62" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 114</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 495 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 140-2773</p>         </div>         </div>`)[0];
+                popup_3b9ae3659124a7cb8d3550f7b759db3b.setContent(html_4d9bbe28d2ed2148f14b4b5c01cbef62);
+            
+        
+
+        marker_17bf3c840fca519955e7fa549e80fa88.bindPopup(popup_3b9ae3659124a7cb8d3550f7b759db3b)
+        ;
+
+        
+    
+    
+            marker_17bf3c840fca519955e7fa549e80fa88.bindTooltip(
+                `<div>
+                     HHAH: Elite Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_17bf3c840fca519955e7fa549e80fa88.setIcon(icon_508240d8a6b70d0daab50c22165087d5);
+            
+    
+            var marker_a9a338f0429de533a138530b7d6f5664 = L.marker(
+                [40.23119044098673, -104.23637470463596],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_623ed4e1e1005bce9f7da3f71b2236d1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4a128daca9c2219808f65dcfca9edc48 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_651a4677e1723a6f852e1e418dee95e5 = $(`<div id="html_651a4677e1723a6f852e1e418dee95e5" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 137</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 491 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 975-6409</p>         </div>         </div>`)[0];
+                popup_4a128daca9c2219808f65dcfca9edc48.setContent(html_651a4677e1723a6f852e1e418dee95e5);
+            
+        
+
+        marker_a9a338f0429de533a138530b7d6f5664.bindPopup(popup_4a128daca9c2219808f65dcfca9edc48)
+        ;
+
+        
+    
+    
+            marker_a9a338f0429de533a138530b7d6f5664.bindTooltip(
+                `<div>
+                     HHAH: Wellness Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a9a338f0429de533a138530b7d6f5664.setIcon(icon_623ed4e1e1005bce9f7da3f71b2236d1);
+            
+    
+            var marker_f42c47b3cdb91a4f07ab6b2ee1a31c0e = L.marker(
+                [40.13504972684828, -104.83111245274036],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_6f5ca1621f8e081054cc8b67846e2775 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cd843b3537d97c27001e4680bfc89b62 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b4d63ee2c56cbe864a798b9125e8ea48 = $(`<div id="html_b4d63ee2c56cbe864a798b9125e8ea48" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 95</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 402 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 177-4327</p>         </div>         </div>`)[0];
+                popup_cd843b3537d97c27001e4680bfc89b62.setContent(html_b4d63ee2c56cbe864a798b9125e8ea48);
+            
+        
+
+        marker_f42c47b3cdb91a4f07ab6b2ee1a31c0e.bindPopup(popup_cd843b3537d97c27001e4680bfc89b62)
+        ;
+
+        
+    
+    
+            marker_f42c47b3cdb91a4f07ab6b2ee1a31c0e.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f42c47b3cdb91a4f07ab6b2ee1a31c0e.setIcon(icon_6f5ca1621f8e081054cc8b67846e2775);
+            
+    
+            var marker_1135193e316d38d9d65725b1b90f848d = L.marker(
+                [40.57076838302598, -103.73237229588658],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_858863b877d9b63102a8581c6f824240 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e6d5195f811dcdd74f17adb936edf0d6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cd3e063c12a70e5702ad80cac97abfaf = $(`<div id="html_cd3e063c12a70e5702ad80cac97abfaf" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 144</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 399 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 111-8520</p>         </div>         </div>`)[0];
+                popup_e6d5195f811dcdd74f17adb936edf0d6.setContent(html_cd3e063c12a70e5702ad80cac97abfaf);
+            
+        
+
+        marker_1135193e316d38d9d65725b1b90f848d.bindPopup(popup_e6d5195f811dcdd74f17adb936edf0d6)
+        ;
+
+        
+    
+    
+            marker_1135193e316d38d9d65725b1b90f848d.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1135193e316d38d9d65725b1b90f848d.setIcon(icon_858863b877d9b63102a8581c6f824240);
+            
+    
+            var marker_184cc08e833cbbc22b9f9c9e26a66413 = L.marker(
+                [40.47498944646501, -104.37723803897475],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_921a5d7dd74d6fc0f7b69e05fca79630 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_537875c8bd1e279cf69eb2ffa2dd1a13 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_645860b61ac84a2e447048de98b3ef19 = $(`<div id="html_645860b61ac84a2e447048de98b3ef19" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Care</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 88</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 255 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 296-8969</p>         </div>         </div>`)[0];
+                popup_537875c8bd1e279cf69eb2ffa2dd1a13.setContent(html_645860b61ac84a2e447048de98b3ef19);
+            
+        
+
+        marker_184cc08e833cbbc22b9f9c9e26a66413.bindPopup(popup_537875c8bd1e279cf69eb2ffa2dd1a13)
+        ;
+
+        
+    
+    
+            marker_184cc08e833cbbc22b9f9c9e26a66413.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Care
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_184cc08e833cbbc22b9f9c9e26a66413.setIcon(icon_921a5d7dd74d6fc0f7b69e05fca79630);
+            
+    
+            var marker_cf7f0b4ecef3d67f66873c56487d8353 = L.marker(
+                [40.883365668522174, -103.73998875685369],
+                {
+}
+            ).addTo(feature_group_009060b3a8c39956b68f2b1cf2d811cf);
+        
+    
+            var icon_27b15f04c786dda5f5c0e24977eb8049 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cebf301647cfdc7cd93d04ec9096b5b7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b87e308f83700a813c2f32d9bd596c74 = $(`<div id="html_b87e308f83700a813c2f32d9bd596c74" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 99</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 411 Medical Blvd, Greeley</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 385-2586</p>         </div>         </div>`)[0];
+                popup_cebf301647cfdc7cd93d04ec9096b5b7.setContent(html_b87e308f83700a813c2f32d9bd596c74);
+            
+        
+
+        marker_cf7f0b4ecef3d67f66873c56487d8353.bindPopup(popup_cebf301647cfdc7cd93d04ec9096b5b7)
+        ;
+
+        
+    
+    
+            marker_cf7f0b4ecef3d67f66873c56487d8353.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cf7f0b4ecef3d67f66873c56487d8353.setIcon(icon_27b15f04c786dda5f5c0e24977eb8049);
+            
+    
+            feature_group_009060b3a8c39956b68f2b1cf2d811cf.addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+        
+    
+            var mouse_position_7a57afa71ef714c594425820df9e321f = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_7a57afa71ef714c594425820df9e321f.options["latFormatter"] =
+                undefined;
+            mouse_position_7a57afa71ef714c594425820df9e321f.options["lngFormatter"] =
+                undefined;
+            map_2ecf3f5eaf4d7f8be9565bedc1fdf36b.addControl(mouse_position_7a57afa71ef714c594425820df9e321f);
+        
+    
+            var layer_control_bbca0fc60e186e05676bf6799e3f5d10_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_1e41f42ebc95cd1768a57780f83775b9,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_c20952f9f8bd7485ced25fb2a134e7f7,
+                    "Greeley, CO Boundary" : geo_json_003941efcdd77430718f0a6dfa191e79,
+                    "Physician Groups (PGs)" : feature_group_8a4cd5f74d9dae3ef723db57eda761d1,
+                    "Home Health At Home (HHAHs)" : feature_group_009060b3a8c39956b68f2b1cf2d811cf,
+                },
+            };
+            let layer_control_bbca0fc60e186e05676bf6799e3f5d10 = L.control.layers(
+                layer_control_bbca0fc60e186e05676bf6799e3f5d10_layers.base_layers,
+                layer_control_bbca0fc60e186e05676bf6799e3f5d10_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_2ecf3f5eaf4d7f8be9565bedc1fdf36b);
+
+        
+    
+            map_2ecf3f5eaf4d7f8be9565bedc1fdf36b.fitBounds(
+                [[40.000251, -105.05672], [41.001716, -103.573774]],
+                {}
+            );
+        
+</script>
+</html>

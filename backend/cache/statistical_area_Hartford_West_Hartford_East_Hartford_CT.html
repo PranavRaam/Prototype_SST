@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_59bc2ed040d97607b1baa9e9f313e788 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Hartford-West Hartford-East Hartford, CT</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 5 PGs and 9 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+        <script>
+        // Safe cross-origin communication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for map to fully render
+            setTimeout(function() {
+                console.log('Map fully loaded and safe for cross-origin access');
+                
+                // Add protection for Leaflet objects to prevent cross-origin issues
+                var originalGet = Object.prototype.__lookupGetter__;
+                var originalSet = Object.prototype.__lookupSetter__;
+                
+                try {
+                    // Safely handle resize to avoid security errors
+                    window.addEventListener('resize', function() {
+                        // Find map containers without accessing unsafe properties
+                        var mapContainers = document.querySelectorAll('.leaflet-container');
+                        if (mapContainers.length > 0) {
+                            // Trigger visible resize
+                            mapContainers.forEach(function(container) {
+                                // This is a safe way to trigger a resize
+                                var evt = document.createEvent('UIEvents');
+                                evt.initUIEvent('resize', true, false, window, 0);
+                                window.dispatchEvent(evt);
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.log('Continuing without advanced map handling');
+                }
+            }, 1000);
+        });
+        </script>
+        
+    
+            <div class="folium-map" id="map_59bc2ed040d97607b1baa9e9f313e788" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_59bc2ed040d97607b1baa9e9f313e788 = L.map(
+                "map_59bc2ed040d97607b1baa9e9f313e788",
+                {
+                    center: [41.687128485461756, -72.54610580775801],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_17d78cc262f34192737a747c1aa394a6 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_17d78cc262f34192737a747c1aa394a6.addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+        function geo_json_9d763534ad5d0140b5485df6e1c87056_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "dashArray": "3,3", "fillColor": "transparent", "fillOpacity": 0, "opacity": 0.8, "weight": 1.5};
+            }
+        }
+
+        function geo_json_9d763534ad5d0140b5485df6e1c87056_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_9d763534ad5d0140b5485df6e1c87056 = L.geoJson(null, {
+                onEachFeature: geo_json_9d763534ad5d0140b5485df6e1c87056_onEachFeature,
+            
+                style: geo_json_9d763534ad5d0140b5485df6e1c87056_styler,
+            ...{
+}
+        });
+
+        function geo_json_9d763534ad5d0140b5485df6e1c87056_add (data) {
+            geo_json_9d763534ad5d0140b5485df6e1c87056
+                .addData(data);
+        }
+            geo_json_9d763534ad5d0140b5485df6e1c87056_add({"bbox": [-79.762418, 40.476578, -69.85913, 45.015865], "features": [{"bbox": [-73.727775, 40.950943, -71.788213, 42.049525], "geometry": {"coordinates": [[[-72.527901, 41.177774], [-73.612885, 40.950943], [-73.656771, 40.984509], [-73.655255, 41.012246], [-73.727775, 41.100696], [-73.482695, 41.212772], [-73.550962, 41.295421], [-73.487319, 42.049525], [-72.813784, 42.036744], [-72.817053, 41.997685], [-72.766733, 42.003266], [-72.755894, 42.036349], [-71.800671, 42.023514], [-71.788213, 41.621017], [-71.797745, 41.416727], [-71.843591, 41.405331], [-71.829365, 41.342432], [-71.857458, 41.320789], [-71.892067, 41.330075], [-71.907258, 41.304483], [-71.999486, 41.295794], [-72.081775, 41.26224], [-72.527901, 41.177774]]], "type": "Polygon"}, "id": "10", "properties": {"ALAND": 12541750274, "AWATER": 1816364426, "DIVISION": "1", "FUNCSTAT": "A", "GEOID": "09", "GEOIDFQ": "0400000US09", "INTPTLAT": "+41.5798637", "INTPTLON": "-072.7466572", "LSAD": "00", "MTFCC": "G4000", "NAME": "Connecticut", "REGION": "1", "STATEFP": "09", "STATENS": "01779780", "STUSPS": "CT"}, "type": "Feature"}, {"bbox": [-79.762418, 40.476578, -71.777491, 45.015865], "geometry": {"coordinates": [[[[-74.726228, 44.994863], [-74.670527, 45.006286], [-74.150135, 44.99136], [-73.343178, 45.010713], [-73.354633, 44.987352], [-73.338244, 44.964751], [-73.338979, 44.917681], [-73.38159, 44.849354], [-73.333154, 44.788759], [-73.365562, 44.741786], [-73.361308, 44.694524], [-73.390231, 44.618354], [-73.37495, 44.575817], [-73.306713, 44.500335], [-73.293627, 44.438903], [-73.33495, 44.36444], [-73.312741, 44.265411], [-73.390625, 44.191068], [-73.437905, 44.045125], [-73.407645, 44.021111], [-73.408554, 43.931894], [-73.374162, 43.876241], [-73.372589, 43.845354], [-73.392517, 43.82134], [-73.350762, 43.771387], [-73.426463, 43.642599], [-73.417669, 43.621687], [-73.431229, 43.588285], [-73.395768, 43.568087], [-73.37189, 43.62449], [-73.30644, 43.628333], [-73.297324, 43.579373], [-73.258631, 43.56495], [-73.241579, 43.53496], [-73.278306, 42.837558], [-73.290944, 42.80192], [-73.276421, 42.746019], [-73.264827, 42.745851], [-73.50821, 42.086134], [-73.487319, 42.049525], [-73.489615, 42.000092], [-73.550962, 41.295421], [-73.482695, 41.212772], [-73.727775, 41.100696], [-73.655255, 41.012246], [-73.659671, 40.987909], [-73.612885, 40.950943], [-72.999547, 41.087108], [-72.081847, 41.262224], [-71.929451, 41.310387], [-71.907258, 41.304483], [-71.790972, 41.184101], [-71.777491, 41.067292], [-71.794139, 41.036977], [-71.870139, 40.996971], [-72.374529, 40.818595], [-73.274025, 40.551314], [-73.326272, 40.556916], [-73.486496, 40.520505], [-73.783969, 40.532387], [-73.889645, 40.486511], [-73.977874, 40.519095], [-74.225331, 40.476578], [-74.253036, 40.48666], [-74.258129, 40.508717], [-74.247484, 40.549377], [-74.214575, 40.560533], [-74.2024, 40.631592], [-74.185641, 40.646042], [-74.055749, 40.651476], [-74.014029, 40.757551], [-73.929821, 40.888682], [-73.893628, 40.997165], [-74.69558, 41.357607], [-74.741383, 41.405689], [-74.738732, 41.430781], [-74.789097, 41.421409], [-74.808242, 41.44292], [-74.832032, 41.430391], [-74.857653, 41.444156], [-74.892625, 41.438617], [-74.890169, 41.455558], [-74.913035, 41.476017], [-74.982476, 41.480253], [-74.98424, 41.506509], [-75.003578, 41.508277], [-75.024543, 41.534593], [-75.018804, 41.552436], [-75.074678, 41.606527], [-75.044181, 41.618063], [-75.052627, 41.68811], [-75.068957, 41.709327], [-75.049687, 41.713372], [-75.052969, 41.751793], [-75.104711, 41.774384], [-75.072248, 41.814131], [-75.113019, 41.822619], [-75.116595, 41.845449], [-75.162879, 41.850555], [-75.17246, 41.872283], [-75.185358, 41.860063], [-75.258316, 41.862274], [-75.278763, 41.938713], [-75.317799, 41.953739], [-75.359645, 41.999554], [-79.761954, 41.998841], [-79.762418, 42.516072], [-78.99976, 42.804368], [-78.930559, 42.850105], [-78.905758, 42.899957], [-78.918859, 42.946857], [-79.019964, 42.994756], [-79.00713, 43.065757], [-79.074459, 43.077863], [-79.057961, 43.106957], [-79.069649, 43.120322], [-79.042299, 43.143663], [-79.055932, 43.254674], [-79.200936, 43.450422], [-78.688295, 43.634742], [-76.776233, 43.629529], [-76.753538, 43.684275], [-76.438287, 44.094172], [-76.352679, 44.134743], [-76.312639, 44.199045], [-76.206774, 44.214538], [-76.164258, 44.239603], [-76.161825, 44.280776], [-76.001107, 44.347867], [-75.970179, 44.342533], [-75.912827, 44.367805], [-75.821379, 44.432042], [-75.807582, 44.471707], [-75.766936, 44.515272], [-75.290429, 44.845575], [-75.139989, 44.896947], [-75.133674, 44.915383], [-75.064826, 44.929449], [-74.972491, 44.983405], [-74.907948, 44.983369], [-74.826576, 45.015865], [-74.726228, 44.994863]]], [[[-74.040747, 40.700167], [-74.038936, 40.699655], [-74.038372, 40.698669], [-74.039931, 40.69859], [-74.040747, 40.700167]]], [[[-74.047207, 40.690893], [-74.043885, 40.690185], [-74.043619, 40.68876], [-74.046248, 40.689319], [-74.047207, 40.690893]]]], "type": "MultiPolygon"}, "id": "38", "properties": {"ALAND": 122049078273, "AWATER": 19256833049, "DIVISION": "2", "FUNCSTAT": "A", "GEOID": "36", "GEOIDFQ": "0400000US36", "INTPTLAT": "+42.9133974", "INTPTLON": "-075.5962723", "LSAD": "00", "MTFCC": "G4000", "NAME": "New York", "REGION": "1", "STATEFP": "36", "STATENS": "01779796", "STUSPS": "NY"}, "type": "Feature"}, {"bbox": [-73.50821, 41.188305, -69.85913, 42.886778], "geometry": {"coordinates": [[[-71.255147, 42.736554], [-71.181786, 42.737341], [-71.18614, 42.790935], [-71.166647, 42.808881], [-71.132805, 42.821476], [-71.064416, 42.806275], [-71.031201, 42.859087], [-70.903533, 42.886778], [-70.847718, 42.860867], [-70.735005, 42.874685], [-70.74883, 42.858831], [-70.714324, 42.731911], [-70.625943, 42.739724], [-70.529655, 42.707048], [-70.502143, 42.624579], [-70.545374, 42.570119], [-70.60629, 42.53122], [-70.690393, 42.278999], [-70.684061, 42.253836], [-70.640113, 42.228372], [-70.642946, 42.178185], [-70.608381, 42.138479], [-70.27743, 42.114345], [-70.172542, 42.134515], [-70.040302, 42.091634], [-69.996279, 42.059687], [-69.917706, 41.959247], [-69.866525, 41.817011], [-69.85913, 41.7365], [-69.868125, 41.656791], [-69.915399, 41.589243], [-69.928994, 41.532152], [-70.023677, 41.471948], [-70.084904, 41.467493], [-70.126677, 41.503698], [-70.122559, 41.537833], [-70.063352, 41.590173], [-70.077934, 41.612528], [-70.1815, 41.593547], [-70.249463, 41.560146], [-70.311254, 41.571062], [-70.395164, 41.556722], [-70.448567, 41.513093], [-70.508603, 41.498965], [-70.489689, 41.462977], [-70.436449, 41.468919], [-70.392892, 41.44548], [-70.383449, 41.369933], [-70.267283, 41.393426], [-70.215115, 41.360275], [-70.13794, 41.346371], [-70.097844, 41.353584], [-70.116541, 41.395132], [-70.094412, 41.43081], [-70.044272, 41.443801], [-70.006467, 41.433898], [-69.969634, 41.403511], [-69.894885, 41.290372], [-69.915842, 41.220939], [-69.999457, 41.188305], [-70.109684, 41.189803], [-70.285736, 41.242346], [-70.344083, 41.276146], [-70.459851, 41.265253], [-70.512199, 41.298313], [-70.571848, 41.300094], [-70.703106, 41.28904], [-70.749473, 41.220173], [-70.783582, 41.201219], [-70.866343, 41.215397], [-70.892457, 41.250112], [-70.870027, 41.297068], [-70.901005, 41.334613], [-70.896017, 41.370148], [-70.990748, 41.351289], [-71.032701, 41.380273], [-71.033604, 41.414085], [-71.088571, 41.431315], [-71.121116, 41.492787], [-71.141958, 41.612533], [-71.132557, 41.660363], [-71.195479, 41.67509], [-71.261067, 41.752082], [-71.340481, 41.797033], [-71.338787, 41.898593], [-71.381463, 41.893546], [-71.381401, 42.018798], [-71.799188, 42.008053], [-71.800671, 42.023514], [-72.755894, 42.036349], [-72.766733, 42.003266], [-72.817053, 41.997685], [-72.813784, 42.036744], [-73.497018, 42.049624], [-73.50821, 42.086134], [-73.264827, 42.745851], [-71.294637, 42.697042], [-71.255147, 42.736554]]], "type": "Polygon"}, "id": "51", "properties": {"ALAND": 20204345054, "AWATER": 7130705555, "DIVISION": "1", "FUNCSTAT": "A", "GEOID": "25", "GEOIDFQ": "0400000US25", "INTPTLAT": "+42.1565196", "INTPTLON": "-071.4895915", "LSAD": "00", "MTFCC": "G4000", "NAME": "Massachusetts", "REGION": "1", "STATEFP": "25", "STATENS": "00606926", "STUSPS": "MA"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_9d763534ad5d0140b5485df6e1c87056.addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+        function geo_json_7fd3f4b370d49ec8362109463b96d1c0_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "fillColor": "#4F46E5", "fillOpacity": 0.2, "opacity": 0.9, "weight": 3};
+            }
+        }
+
+        function geo_json_7fd3f4b370d49ec8362109463b96d1c0_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_7fd3f4b370d49ec8362109463b96d1c0 = L.geoJson(null, {
+                onEachFeature: geo_json_7fd3f4b370d49ec8362109463b96d1c0_onEachFeature,
+            
+                style: geo_json_7fd3f4b370d49ec8362109463b96d1c0_styler,
+            ...{
+}
+        });
+
+        function geo_json_7fd3f4b370d49ec8362109463b96d1c0_add (data) {
+            geo_json_7fd3f4b370d49ec8362109463b96d1c0
+                .addData(data);
+        }
+            geo_json_7fd3f4b370d49ec8362109463b96d1c0_add({"features": [{"geometry": {"coordinates": [[[-72.334226, 41.643598], [-72.328095, 41.605471], [-72.46673, 41.583899], [-72.430767, 41.524567], [-72.323394, 41.53425], [-72.304868, 41.432728], [-72.276636, 41.440449], [-72.282154, 41.405899], [-72.248678, 41.299572], [-72.248529, 41.230711], [-72.527901, 41.177774], [-72.527902, 41.250115], [-72.585599, 41.307348], [-72.585943, 41.324014], [-72.614269, 41.32962], [-72.612328, 41.386179], [-72.650416, 41.418964], [-72.642257, 41.429236], [-72.746141, 41.423297], [-72.733886, 41.485368], [-72.752181, 41.578894], [-72.801243, 41.573098], [-72.819145, 41.554298], [-72.827644, 41.570999], [-72.848541, 41.567329], [-72.84428, 41.544725], [-72.883885, 41.563812], [-72.94635, 41.556797], [-72.938501, 41.644311], [-72.883388, 41.649468], [-72.90848, 41.776043], [-72.924946, 41.787785], [-72.921183, 41.807117], [-72.949024, 41.806431], [-72.936348, 41.839798], [-72.953647, 41.853885], [-72.940647, 41.895196], [-72.915346, 41.896797], [-72.86364, 42.037528], [-72.813784, 42.036744], [-72.817053, 41.997685], [-72.766733, 42.003266], [-72.755894, 42.036349], [-72.205081, 42.031069], [-72.234898, 41.957583], [-72.21698, 41.958161], [-72.217719, 41.835184], [-72.164498, 41.834913], [-72.156321, 41.753491], [-72.187656, 41.755181], [-72.198126, 41.728176], [-72.252643, 41.728202], [-72.239559, 41.714191], [-72.274307, 41.692607], [-72.268418, 41.671137], [-72.334226, 41.643598]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_7fd3f4b370d49ec8362109463b96d1c0.addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+            var feature_group_68f2afd91ae8e4da7ba25acaf490bd67 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_b5c1c614b4ed22a76061943bf8c47d50 = L.marker(
+                [41.75750813310434, -72.75555367557519],
+                {
+}
+            ).addTo(feature_group_68f2afd91ae8e4da7ba25acaf490bd67);
+        
+    
+            var icon_cf7128ca8a6684f69d0ff714d1e6409a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e3be2fc2c733fc34196c890409d4e3f2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4bedea234ed5c408d6592359eaf79a4c = $(`<div id="html_4bedea234ed5c408d6592359eaf79a4c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Har1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 101</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 397 Healthcare Ave, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 591-6418</p>         </div>         </div>`)[0];
+                popup_e3be2fc2c733fc34196c890409d4e3f2.setContent(html_4bedea234ed5c408d6592359eaf79a4c);
+            
+        
+
+        marker_b5c1c614b4ed22a76061943bf8c47d50.bindPopup(popup_e3be2fc2c733fc34196c890409d4e3f2)
+        ;
+
+        
+    
+    
+            marker_b5c1c614b4ed22a76061943bf8c47d50.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Har1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b5c1c614b4ed22a76061943bf8c47d50.setIcon(icon_cf7128ca8a6684f69d0ff714d1e6409a);
+            
+    
+            var marker_fd743d7c025ab7c2e9578fd28a2f9ba9 = L.marker(
+                [41.906169411968726, -72.31318906751069],
+                {
+}
+            ).addTo(feature_group_68f2afd91ae8e4da7ba25acaf490bd67);
+        
+    
+            var icon_0c86c4464f389e26b4dfc9630f0e0f63 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a85f32c553b82fb9d8743da8c3b45326 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6cc72fd8bc31c99c197a6b6353e462ba = $(`<div id="html_6cc72fd8bc31c99c197a6b6353e462ba" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Har2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 14</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 59</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 162 Healthcare Ave, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 391-4150</p>         </div>         </div>`)[0];
+                popup_a85f32c553b82fb9d8743da8c3b45326.setContent(html_6cc72fd8bc31c99c197a6b6353e462ba);
+            
+        
+
+        marker_fd743d7c025ab7c2e9578fd28a2f9ba9.bindPopup(popup_a85f32c553b82fb9d8743da8c3b45326)
+        ;
+
+        
+    
+    
+            marker_fd743d7c025ab7c2e9578fd28a2f9ba9.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Har2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fd743d7c025ab7c2e9578fd28a2f9ba9.setIcon(icon_0c86c4464f389e26b4dfc9630f0e0f63);
+            
+    
+            var marker_a4519a116881043add55d041e4916d7c = L.marker(
+                [41.33202381095277, -72.28247912495179],
+                {
+}
+            ).addTo(feature_group_68f2afd91ae8e4da7ba25acaf490bd67);
+        
+    
+            var icon_d37c496d176d70d3b74bb5153397919a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4258e6892947079f65cb8adb5f5b62f1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b0c69ad76dd9967d3d431b0ce7753bb7 = $(`<div id="html_b0c69ad76dd9967d3d431b0ce7753bb7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Har3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 144</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 853 Healthcare Ave, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 701-6694</p>         </div>         </div>`)[0];
+                popup_4258e6892947079f65cb8adb5f5b62f1.setContent(html_b0c69ad76dd9967d3d431b0ce7753bb7);
+            
+        
+
+        marker_a4519a116881043add55d041e4916d7c.bindPopup(popup_4258e6892947079f65cb8adb5f5b62f1)
+        ;
+
+        
+    
+    
+            marker_a4519a116881043add55d041e4916d7c.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Har3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a4519a116881043add55d041e4916d7c.setIcon(icon_d37c496d176d70d3b74bb5153397919a);
+            
+    
+            var marker_711822c647e8b9905e90d4683201484d = L.marker(
+                [41.87111385392946, -72.57493354568462],
+                {
+}
+            ).addTo(feature_group_68f2afd91ae8e4da7ba25acaf490bd67);
+        
+    
+            var icon_07d3be2d2e58209a5423bbd22bf6da4c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8201ba4fc91551168075d50588b02fcd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_182622bb56b5cbae93387a9f94461e34 = $(`<div id="html_182622bb56b5cbae93387a9f94461e34" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Har4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 15</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 145</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 471 Healthcare Ave, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 848-3474</p>         </div>         </div>`)[0];
+                popup_8201ba4fc91551168075d50588b02fcd.setContent(html_182622bb56b5cbae93387a9f94461e34);
+            
+        
+
+        marker_711822c647e8b9905e90d4683201484d.bindPopup(popup_8201ba4fc91551168075d50588b02fcd)
+        ;
+
+        
+    
+    
+            marker_711822c647e8b9905e90d4683201484d.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Har4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_711822c647e8b9905e90d4683201484d.setIcon(icon_07d3be2d2e58209a5423bbd22bf6da4c);
+            
+    
+            var marker_d510609fe0c99501c68a9f3c666198f2 = L.marker(
+                [41.82624623320857, -72.33678571561644],
+                {
+}
+            ).addTo(feature_group_68f2afd91ae8e4da7ba25acaf490bd67);
+        
+    
+            var icon_89cab8e20e3a9132909b0bde2bd74d00 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6f00d82070073a9134cce077b8b1059f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e60aadd3b889f034ae56d3da69ef1735 = $(`<div id="html_e60aadd3b889f034ae56d3da69ef1735" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Har5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 157</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 971 Healthcare Ave, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 760-4651</p>         </div>         </div>`)[0];
+                popup_6f00d82070073a9134cce077b8b1059f.setContent(html_e60aadd3b889f034ae56d3da69ef1735);
+            
+        
+
+        marker_d510609fe0c99501c68a9f3c666198f2.bindPopup(popup_6f00d82070073a9134cce077b8b1059f)
+        ;
+
+        
+    
+    
+            marker_d510609fe0c99501c68a9f3c666198f2.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Har5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d510609fe0c99501c68a9f3c666198f2.setIcon(icon_89cab8e20e3a9132909b0bde2bd74d00);
+            
+    
+            feature_group_68f2afd91ae8e4da7ba25acaf490bd67.addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+            var feature_group_77faa4ae28f255f96443da52931f25f0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_275e8ef5d0228e0c6d854329a2c55ae1 = L.marker(
+                [41.70315097493091, -72.3718283267523],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_d28c20397038a1cfd9eb7e17ffdaa0de = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e591044bdfa637d01ed148959b4bffb1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fc2ed58a2228fde90d56bcc25f6f8e27 = $(`<div id="html_fc2ed58a2228fde90d56bcc25f6f8e27" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 56</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 337 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 912-4010</p>         </div>         </div>`)[0];
+                popup_e591044bdfa637d01ed148959b4bffb1.setContent(html_fc2ed58a2228fde90d56bcc25f6f8e27);
+            
+        
+
+        marker_275e8ef5d0228e0c6d854329a2c55ae1.bindPopup(popup_e591044bdfa637d01ed148959b4bffb1)
+        ;
+
+        
+    
+    
+            marker_275e8ef5d0228e0c6d854329a2c55ae1.bindTooltip(
+                `<div>
+                     HHAH: Elite Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_275e8ef5d0228e0c6d854329a2c55ae1.setIcon(icon_d28c20397038a1cfd9eb7e17ffdaa0de);
+            
+    
+            var marker_baab299417a9c18a1adfde4b2e0d0605 = L.marker(
+                [41.870266731969636, -72.56496901169025],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_d2608141276bbc34022374a9c89b175c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a4efcc202a9e991c494173de9faa89be = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_256615af79e22f7e3f6728d08b73002a = $(`<div id="html_256615af79e22f7e3f6728d08b73002a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 135</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 225 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 394-5165</p>         </div>         </div>`)[0];
+                popup_a4efcc202a9e991c494173de9faa89be.setContent(html_256615af79e22f7e3f6728d08b73002a);
+            
+        
+
+        marker_baab299417a9c18a1adfde4b2e0d0605.bindPopup(popup_a4efcc202a9e991c494173de9faa89be)
+        ;
+
+        
+    
+    
+            marker_baab299417a9c18a1adfde4b2e0d0605.bindTooltip(
+                `<div>
+                     HHAH: Wellness Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_baab299417a9c18a1adfde4b2e0d0605.setIcon(icon_d2608141276bbc34022374a9c89b175c);
+            
+    
+            var marker_67d5077a2b25ce5c466e02f45dd50e9b = L.marker(
+                [41.56816213832553, -72.72254491181099],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_a420c4437963271cff0152b075f05f0c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_644e1a7fc11da048102066504d6f90bd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c291d01942e43457234ac8659234d2f2 = $(`<div id="html_c291d01942e43457234ac8659234d2f2" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 73</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 454 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 333-4798</p>         </div>         </div>`)[0];
+                popup_644e1a7fc11da048102066504d6f90bd.setContent(html_c291d01942e43457234ac8659234d2f2);
+            
+        
+
+        marker_67d5077a2b25ce5c466e02f45dd50e9b.bindPopup(popup_644e1a7fc11da048102066504d6f90bd)
+        ;
+
+        
+    
+    
+            marker_67d5077a2b25ce5c466e02f45dd50e9b.bindTooltip(
+                `<div>
+                     HHAH: Guardian Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_67d5077a2b25ce5c466e02f45dd50e9b.setIcon(icon_a420c4437963271cff0152b075f05f0c);
+            
+    
+            var marker_63f652745babf54380fb678a36d8f42c = L.marker(
+                [41.31041362407147, -72.27789251818845],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_232263bc808e8bcbaeaadbc31b06f0ae = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5dfb00f81e15a65b34036714bab29f52 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f1a25ff218f705acd7aefe9c318ef2d1 = $(`<div id="html_f1a25ff218f705acd7aefe9c318ef2d1" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 29</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 107 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 560-5561</p>         </div>         </div>`)[0];
+                popup_5dfb00f81e15a65b34036714bab29f52.setContent(html_f1a25ff218f705acd7aefe9c318ef2d1);
+            
+        
+
+        marker_63f652745babf54380fb678a36d8f42c.bindPopup(popup_5dfb00f81e15a65b34036714bab29f52)
+        ;
+
+        
+    
+    
+            marker_63f652745babf54380fb678a36d8f42c.bindTooltip(
+                `<div>
+                     HHAH: Wellness Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_63f652745babf54380fb678a36d8f42c.setIcon(icon_232263bc808e8bcbaeaadbc31b06f0ae);
+            
+    
+            var marker_4c115800063e2fb025102326083f4505 = L.marker(
+                [41.91216362703121, -72.81488453388509],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_7660f64c3b67ca0c3e268ef9c1ee0838 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a9bd9c6972a1fbac5d26feacc954def4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0f93228b0ba9e7cffaed55525c238812 = $(`<div id="html_0f93228b0ba9e7cffaed55525c238812" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 102</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 258 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 955-4601</p>         </div>         </div>`)[0];
+                popup_a9bd9c6972a1fbac5d26feacc954def4.setContent(html_0f93228b0ba9e7cffaed55525c238812);
+            
+        
+
+        marker_4c115800063e2fb025102326083f4505.bindPopup(popup_a9bd9c6972a1fbac5d26feacc954def4)
+        ;
+
+        
+    
+    
+            marker_4c115800063e2fb025102326083f4505.bindTooltip(
+                `<div>
+                     HHAH: Premier Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4c115800063e2fb025102326083f4505.setIcon(icon_7660f64c3b67ca0c3e268ef9c1ee0838);
+            
+    
+            var marker_87003d549477a85fc4f335f85b822024 = L.marker(
+                [41.631780616756004, -72.71398167611258],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_8600ec836ce0e2c59dda9644765e3375 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0ca5003e6abc76a2837c35f1c9af4182 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_61d566fad016ea27118963070877b6d7 = $(`<div id="html_61d566fad016ea27118963070877b6d7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 128</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 894 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 272-4806</p>         </div>         </div>`)[0];
+                popup_0ca5003e6abc76a2837c35f1c9af4182.setContent(html_61d566fad016ea27118963070877b6d7);
+            
+        
+
+        marker_87003d549477a85fc4f335f85b822024.bindPopup(popup_0ca5003e6abc76a2837c35f1c9af4182)
+        ;
+
+        
+    
+    
+            marker_87003d549477a85fc4f335f85b822024.bindTooltip(
+                `<div>
+                     HHAH: Premier Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_87003d549477a85fc4f335f85b822024.setIcon(icon_8600ec836ce0e2c59dda9644765e3375);
+            
+    
+            var marker_67cba3d981baeb0646dce6c6b480fe0c = L.marker(
+                [41.7606853284646, -72.44095896597608],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_cab7a86f0badb0cc00dd06e8e3db176e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_98a4db471191d6216cd1d3f9daf568cf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_98f7dab8b7e0b29a8aef53e292905810 = $(`<div id="html_98f7dab8b7e0b29a8aef53e292905810" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 50</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 249 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 728-4973</p>         </div>         </div>`)[0];
+                popup_98a4db471191d6216cd1d3f9daf568cf.setContent(html_98f7dab8b7e0b29a8aef53e292905810);
+            
+        
+
+        marker_67cba3d981baeb0646dce6c6b480fe0c.bindPopup(popup_98a4db471191d6216cd1d3f9daf568cf)
+        ;
+
+        
+    
+    
+            marker_67cba3d981baeb0646dce6c6b480fe0c.bindTooltip(
+                `<div>
+                     HHAH: Elite Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_67cba3d981baeb0646dce6c6b480fe0c.setIcon(icon_cab7a86f0badb0cc00dd06e8e3db176e);
+            
+    
+            var marker_57b981317c3a83b626bf424596a41f4f = L.marker(
+                [41.71231510390741, -72.6348563217651],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_55ebb1a2126b9ce5c368e9097a9fac9f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9396b94107fdfeacde7c5a9e721151d6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ed98aa341597ca380e314057fe75d9ac = $(`<div id="html_ed98aa341597ca380e314057fe75d9ac" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 131</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 614 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 609-2999</p>         </div>         </div>`)[0];
+                popup_9396b94107fdfeacde7c5a9e721151d6.setContent(html_ed98aa341597ca380e314057fe75d9ac);
+            
+        
+
+        marker_57b981317c3a83b626bf424596a41f4f.bindPopup(popup_9396b94107fdfeacde7c5a9e721151d6)
+        ;
+
+        
+    
+    
+            marker_57b981317c3a83b626bf424596a41f4f.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_57b981317c3a83b626bf424596a41f4f.setIcon(icon_55ebb1a2126b9ce5c368e9097a9fac9f);
+            
+    
+            var marker_a376c63546fd554b8bc0d7be6d7a4aab = L.marker(
+                [41.28975536569953, -72.44170946387075],
+                {
+}
+            ).addTo(feature_group_77faa4ae28f255f96443da52931f25f0);
+        
+    
+            var icon_10cc6df322f38c101a6e4479689647f4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_64ab3ccfef9b4c405f28632e314c4666 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bf8321da642ddb6c9330c88cb115da5f = $(`<div id="html_bf8321da642ddb6c9330c88cb115da5f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 150</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 363 Medical Blvd, Hartford-West Hartford-East Hartford</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 611-4731</p>         </div>         </div>`)[0];
+                popup_64ab3ccfef9b4c405f28632e314c4666.setContent(html_bf8321da642ddb6c9330c88cb115da5f);
+            
+        
+
+        marker_a376c63546fd554b8bc0d7be6d7a4aab.bindPopup(popup_64ab3ccfef9b4c405f28632e314c4666)
+        ;
+
+        
+    
+    
+            marker_a376c63546fd554b8bc0d7be6d7a4aab.bindTooltip(
+                `<div>
+                     HHAH: Wellness Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a376c63546fd554b8bc0d7be6d7a4aab.setIcon(icon_10cc6df322f38c101a6e4479689647f4);
+            
+    
+            feature_group_77faa4ae28f255f96443da52931f25f0.addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+        
+    
+            var mouse_position_ecdeef5898139fb19cbaeb4af4349c99 = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_ecdeef5898139fb19cbaeb4af4349c99.options["latFormatter"] =
+                undefined;
+            mouse_position_ecdeef5898139fb19cbaeb4af4349c99.options["lngFormatter"] =
+                undefined;
+            map_59bc2ed040d97607b1baa9e9f313e788.addControl(mouse_position_ecdeef5898139fb19cbaeb4af4349c99);
+        
+    
+            var layer_control_26dc1f888d0d428b03045f9566f469e4_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_17d78cc262f34192737a747c1aa394a6,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_9d763534ad5d0140b5485df6e1c87056,
+                    "Hartford-West Hartford-East Hartford, CT Boundary" : geo_json_7fd3f4b370d49ec8362109463b96d1c0,
+                    "Physician Groups (PGs)" : feature_group_68f2afd91ae8e4da7ba25acaf490bd67,
+                    "Home Health At Home (HHAHs)" : feature_group_77faa4ae28f255f96443da52931f25f0,
+                },
+            };
+            let layer_control_26dc1f888d0d428b03045f9566f469e4 = L.control.layers(
+                layer_control_26dc1f888d0d428b03045f9566f469e4_layers.base_layers,
+                layer_control_26dc1f888d0d428b03045f9566f469e4_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_59bc2ed040d97607b1baa9e9f313e788);
+
+        
+    
+            map_59bc2ed040d97607b1baa9e9f313e788.fitBounds(
+                [[41.177774, -72.953647], [42.037528, -72.156321]],
+                {}
+            );
+        
+</script>
+</html>

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4feab0a0e7687d00fb684cc79d822c5d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Los Angeles-Long Beach-Anaheim, CA</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 7 PGs and 8 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_4feab0a0e7687d00fb684cc79d822c5d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4feab0a0e7687d00fb684cc79d822c5d = L.map(
+                "map_4feab0a0e7687d00fb684cc79d822c5d",
+                {
+                    center: [34.11604312231036, -118.18009821173922],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_2907abebf6ffbfd5dfc160b26bab641b = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2907abebf6ffbfd5dfc160b26bab641b.addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+        function geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "dashArray": "3,3", "fillColor": "transparent", "fillOpacity": 0, "opacity": 0.8, "weight": 1.5};
+            }
+        }
+
+        function geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_7cc2c5e584195546c5d33dd1f75dd4e8 = L.geoJson(null, {
+                onEachFeature: geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_onEachFeature,
+            
+                style: geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_styler,
+            ...{
+}
+        });
+
+        function geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_add (data) {
+            geo_json_7cc2c5e584195546c5d33dd1f75dd4e8
+                .addData(data);
+        }
+            geo_json_7cc2c5e584195546c5d33dd1f75dd4e8_add({"bbox": [-124.480543, 32.529508, -114.131211, 42.009503], "features": [{"bbox": [-124.480543, 32.529508, -114.131211, 42.009503], "geometry": {"coordinates": [[[[-119.999866, 41.183974], [-120.001014, 38.999574], [-118.714201, 38.102105], [-117.500117, 37.22038], [-116.094166, 36.156263], [-114.633487, 35.001857], [-114.634382, 34.87289], [-114.586842, 34.835672], [-114.552682, 34.766871], [-114.470477, 34.711368], [-114.457985, 34.657113], [-114.424202, 34.610453], [-114.43681, 34.596074], [-114.380838, 34.529724], [-114.386699, 34.457911], [-114.335372, 34.450038], [-114.226107, 34.365916], [-114.176909, 34.349306], [-114.138282, 34.30323], [-114.131211, 34.26273], [-114.164648, 34.259699], [-114.229715, 34.186928], [-114.41168, 34.110031], [-114.434181, 34.087379], [-114.438266, 34.022609], [-114.465867, 34.010987], [-114.459258, 33.994711], [-114.535676, 33.933552], [-114.50792, 33.903807], [-114.525872, 33.901008], [-114.503017, 33.867998], [-114.529883, 33.857563], [-114.52805, 33.814963], [-114.494197, 33.707922], [-114.531523, 33.675108], [-114.514057, 33.660179], [-114.533194, 33.65166], [-114.521845, 33.612544], [-114.540617, 33.591412], [-114.524215, 33.553068], [-114.592369, 33.498675], [-114.643302, 33.416746], [-114.725282, 33.405048], [-114.698035, 33.352442], [-114.731223, 33.302433], [-114.672088, 33.258499], [-114.689541, 33.246428], [-114.673626, 33.223121], [-114.675359, 33.185488], [-114.706488, 33.08816], [-114.68902, 33.084035], [-114.66506, 33.033906], [-114.645979, 33.048902], [-114.618788, 33.027202], [-114.52013, 33.029984], [-114.492938, 32.971781], [-114.468605, 32.971649], [-114.480925, 32.936276], [-114.462929, 32.907944], [-114.468971, 32.845155], [-114.529633, 32.795477], [-114.526856, 32.757094], [-114.617395, 32.728257], [-114.701582, 32.745632], [-114.719497, 32.718739], [-117.205051, 32.529508], [-117.223302, 32.621238], [-117.268789, 32.619415], [-117.309239, 32.656401], [-117.342, 32.840354], [-117.323279, 32.903064], [-117.375872, 33.075217], [-117.467871, 33.212494], [-117.571531, 33.312302], [-117.713571, 33.408777], [-117.741409, 33.410118], [-117.816356, 33.490872], [-118.049848, 33.620015], [-118.1259, 33.697151], [-118.237008, 33.690595], [-118.274239, 33.663429], [-118.319135, 33.659547], [-118.466962, 33.725524], [-118.485577, 33.753664], [-118.484483, 33.803154], [-118.447254, 33.84876], [-118.557356, 33.987673], [-118.727459, 33.980307], [-118.814752, 33.947214], [-118.887301, 33.987223], [-119.158963, 34.040253], [-119.217993, 34.062491], [-119.285743, 34.140805], [-119.334887, 34.236865], [-119.584795, 34.36166], [-119.651357, 34.366708], [-119.716129, 34.336108], [-119.797067, 34.365331], [-119.891521, 34.357457], [-120.024356, 34.409343], [-120.14728, 34.422916], [-120.456015, 34.391485], [-120.523646, 34.419505], [-120.559439, 34.488466], [-120.682206, 34.525326], [-120.713329, 34.57496], [-120.664691, 34.696344], [-120.702093, 34.748329], [-120.673281, 34.838624], [-120.720319, 34.869241], [-120.734382, 34.901499], [-120.694715, 35.028839], [-120.689606, 35.098828], [-120.800411, 35.116577], [-120.917792, 35.187378], [-120.961253, 35.249975], [-120.923435, 35.348413], [-120.933292, 35.392748], [-121.041635, 35.41999], [-121.151056, 35.516412], [-121.201555, 35.58369], [-121.323512, 35.624969], [-121.366362, 35.680419], [-121.39346, 35.763401], [-121.501047, 35.842745], [-121.561461, 35.943818], [-121.631818, 35.978945], [-121.674359, 36.064661], [-121.727812, 36.129009], [-121.880193, 36.210314], [-121.957666, 36.285117], [-121.981042, 36.419634], [-122.04405, 36.578249], [-122.001124, 36.647704], [-122.076399, 36.910199], [-122.251082, 36.985833], [-122.313899, 37.054764], [-122.376086, 37.065648], [-122.396916, 37.109888], [-122.464117, 37.177848], [-122.484046, 37.249944], [-122.467005, 37.349889], [-122.509889, 37.441554], [-122.546996, 37.457857], [-122.574963, 37.499943], [-122.588177, 37.579408], [-122.567497, 37.639185], [-122.588174, 37.789362], [-122.675654, 37.848517], [-122.715845, 37.845625], [-122.766771, 37.865804], [-122.889291, 37.974109], [-122.953224, 37.941093], [-123.067965, 37.958669], [-123.08513, 38.008433], [-123.014817, 38.149132], [-123.049617, 38.214286], [-123.134523, 38.296263], [-123.134312, 38.345786], [-123.164757, 38.388337], [-123.22022, 38.441954], [-123.360929, 38.510202], [-123.51058, 38.68089], [-123.641253, 38.764394], [-123.784676, 38.893728], [-123.80986, 38.961219], [-123.797217, 38.989863], [-123.763148, 39.00869], [-123.761965, 39.041091], [-123.840771, 39.187335], [-123.894936, 39.348349], [-123.875126, 39.494179], [-123.834649, 39.549194], [-123.857183, 39.674693], [-123.895741, 39.711406], [-123.90097, 39.780466], [-124.078596, 39.972263], [-124.133255, 39.999865], [-124.153762, 40.063544], [-124.231204, 40.093382], [-124.411026, 40.225275], [-124.428222, 40.258121], [-124.428055, 40.361785], [-124.480543, 40.428493], [-124.403367, 40.61317], [-124.232622, 40.869286], [-124.197619, 40.950529], [-124.182694, 41.001313], [-124.227079, 41.046622], [-124.252474, 41.134075], [-124.237625, 41.165959], [-124.195532, 41.184582], [-124.160704, 41.289293], [-124.220032, 41.302994], [-124.24242, 41.3433], [-124.206515, 41.384718], [-124.139973, 41.381821], [-124.133231, 41.432311], [-124.160493, 41.543409], [-124.18499, 41.565769], [-124.209785, 41.635205], [-124.211706, 41.681193], [-124.392055, 41.772377], [-124.438909, 41.824504], [-124.435015, 41.856507], [-124.401242, 41.885588], [-124.285031, 41.859487], [-124.27612, 41.903052], [-124.291939, 41.928498], [-124.288578, 41.969564], [-124.328835, 41.998334], [-122.378049, 42.009503], [-119.999234, 41.994944], [-119.999866, 41.183974]]], [[[-123.173825, 37.775727], [-123.132272, 37.819676], [-123.070494, 37.81383], [-122.949985, 37.732187], [-122.941364, 37.67658], [-122.986747, 37.641783], [-123.040696, 37.650328], [-123.09285, 37.713688], [-123.156757, 37.73784], [-123.173825, 37.775727]]], [[[-119.49229, 33.983215], [-119.538949, 33.947656], [-119.63673, 33.938277], [-119.707491, 33.910388], [-119.83442, 33.900788], [-119.904762, 33.939674], [-119.93919, 33.898643], [-120.125964, 33.842348], [-120.221128, 33.884187], [-120.298973, 33.968457], [-120.367073, 33.961036], [-120.488151, 33.984283], [-120.518784, 34.01408], [-120.523387, 34.051133], [-120.566995, 34.068638], [-120.582264, 34.107517], [-120.567847, 34.135618], [-120.538118, 34.150344], [-120.471654, 34.134102], [-120.418787, 34.160569], [-120.355161, 34.145021], [-120.252846, 34.058031], [-120.045154, 34.090606], [-119.991643, 34.064868], [-119.965471, 34.11256], [-119.928795, 34.129902], [-119.792601, 34.106375], [-119.750981, 34.112582], [-119.654931, 34.071218], [-119.614268, 34.099432], [-119.557426, 34.108603], [-119.467842, 34.062931], [-119.342462, 34.068964], [-119.294398, 34.027503], [-119.311615, 33.980023], [-119.380456, 33.953611], [-119.432961, 33.955905], [-119.49229, 33.983215]]], [[[-119.117174, 33.5056], [-119.076497, 33.535148], [-119.000932, 33.535895], [-118.971007, 33.510655], [-118.963751, 33.46683], [-118.988726, 33.423441], [-119.071893, 33.413799], [-119.106154, 33.445012], [-119.117174, 33.5056]]], [[[-119.636068, 33.280713], [-119.599222, 33.323276], [-119.519138, 33.3337], [-119.37973, 33.267632], [-119.360702, 33.221452], [-119.394536, 33.180836], [-119.512001, 33.167755], [-119.605282, 33.206919], [-119.636068, 33.280713]]], [[[-118.678204, 33.039726], [-118.632642, 33.084539], [-118.542103, 33.073788], [-118.448863, 32.96175], [-118.29725, 32.845094], [-118.295841, 32.798256], [-118.323819, 32.773514], [-118.378377, 32.770232], [-118.408322, 32.751914], [-118.464712, 32.760176], [-118.553186, 32.828797], [-118.644732, 33.000033], [-118.670173, 33.000034], [-118.678204, 33.039726]]], [[[-118.668203, 33.485937], [-118.625916, 33.528978], [-118.529382, 33.531182], [-118.359393, 33.464922], [-118.257714, 33.364131], [-118.241286, 33.323023], [-118.249075, 33.284142], [-118.327993, 33.248083], [-118.486688, 33.276905], [-118.534885, 33.315176], [-118.547929, 33.376799], [-118.618574, 33.406191], [-118.655057, 33.44531], [-118.668203, 33.485937]]]], "type": "MultiPolygon"}, "id": "13", "properties": {"ALAND": 403673296401, "AWATER": 20291770234, "DIVISION": "9", "FUNCSTAT": "A", "GEOID": "06", "GEOIDFQ": "0400000US06", "INTPTLAT": "+37.1551773", "INTPTLON": "-119.5434183", "LSAD": "00", "MTFCC": "G4000", "NAME": "California", "REGION": "4", "STATEFP": "06", "STATENS": "01779778", "STUSPS": "CA"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_7cc2c5e584195546c5d33dd1f75dd4e8.addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+        function geo_json_6f0c69e0c4a53a86153ade922a5f93aa_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "fillColor": "#4F46E5", "fillOpacity": 0.2, "opacity": 0.9, "weight": 3};
+            }
+        }
+
+        function geo_json_6f0c69e0c4a53a86153ade922a5f93aa_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_6f0c69e0c4a53a86153ade922a5f93aa = L.geoJson(null, {
+                onEachFeature: geo_json_6f0c69e0c4a53a86153ade922a5f93aa_onEachFeature,
+            
+                style: geo_json_6f0c69e0c4a53a86153ade922a5f93aa_styler,
+            ...{
+}
+        });
+
+        function geo_json_6f0c69e0c4a53a86153ade922a5f93aa_add (data) {
+            geo_json_6f0c69e0c4a53a86153ade922a5f93aa
+                .addData(data);
+        }
+            geo_json_6f0c69e0c4a53a86153ade922a5f93aa_add({"features": [{"geometry": {"coordinates": [[[[-118.678204, 33.039726], [-118.632642, 33.084539], [-118.542103, 33.073788], [-118.448863, 32.96175], [-118.29725, 32.845094], [-118.295841, 32.798256], [-118.323819, 32.773514], [-118.378377, 32.770232], [-118.408322, 32.751914], [-118.464712, 32.760176], [-118.553186, 32.828797], [-118.644732, 33.000033], [-118.670173, 33.000034], [-118.678204, 33.039726]]], [[[-118.668203, 33.485937], [-118.625916, 33.528978], [-118.529382, 33.531182], [-118.359393, 33.464922], [-118.257714, 33.364131], [-118.241286, 33.323023], [-118.249075, 33.284142], [-118.327993, 33.248083], [-118.486688, 33.276905], [-118.534885, 33.315176], [-118.547929, 33.376799], [-118.618574, 33.406191], [-118.655057, 33.44531], [-118.668203, 33.485937]]], [[[-117.783252, 33.946261], [-117.679303, 33.877621], [-117.580136, 33.767988], [-117.536448, 33.757665], [-117.533999, 33.710355], [-117.474573, 33.703811], [-117.412987, 33.659045], [-117.51021, 33.533999], [-117.508614, 33.469614], [-117.57848, 33.453927], [-117.611081, 33.333992], [-117.713571, 33.408777], [-117.741409, 33.410118], [-117.816356, 33.490872], [-118.049848, 33.620015], [-118.1259, 33.697151], [-118.237008, 33.690595], [-118.274239, 33.663429], [-118.319135, 33.659547], [-118.466962, 33.725524], [-118.485577, 33.753664], [-118.484483, 33.803154], [-118.447254, 33.84876], [-118.557356, 33.987673], [-118.727459, 33.980307], [-118.809827, 33.946905], [-118.873998, 33.983314], [-118.951721, 33.992858], [-118.940965, 34.07483], [-118.788889, 34.168214], [-118.668152, 34.168195], [-118.667714, 34.240345], [-118.632494, 34.240391], [-118.636789, 34.291804], [-118.894634, 34.817972], [-118.87212, 34.803171], [-118.854114, 34.803279], [-118.854009, 34.817758], [-117.667459, 34.822528], [-117.667121, 34.557906], [-117.646374, 34.28917], [-117.730125, 34.021371], [-117.767657, 34.023508], [-117.767525, 34.004695], [-117.785033, 34.004854], [-117.802539, 33.975551], [-117.783252, 33.946261]]]], "type": "MultiPolygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_6f0c69e0c4a53a86153ade922a5f93aa.addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+            var feature_group_5f16189ca7be00359f5774e642ef7460 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_1b2a320e6302acaf55c797e027b4d048 = L.marker(
+                [33.572508454209725, -117.73749122553701],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_f440c47757b0fd7161115abd919a9dd9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8e15b7a05a65caa986e1d0b0c86923a3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a1b9dc9be72e5c7ab8bfe9b4587828f2 = $(`<div id="html_a1b9dc9be72e5c7ab8bfe9b4587828f2" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Los1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 214</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 428 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 379-2124</p>         </div>         </div>`)[0];
+                popup_8e15b7a05a65caa986e1d0b0c86923a3.setContent(html_a1b9dc9be72e5c7ab8bfe9b4587828f2);
+            
+        
+
+        marker_1b2a320e6302acaf55c797e027b4d048.bindPopup(popup_8e15b7a05a65caa986e1d0b0c86923a3)
+        ;
+
+        
+    
+    
+            marker_1b2a320e6302acaf55c797e027b4d048.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Los1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1b2a320e6302acaf55c797e027b4d048.setIcon(icon_f440c47757b0fd7161115abd919a9dd9);
+            
+    
+            var marker_ed8d2c69673d1a9ca0138ae9d59a5667 = L.marker(
+                [33.42330258138765, -118.37748829187956],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_7ebe57b9e864a12e49cfbd1210aab0a0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_683fae549a58271f2a22f6a748e6081f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d52751fcd95ba0f4bf347d92af998295 = $(`<div id="html_d52751fcd95ba0f4bf347d92af998295" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Los2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 164</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 618 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 207-4123</p>         </div>         </div>`)[0];
+                popup_683fae549a58271f2a22f6a748e6081f.setContent(html_d52751fcd95ba0f4bf347d92af998295);
+            
+        
+
+        marker_ed8d2c69673d1a9ca0138ae9d59a5667.bindPopup(popup_683fae549a58271f2a22f6a748e6081f)
+        ;
+
+        
+    
+    
+            marker_ed8d2c69673d1a9ca0138ae9d59a5667.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Los2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ed8d2c69673d1a9ca0138ae9d59a5667.setIcon(icon_7ebe57b9e864a12e49cfbd1210aab0a0);
+            
+    
+            var marker_8a4ea9cc030874a0be3ec73886245883 = L.marker(
+                [34.46624572917132, -117.72113089852559],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_c56ee9e86ee8295399034d35f523d2c6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_043c6bb932fe720317e33d50b0b42ab5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cf047d7ac1f8486e3f5045203ba441dd = $(`<div id="html_cf047d7ac1f8486e3f5045203ba441dd" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Los3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 15</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 116</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 433 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 125-9138</p>         </div>         </div>`)[0];
+                popup_043c6bb932fe720317e33d50b0b42ab5.setContent(html_cf047d7ac1f8486e3f5045203ba441dd);
+            
+        
+
+        marker_8a4ea9cc030874a0be3ec73886245883.bindPopup(popup_043c6bb932fe720317e33d50b0b42ab5)
+        ;
+
+        
+    
+    
+            marker_8a4ea9cc030874a0be3ec73886245883.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Los3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8a4ea9cc030874a0be3ec73886245883.setIcon(icon_c56ee9e86ee8295399034d35f523d2c6);
+            
+    
+            var marker_b7fc0e80097575278cb9add5514f2e08 = L.marker(
+                [33.83256524822517, -118.06447308919087],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_079bc3c45312dbcc8c14cf990ee8bc42 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e3fcb62fc23ce211f6318b5a0ab83780 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_814e2801bc554132514630c8c1c775a3 = $(`<div id="html_814e2801bc554132514630c8c1c775a3" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Los4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 218</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 725 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 751-1024</p>         </div>         </div>`)[0];
+                popup_e3fcb62fc23ce211f6318b5a0ab83780.setContent(html_814e2801bc554132514630c8c1c775a3);
+            
+        
+
+        marker_b7fc0e80097575278cb9add5514f2e08.bindPopup(popup_e3fcb62fc23ce211f6318b5a0ab83780)
+        ;
+
+        
+    
+    
+            marker_b7fc0e80097575278cb9add5514f2e08.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Los4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b7fc0e80097575278cb9add5514f2e08.setIcon(icon_079bc3c45312dbcc8c14cf990ee8bc42);
+            
+    
+            var marker_6222714d6c1678425abdefe6d0d692e6 = L.marker(
+                [34.26755878836233, -117.84664655629905],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_2d9a75992db33f0f5464345df810ae35 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_78899098a6830fbe458bd339b5d917ae = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7a1fb124837e8363c7eeb2b31eba56de = $(`<div id="html_7a1fb124837e8363c7eeb2b31eba56de" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Los5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 246</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 552 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 135-6680</p>         </div>         </div>`)[0];
+                popup_78899098a6830fbe458bd339b5d917ae.setContent(html_7a1fb124837e8363c7eeb2b31eba56de);
+            
+        
+
+        marker_6222714d6c1678425abdefe6d0d692e6.bindPopup(popup_78899098a6830fbe458bd339b5d917ae)
+        ;
+
+        
+    
+    
+            marker_6222714d6c1678425abdefe6d0d692e6.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Los5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6222714d6c1678425abdefe6d0d692e6.setIcon(icon_2d9a75992db33f0f5464345df810ae35);
+            
+    
+            var marker_25ff4e5f9d4ef8127d4377608cfc9477 = L.marker(
+                [33.9835744547961, -118.52775647289336],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_290994c0f3808c708c2e423d72703707 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fac0e34a854f885b2dcebeb11fca2492 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ca8ca6af7bb3ab78de0c8e5371a848a7 = $(`<div id="html_ca8ca6af7bb3ab78de0c8e5371a848a7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Los6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 164</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 660 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 196-4333</p>         </div>         </div>`)[0];
+                popup_fac0e34a854f885b2dcebeb11fca2492.setContent(html_ca8ca6af7bb3ab78de0c8e5371a848a7);
+            
+        
+
+        marker_25ff4e5f9d4ef8127d4377608cfc9477.bindPopup(popup_fac0e34a854f885b2dcebeb11fca2492)
+        ;
+
+        
+    
+    
+            marker_25ff4e5f9d4ef8127d4377608cfc9477.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Los6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_25ff4e5f9d4ef8127d4377608cfc9477.setIcon(icon_290994c0f3808c708c2e423d72703707);
+            
+    
+            var marker_7704119bcd13f84af03a45d74ffce987 = L.marker(
+                [34.48598289582405, -117.85500643576351],
+                {
+}
+            ).addTo(feature_group_5f16189ca7be00359f5774e642ef7460);
+        
+    
+            var icon_4527cdadc65bb11d886804dc658937e2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_65573c835111880be8d71f36fb07ff8e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dedaa39d91d71b48b8b16be9e50f2360 = $(`<div id="html_dedaa39d91d71b48b8b16be9e50f2360" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Los7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 290</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 580 Healthcare Ave, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 223-8208</p>         </div>         </div>`)[0];
+                popup_65573c835111880be8d71f36fb07ff8e.setContent(html_dedaa39d91d71b48b8b16be9e50f2360);
+            
+        
+
+        marker_7704119bcd13f84af03a45d74ffce987.bindPopup(popup_65573c835111880be8d71f36fb07ff8e)
+        ;
+
+        
+    
+    
+            marker_7704119bcd13f84af03a45d74ffce987.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Los7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7704119bcd13f84af03a45d74ffce987.setIcon(icon_4527cdadc65bb11d886804dc658937e2);
+            
+    
+            feature_group_5f16189ca7be00359f5774e642ef7460.addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+            var feature_group_ecfb9812f1d9f596948da242a7b253ca = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_d8e18b68c3e3d643eaf86dcd38beab63 = L.marker(
+                [33.81699624878319, -118.01685363222401],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_b93ff0338fe6b902c69fc5890081e0e8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_241c373e2e14e52b59c8e197f6582960 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_77589990644b0ebab1a7d08cb9cbbeb9 = $(`<div id="html_77589990644b0ebab1a7d08cb9cbbeb9" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 120</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 894 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 177-2716</p>         </div>         </div>`)[0];
+                popup_241c373e2e14e52b59c8e197f6582960.setContent(html_77589990644b0ebab1a7d08cb9cbbeb9);
+            
+        
+
+        marker_d8e18b68c3e3d643eaf86dcd38beab63.bindPopup(popup_241c373e2e14e52b59c8e197f6582960)
+        ;
+
+        
+    
+    
+            marker_d8e18b68c3e3d643eaf86dcd38beab63.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d8e18b68c3e3d643eaf86dcd38beab63.setIcon(icon_b93ff0338fe6b902c69fc5890081e0e8);
+            
+    
+            var marker_02f7953c792a71df281da05b60684aaa = L.marker(
+                [34.105639586770124, -118.06960446613752],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_cb11c2b375b3fd5f15bc9d72cbb7ef82 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6b3dcbd7856c5e24387b92129b46eb9a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3fe54032725ea385d90e1acec66096c4 = $(`<div id="html_3fe54032725ea385d90e1acec66096c4" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 84</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 886 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 799-7648</p>         </div>         </div>`)[0];
+                popup_6b3dcbd7856c5e24387b92129b46eb9a.setContent(html_3fe54032725ea385d90e1acec66096c4);
+            
+        
+
+        marker_02f7953c792a71df281da05b60684aaa.bindPopup(popup_6b3dcbd7856c5e24387b92129b46eb9a)
+        ;
+
+        
+    
+    
+            marker_02f7953c792a71df281da05b60684aaa.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_02f7953c792a71df281da05b60684aaa.setIcon(icon_cb11c2b375b3fd5f15bc9d72cbb7ef82);
+            
+    
+            var marker_aaba37fc13f82f2b2dc57e4ada1418e9 = L.marker(
+                [34.109767214907826, -118.21422832106697],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_2f7f7a3ab9b944eabfc49d755a1f0725 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_921dd9f74cdf0ee9d79fab50dbf3127e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_80f515ec6f2e64e0fd7933c62f270ee6 = $(`<div id="html_80f515ec6f2e64e0fd7933c62f270ee6" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 123</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 541 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 190-7137</p>         </div>         </div>`)[0];
+                popup_921dd9f74cdf0ee9d79fab50dbf3127e.setContent(html_80f515ec6f2e64e0fd7933c62f270ee6);
+            
+        
+
+        marker_aaba37fc13f82f2b2dc57e4ada1418e9.bindPopup(popup_921dd9f74cdf0ee9d79fab50dbf3127e)
+        ;
+
+        
+    
+    
+            marker_aaba37fc13f82f2b2dc57e4ada1418e9.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_aaba37fc13f82f2b2dc57e4ada1418e9.setIcon(icon_2f7f7a3ab9b944eabfc49d755a1f0725);
+            
+    
+            var marker_77c9c0b7aa90df72a9600f2719a01950 = L.marker(
+                [34.41763151358971, -118.42326658921705],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_087d5d510e5729d355b9589ee82e75a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8d9963f03c298fb5003c00914e7f294a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c2d3a41b4e893ca78dabc9f5989cd81c = $(`<div id="html_c2d3a41b4e893ca78dabc9f5989cd81c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 91</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 383 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 420-2083</p>         </div>         </div>`)[0];
+                popup_8d9963f03c298fb5003c00914e7f294a.setContent(html_c2d3a41b4e893ca78dabc9f5989cd81c);
+            
+        
+
+        marker_77c9c0b7aa90df72a9600f2719a01950.bindPopup(popup_8d9963f03c298fb5003c00914e7f294a)
+        ;
+
+        
+    
+    
+            marker_77c9c0b7aa90df72a9600f2719a01950.bindTooltip(
+                `<div>
+                     HHAH: Guardian Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_77c9c0b7aa90df72a9600f2719a01950.setIcon(icon_087d5d510e5729d355b9589ee82e75a2);
+            
+    
+            var marker_852d248db0581cb99341943aeb01f768 = L.marker(
+                [34.062021598792654, -117.7273000056081],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_e8f38b9044738f5b11a6e33d12600770 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e28d9f338e9ba0e402b6532437b026ce = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_252ee00fc3fd1dc946c8119dffe78125 = $(`<div id="html_252ee00fc3fd1dc946c8119dffe78125" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 70</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 805 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 814-7707</p>         </div>         </div>`)[0];
+                popup_e28d9f338e9ba0e402b6532437b026ce.setContent(html_252ee00fc3fd1dc946c8119dffe78125);
+            
+        
+
+        marker_852d248db0581cb99341943aeb01f768.bindPopup(popup_e28d9f338e9ba0e402b6532437b026ce)
+        ;
+
+        
+    
+    
+            marker_852d248db0581cb99341943aeb01f768.bindTooltip(
+                `<div>
+                     HHAH: Guardian Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_852d248db0581cb99341943aeb01f768.setIcon(icon_e8f38b9044738f5b11a6e33d12600770);
+            
+    
+            var marker_0af93aab085e0f19df0ffc88d2287df0 = L.marker(
+                [34.020268148769446, -118.40992888765206],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_ed4f8d486665f2e5511604565cbf8864 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f4f0d34683b2aaaf3da5d032a643f9e1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2d1ec9bd58f3d06faa1b89a89683c83a = $(`<div id="html_2d1ec9bd58f3d06faa1b89a89683c83a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 80</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 143 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 147-3962</p>         </div>         </div>`)[0];
+                popup_f4f0d34683b2aaaf3da5d032a643f9e1.setContent(html_2d1ec9bd58f3d06faa1b89a89683c83a);
+            
+        
+
+        marker_0af93aab085e0f19df0ffc88d2287df0.bindPopup(popup_f4f0d34683b2aaaf3da5d032a643f9e1)
+        ;
+
+        
+    
+    
+            marker_0af93aab085e0f19df0ffc88d2287df0.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0af93aab085e0f19df0ffc88d2287df0.setIcon(icon_ed4f8d486665f2e5511604565cbf8864);
+            
+    
+            var marker_4bf09e91f7a4fe913609daa573be3faf = L.marker(
+                [33.52477408867326, -118.56857652838954],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_71a27f786a0df96f98a958db92f5becc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2ac95fc1fdaa7a68c5faf4f9a69df2ed = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54f450c01971a491b9d080fb1a0c3939 = $(`<div id="html_54f450c01971a491b9d080fb1a0c3939" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 87</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 778 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 487-9402</p>         </div>         </div>`)[0];
+                popup_2ac95fc1fdaa7a68c5faf4f9a69df2ed.setContent(html_54f450c01971a491b9d080fb1a0c3939);
+            
+        
+
+        marker_4bf09e91f7a4fe913609daa573be3faf.bindPopup(popup_2ac95fc1fdaa7a68c5faf4f9a69df2ed)
+        ;
+
+        
+    
+    
+            marker_4bf09e91f7a4fe913609daa573be3faf.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4bf09e91f7a4fe913609daa573be3faf.setIcon(icon_71a27f786a0df96f98a958db92f5becc);
+            
+    
+            var marker_d9f460755883eadec255d52e45a6f800 = L.marker(
+                [34.59368884812043, -117.92942728115844],
+                {
+}
+            ).addTo(feature_group_ecfb9812f1d9f596948da242a7b253ca);
+        
+    
+            var icon_a2b0e3d0574b135640d7e09cdbc868b3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0969f931165419f25e7968dbc896ba21 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_df7a6620c3ab748c2aa13b2c5745b625 = $(`<div id="html_df7a6620c3ab748c2aa13b2c5745b625" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 72</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 339 Medical Blvd, Los Angeles-Long Beach-Anaheim</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 415-7562</p>         </div>         </div>`)[0];
+                popup_0969f931165419f25e7968dbc896ba21.setContent(html_df7a6620c3ab748c2aa13b2c5745b625);
+            
+        
+
+        marker_d9f460755883eadec255d52e45a6f800.bindPopup(popup_0969f931165419f25e7968dbc896ba21)
+        ;
+
+        
+    
+    
+            marker_d9f460755883eadec255d52e45a6f800.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d9f460755883eadec255d52e45a6f800.setIcon(icon_a2b0e3d0574b135640d7e09cdbc868b3);
+            
+    
+            feature_group_ecfb9812f1d9f596948da242a7b253ca.addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+        
+    
+            var mouse_position_ce3ac38ee856302849c1fc82ba71829f = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_ce3ac38ee856302849c1fc82ba71829f.options["latFormatter"] =
+                undefined;
+            mouse_position_ce3ac38ee856302849c1fc82ba71829f.options["lngFormatter"] =
+                undefined;
+            map_4feab0a0e7687d00fb684cc79d822c5d.addControl(mouse_position_ce3ac38ee856302849c1fc82ba71829f);
+        
+    
+            var layer_control_b030d9e2bffbaefc21791caac39d13c8_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_2907abebf6ffbfd5dfc160b26bab641b,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_7cc2c5e584195546c5d33dd1f75dd4e8,
+                    "Los Angeles-Long Beach-Anaheim, CA Boundary" : geo_json_6f0c69e0c4a53a86153ade922a5f93aa,
+                    "Physician Groups (PGs)" : feature_group_5f16189ca7be00359f5774e642ef7460,
+                    "Home Health At Home (HHAHs)" : feature_group_ecfb9812f1d9f596948da242a7b253ca,
+                },
+            };
+            let layer_control_b030d9e2bffbaefc21791caac39d13c8 = L.control.layers(
+                layer_control_b030d9e2bffbaefc21791caac39d13c8_layers.base_layers,
+                layer_control_b030d9e2bffbaefc21791caac39d13c8_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_4feab0a0e7687d00fb684cc79d822c5d);
+
+        
+    
+            map_4feab0a0e7687d00fb684cc79d822c5d.fitBounds(
+                [[32.751914, -118.951721], [34.822528, -117.412987]],
+                {}
+            );
+        
+</script>
+</html>

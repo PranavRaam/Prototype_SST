@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1c726e9676675c9ec8f1c2c07a45a768 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Lake Havasu City-Kingman, AZ</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 5 PGs and 6 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_1c726e9676675c9ec8f1c2c07a45a768" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_1c726e9676675c9ec8f1c2c07a45a768 = L.map(
+                "map_1c726e9676675c9ec8f1c2c07a45a768",
+                {
+                    center: [35.7040649813529, -113.75814794701365],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_df748a4596c700d5ae4f24287613a952 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_df748a4596c700d5ae4f24287613a952.addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+        function geo_json_da1f71bde85a585e17adfb5f73924ae5_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+            }
+        }
+
+        function geo_json_da1f71bde85a585e17adfb5f73924ae5_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_da1f71bde85a585e17adfb5f73924ae5 = L.geoJson(null, {
+                onEachFeature: geo_json_da1f71bde85a585e17adfb5f73924ae5_onEachFeature,
+            
+                style: geo_json_da1f71bde85a585e17adfb5f73924ae5_styler,
+            ...{
+}
+        });
+
+        function geo_json_da1f71bde85a585e17adfb5f73924ae5_add (data) {
+            geo_json_da1f71bde85a585e17adfb5f73924ae5
+                .addData(data);
+        }
+            geo_json_da1f71bde85a585e17adfb5f73924ae5_add({"bbox": [-124.480543, 31.332342, -109.042572, 42.009503], "features": [{"bbox": [-124.480543, 32.529508, -114.131211, 42.009503], "geometry": {"coordinates": [[[[-119.999866, 41.183974], [-120.001014, 38.999574], [-118.714201, 38.102105], [-117.500117, 37.22038], [-116.094166, 36.156263], [-114.633487, 35.001857], [-114.634382, 34.87289], [-114.586842, 34.835672], [-114.552682, 34.766871], [-114.470477, 34.711368], [-114.457985, 34.657113], [-114.424202, 34.610453], [-114.43681, 34.596074], [-114.380838, 34.529724], [-114.386699, 34.457911], [-114.335372, 34.450038], [-114.226107, 34.365916], [-114.176909, 34.349306], [-114.138282, 34.30323], [-114.131211, 34.26273], [-114.164648, 34.259699], [-114.229715, 34.186928], [-114.41168, 34.110031], [-114.434181, 34.087379], [-114.438266, 34.022609], [-114.465867, 34.010987], [-114.459258, 33.994711], [-114.535676, 33.933552], [-114.50792, 33.903807], [-114.525872, 33.901008], [-114.503017, 33.867998], [-114.529883, 33.857563], [-114.52805, 33.814963], [-114.494197, 33.707922], [-114.531523, 33.675108], [-114.514057, 33.660179], [-114.533194, 33.65166], [-114.521845, 33.612544], [-114.540617, 33.591412], [-114.524215, 33.553068], [-114.592369, 33.498675], [-114.643302, 33.416746], [-114.725282, 33.405048], [-114.698035, 33.352442], [-114.731223, 33.302433], [-114.672088, 33.258499], [-114.689541, 33.246428], [-114.673626, 33.223121], [-114.675359, 33.185488], [-114.706488, 33.08816], [-114.68902, 33.084035], [-114.66506, 33.033906], [-114.645979, 33.048902], [-114.618788, 33.027202], [-114.52013, 33.029984], [-114.492938, 32.971781], [-114.468605, 32.971649], [-114.480925, 32.936276], [-114.462929, 32.907944], [-114.468971, 32.845155], [-114.529633, 32.795477], [-114.526856, 32.757094], [-114.617395, 32.728257], [-114.701582, 32.745632], [-114.719497, 32.718739], [-117.205051, 32.529508], [-117.223302, 32.621238], [-117.268789, 32.619415], [-117.309239, 32.656401], [-117.342, 32.840354], [-117.323279, 32.903064], [-117.375872, 33.075217], [-117.467871, 33.212494], [-117.571531, 33.312302], [-117.713571, 33.408777], [-117.741409, 33.410118], [-117.816356, 33.490872], [-118.049848, 33.620015], [-118.1259, 33.697151], [-118.237008, 33.690595], [-118.274239, 33.663429], [-118.319135, 33.659547], [-118.466962, 33.725524], [-118.485577, 33.753664], [-118.484483, 33.803154], [-118.447254, 33.84876], [-118.557356, 33.987673], [-118.727459, 33.980307], [-118.814752, 33.947214], [-118.887301, 33.987223], [-119.158963, 34.040253], [-119.217993, 34.062491], [-119.285743, 34.140805], [-119.334887, 34.236865], [-119.584795, 34.36166], [-119.651357, 34.366708], [-119.716129, 34.336108], [-119.797067, 34.365331], [-119.891521, 34.357457], [-120.024356, 34.409343], [-120.14728, 34.422916], [-120.456015, 34.391485], [-120.523646, 34.419505], [-120.559439, 34.488466], [-120.682206, 34.525326], [-120.713329, 34.57496], [-120.664691, 34.696344], [-120.702093, 34.748329], [-120.673281, 34.838624], [-120.720319, 34.869241], [-120.734382, 34.901499], [-120.694715, 35.028839], [-120.689606, 35.098828], [-120.800411, 35.116577], [-120.917792, 35.187378], [-120.961253, 35.249975], [-120.923435, 35.348413], [-120.933292, 35.392748], [-121.041635, 35.41999], [-121.151056, 35.516412], [-121.201555, 35.58369], [-121.323512, 35.624969], [-121.366362, 35.680419], [-121.39346, 35.763401], [-121.501047, 35.842745], [-121.561461, 35.943818], [-121.631818, 35.978945], [-121.674359, 36.064661], [-121.727812, 36.129009], [-121.880193, 36.210314], [-121.957666, 36.285117], [-121.981042, 36.419634], [-122.04405, 36.578249], [-122.001124, 36.647704], [-122.076399, 36.910199], [-122.251082, 36.985833], [-122.313899, 37.054764], [-122.376086, 37.065648], [-122.396916, 37.109888], [-122.464117, 37.177848], [-122.484046, 37.249944], [-122.467005, 37.349889], [-122.509889, 37.441554], [-122.546996, 37.457857], [-122.574963, 37.499943], [-122.588177, 37.579408], [-122.567497, 37.639185], [-122.588174, 37.789362], [-122.675654, 37.848517], [-122.715845, 37.845625], [-122.766771, 37.865804], [-122.889291, 37.974109], [-122.953224, 37.941093], [-123.067965, 37.958669], [-123.08513, 38.008433], [-123.014817, 38.149132], [-123.049617, 38.214286], [-123.134523, 38.296263], [-123.134312, 38.345786], [-123.164757, 38.388337], [-123.22022, 38.441954], [-123.360929, 38.510202], [-123.51058, 38.68089], [-123.641253, 38.764394], [-123.784676, 38.893728], [-123.80986, 38.961219], [-123.797217, 38.989863], [-123.763148, 39.00869], [-123.761965, 39.041091], [-123.840771, 39.187335], [-123.894936, 39.348349], [-123.875126, 39.494179], [-123.834649, 39.549194], [-123.857183, 39.674693], [-123.895741, 39.711406], [-123.90097, 39.780466], [-124.078596, 39.972263], [-124.133255, 39.999865], [-124.153762, 40.063544], [-124.231204, 40.093382], [-124.411026, 40.225275], [-124.428222, 40.258121], [-124.428055, 40.361785], [-124.480543, 40.428493], [-124.403367, 40.61317], [-124.232622, 40.869286], [-124.197619, 40.950529], [-124.182694, 41.001313], [-124.227079, 41.046622], [-124.252474, 41.134075], [-124.237625, 41.165959], [-124.195532, 41.184582], [-124.160704, 41.289293], [-124.220032, 41.302994], [-124.24242, 41.3433], [-124.206515, 41.384718], [-124.139973, 41.381821], [-124.133231, 41.432311], [-124.160493, 41.543409], [-124.18499, 41.565769], [-124.209785, 41.635205], [-124.211706, 41.681193], [-124.392055, 41.772377], [-124.438909, 41.824504], [-124.435015, 41.856507], [-124.401242, 41.885588], [-124.285031, 41.859487], [-124.27612, 41.903052], [-124.291939, 41.928498], [-124.288578, 41.969564], [-124.328835, 41.998334], [-122.378049, 42.009503], [-119.999234, 41.994944], [-119.999866, 41.183974]]], [[[-123.173825, 37.775727], [-123.132272, 37.819676], [-123.070494, 37.81383], [-122.949985, 37.732187], [-122.941364, 37.67658], [-122.986747, 37.641783], [-123.040696, 37.650328], [-123.09285, 37.713688], [-123.156757, 37.73784], [-123.173825, 37.775727]]], [[[-119.49229, 33.983215], [-119.538949, 33.947656], [-119.63673, 33.938277], [-119.707491, 33.910388], [-119.83442, 33.900788], [-119.904762, 33.939674], [-119.93919, 33.898643], [-120.125964, 33.842348], [-120.221128, 33.884187], [-120.298973, 33.968457], [-120.367073, 33.961036], [-120.488151, 33.984283], [-120.518784, 34.01408], [-120.523387, 34.051133], [-120.566995, 34.068638], [-120.582264, 34.107517], [-120.567847, 34.135618], [-120.538118, 34.150344], [-120.471654, 34.134102], [-120.418787, 34.160569], [-120.355161, 34.145021], [-120.252846, 34.058031], [-120.045154, 34.090606], [-119.991643, 34.064868], [-119.965471, 34.11256], [-119.928795, 34.129902], [-119.792601, 34.106375], [-119.750981, 34.112582], [-119.654931, 34.071218], [-119.614268, 34.099432], [-119.557426, 34.108603], [-119.467842, 34.062931], [-119.342462, 34.068964], [-119.294398, 34.027503], [-119.311615, 33.980023], [-119.380456, 33.953611], [-119.432961, 33.955905], [-119.49229, 33.983215]]], [[[-119.117174, 33.5056], [-119.076497, 33.535148], [-119.000932, 33.535895], [-118.971007, 33.510655], [-118.963751, 33.46683], [-118.988726, 33.423441], [-119.071893, 33.413799], [-119.106154, 33.445012], [-119.117174, 33.5056]]], [[[-119.636068, 33.280713], [-119.599222, 33.323276], [-119.519138, 33.3337], [-119.37973, 33.267632], [-119.360702, 33.221452], [-119.394536, 33.180836], [-119.512001, 33.167755], [-119.605282, 33.206919], [-119.636068, 33.280713]]], [[[-118.678204, 33.039726], [-118.632642, 33.084539], [-118.542103, 33.073788], [-118.448863, 32.96175], [-118.29725, 32.845094], [-118.295841, 32.798256], [-118.323819, 32.773514], [-118.378377, 32.770232], [-118.408322, 32.751914], [-118.464712, 32.760176], [-118.553186, 32.828797], [-118.644732, 33.000033], [-118.670173, 33.000034], [-118.678204, 33.039726]]], [[[-118.668203, 33.485937], [-118.625916, 33.528978], [-118.529382, 33.531182], [-118.359393, 33.464922], [-118.257714, 33.364131], [-118.241286, 33.323023], [-118.249075, 33.284142], [-118.327993, 33.248083], [-118.486688, 33.276905], [-118.534885, 33.315176], [-118.547929, 33.376799], [-118.618574, 33.406191], [-118.655057, 33.44531], [-118.668203, 33.485937]]]], "type": "MultiPolygon"}, "id": "13", "properties": {"ALAND": 403673296401, "AWATER": 20291770234, "DIVISION": "9", "FUNCSTAT": "A", "GEOID": "06", "GEOIDFQ": "0400000US06", "INTPTLAT": "+37.1551773", "INTPTLON": "-119.5434183", "LSAD": "00", "MTFCC": "G4000", "NAME": "California", "REGION": "4", "STATEFP": "06", "STATENS": "01779778", "STUSPS": "CA"}, "type": "Feature"}, {"bbox": [-114.050052, 36.998977, -109.042572, 42.001702], "geometry": {"coordinates": [[[-111.507806, 41.999552], [-111.046714, 42.001702], [-111.046815, 40.997875], [-109.050026, 41.000691], [-109.060204, 38.278238], [-109.042572, 38.157016], [-109.045172, 36.998977], [-114.050052, 37.000191], [-114.041477, 41.993873], [-111.507806, 41.999552]]], "type": "Polygon"}, "id": "23", "properties": {"ALAND": 213921849163, "AWATER": 5963196691, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "49", "GEOIDFQ": "0400000US49", "INTPTLAT": "+39.3349925", "INTPTLON": "-111.6563326", "LSAD": "00", "MTFCC": "G4000", "NAME": "Utah", "REGION": "4", "STATEFP": "49", "STATENS": "01455989", "STUSPS": "UT"}, "type": "Feature"}, {"bbox": [-120.001014, 35.001857, -114.041477, 41.994944], "geometry": {"coordinates": [[[-119.324184, 41.993923], [-114.041477, 41.993873], [-114.043944, 36.19335], [-114.066798, 36.179087], [-114.096994, 36.120823], [-114.120865, 36.11085], [-114.112297, 36.09405], [-114.15139, 36.023133], [-114.243865, 36.015266], [-114.270862, 36.045523], [-114.313591, 36.059048], [-114.306939, 36.082487], [-114.373745, 36.143722], [-114.501798, 36.126556], [-114.508104, 36.149713], [-114.57109, 36.151099], [-114.615455, 36.129653], [-114.630474, 36.142218], [-114.664343, 36.1163], [-114.734085, 36.104672], [-114.753784, 36.087807], [-114.735285, 36.056648], [-114.741262, 36.038044], [-114.722096, 36.028952], [-114.743005, 36.00845], [-114.740536, 35.975545], [-114.708112, 35.909933], [-114.661636, 35.871233], [-114.705856, 35.850508], [-114.695277, 35.831091], [-114.712026, 35.805529], [-114.694267, 35.756633], [-114.705597, 35.708274], [-114.680631, 35.684046], [-114.689507, 35.651429], [-114.653534, 35.609672], [-114.675667, 35.580033], [-114.65677, 35.534964], [-114.678642, 35.497628], [-114.604607, 35.355239], [-114.569258, 35.183424], [-114.578263, 35.12881], [-114.646764, 35.101868], [-114.602908, 35.068588], [-114.634732, 35.033734], [-114.633487, 35.001857], [-116.094166, 36.156263], [-117.500117, 37.22038], [-118.714201, 38.102105], [-120.001014, 38.999574], [-119.999234, 41.994944], [-119.324184, 41.993923]]], "type": "Polygon"}, "id": "39", "properties": {"ALAND": 284537045712, "AWATER": 1839880833, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "32", "GEOIDFQ": "0400000US32", "INTPTLAT": "+39.3310928", "INTPTLON": "-116.6151469", "LSAD": "00", "MTFCC": "G4000", "NAME": "Nevada", "REGION": "4", "STATEFP": "32", "STATENS": "01779793", "STUSPS": "NV"}, "type": "Feature"}, {"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "geometry": {"coordinates": [[[-110.75069, 37.003007], [-109.045172, 36.998977], [-109.050033, 31.332348], [-111.07498, 31.332342], [-114.813692, 32.494069], [-114.805678, 32.546332], [-114.791408, 32.556461], [-114.792808, 32.569524], [-114.813934, 32.562213], [-114.799402, 32.592618], [-114.80844, 32.619426], [-114.763784, 32.643403], [-114.70294, 32.744793], [-114.617395, 32.728257], [-114.539224, 32.749812], [-114.526856, 32.757094], [-114.529633, 32.795477], [-114.468971, 32.845155], [-114.462929, 32.907944], [-114.480925, 32.936276], [-114.468379, 32.970745], [-114.492938, 32.971781], [-114.511343, 33.023455], [-114.571653, 33.036624], [-114.618788, 33.027202], [-114.645979, 33.048902], [-114.662317, 33.03267], [-114.68902, 33.084035], [-114.706488, 33.08816], [-114.675359, 33.185488], [-114.673626, 33.223121], [-114.689541, 33.246428], [-114.672088, 33.258499], [-114.731223, 33.302433], [-114.698035, 33.352442], [-114.725282, 33.405048], [-114.643302, 33.416746], [-114.592369, 33.498675], [-114.524215, 33.553068], [-114.540617, 33.591412], [-114.521845, 33.612544], [-114.533194, 33.65166], [-114.514057, 33.660179], [-114.531523, 33.675108], [-114.494197, 33.707922], [-114.52805, 33.814963], [-114.529883, 33.857563], [-114.503017, 33.867998], [-114.525872, 33.901008], [-114.50792, 33.903807], [-114.535478, 33.934651], [-114.438266, 34.022609], [-114.434181, 34.087379], [-114.415908, 34.107636], [-114.229715, 34.186928], [-114.164648, 34.259699], [-114.131211, 34.26273], [-114.138282, 34.30323], [-114.176909, 34.349306], [-114.226107, 34.365916], [-114.335372, 34.450038], [-114.386699, 34.457911], [-114.380838, 34.529724], [-114.43681, 34.596074], [-114.424202, 34.610453], [-114.457985, 34.657113], [-114.470477, 34.711368], [-114.552682, 34.766871], [-114.586842, 34.835672], [-114.635176, 34.875003], [-114.637524, 35.027053], [-114.602908, 35.068588], [-114.646764, 35.101868], [-114.578263, 35.12881], [-114.569258, 35.183424], [-114.604607, 35.355239], [-114.678642, 35.497628], [-114.65677, 35.534964], [-114.675667, 35.580033], [-114.653534, 35.609672], [-114.689507, 35.651429], [-114.680631, 35.684046], [-114.705597, 35.708274], [-114.694267, 35.756633], [-114.712026, 35.805529], [-114.695277, 35.831091], [-114.705856, 35.850508], [-114.661636, 35.871233], [-114.708112, 35.909933], [-114.740536, 35.975545], [-114.743005, 36.00845], [-114.722096, 36.028952], [-114.741262, 36.038044], [-114.735285, 36.056648], [-114.754508, 36.086171], [-114.630474, 36.142218], [-114.615455, 36.129653], [-114.57109, 36.151099], [-114.511218, 36.150576], [-114.504715, 36.127188], [-114.4626, 36.139644], [-114.445042, 36.125346], [-114.405624, 36.146983], [-114.370181, 36.142624], [-114.306939, 36.082487], [-114.313591, 36.059048], [-114.270862, 36.045523], [-114.243865, 36.015266], [-114.15139, 36.023133], [-114.137112, 36.038491], [-114.111998, 36.09491], [-114.120865, 36.11085], [-114.096994, 36.120823], [-114.066798, 36.179087], [-114.043944, 36.19335], [-114.050616, 37.000167], [-110.75069, 37.003007]]], "type": "Polygon"}, "id": "55", "properties": {"ALAND": 294366106734, "AWATER": 854003932, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "04", "GEOIDFQ": "0400000US04", "INTPTLAT": "+34.2039362", "INTPTLON": "-111.6063449", "LSAD": "00", "MTFCC": "G4000", "NAME": "Arizona", "REGION": "4", "STATEFP": "04", "STATENS": "01779777", "STUSPS": "AZ"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_da1f71bde85a585e17adfb5f73924ae5.addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+        function geo_json_e28189c4a403947f351a60e99a0f4823_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+            }
+        }
+
+        function geo_json_e28189c4a403947f351a60e99a0f4823_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_e28189c4a403947f351a60e99a0f4823 = L.geoJson(null, {
+                onEachFeature: geo_json_e28189c4a403947f351a60e99a0f4823_onEachFeature,
+            
+                style: geo_json_e28189c4a403947f351a60e99a0f4823_styler,
+            ...{
+}
+        });
+
+        function geo_json_e28189c4a403947f351a60e99a0f4823_add (data) {
+            geo_json_e28189c4a403947f351a60e99a0f4823
+                .addData(data);
+        }
+            geo_json_e28189c4a403947f351a60e99a0f4823_add({"features": [{"geometry": {"coordinates": [[[-114.050616, 37.000167], [-112.538571, 37.000758], [-112.53006, 36.961792], [-112.619728, 36.782744], [-112.612234, 36.736854], [-112.638679, 36.674478], [-112.620945, 36.595645], [-112.660401, 36.538862], [-112.640641, 36.488474], [-112.621821, 36.484902], [-112.647594, 36.446895], [-112.6241, 36.410241], [-112.656333, 36.357545], [-112.680735, 36.341658], [-112.692851, 36.355163], [-112.722574, 36.346941], [-112.722872, 36.31997], [-112.755786, 36.324347], [-112.793761, 36.284398], [-112.869234, 36.282304], [-112.935314, 36.242781], [-113.019111, 36.236705], [-113.1258, 36.17051], [-113.156882, 36.174305], [-113.19923, 36.151389], [-113.201671, 36.119041], [-113.224919, 36.091144], [-113.319971, 36.096769], [-113.352039, 36.047528], [-113.339777, 35.98515], [-113.317259, 35.968611], [-113.33485, 35.913859], [-113.309214, 35.887325], [-113.334024, 35.803031], [-113.333422, 34.317913], [-113.369244, 34.291968], [-113.530971, 34.310149], [-113.604288, 34.229936], [-113.679405, 34.209828], [-113.705388, 34.210465], [-113.732349, 34.241014], [-113.83494, 34.223165], [-113.857702, 34.253418], [-114.035107, 34.259779], [-114.087442, 34.298559], [-114.138282, 34.30323], [-114.176909, 34.349306], [-114.226107, 34.365916], [-114.335372, 34.450038], [-114.375789, 34.447798], [-114.387407, 34.460492], [-114.380838, 34.529724], [-114.43681, 34.596074], [-114.424202, 34.610453], [-114.457985, 34.657113], [-114.470477, 34.711368], [-114.552682, 34.766871], [-114.586842, 34.835672], [-114.636768, 34.885705], [-114.637524, 35.027053], [-114.602908, 35.068588], [-114.646764, 35.101868], [-114.578263, 35.12881], [-114.569258, 35.183424], [-114.604607, 35.355239], [-114.678642, 35.497628], [-114.65677, 35.534964], [-114.675667, 35.580033], [-114.653534, 35.609672], [-114.689507, 35.651429], [-114.680631, 35.684046], [-114.705597, 35.708274], [-114.694267, 35.756633], [-114.712026, 35.805529], [-114.695277, 35.831091], [-114.705856, 35.850508], [-114.661636, 35.871233], [-114.708112, 35.909933], [-114.740536, 35.975545], [-114.743005, 36.00845], [-114.722096, 36.028952], [-114.741262, 36.038044], [-114.735285, 36.056648], [-114.754508, 36.086171], [-114.630474, 36.142218], [-114.615455, 36.129653], [-114.57109, 36.151099], [-114.511218, 36.150576], [-114.504715, 36.127188], [-114.4626, 36.139644], [-114.445042, 36.125346], [-114.405624, 36.146983], [-114.370181, 36.142624], [-114.306939, 36.082487], [-114.313591, 36.059048], [-114.270862, 36.045523], [-114.243865, 36.015266], [-114.15139, 36.023133], [-114.137112, 36.038491], [-114.111998, 36.09491], [-114.120865, 36.11085], [-114.096994, 36.120823], [-114.066798, 36.179087], [-114.043944, 36.19335], [-114.050616, 37.000167]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_e28189c4a403947f351a60e99a0f4823.addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+            var feature_group_0920ecd89f53c57b572645286a18c297 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_c9060fc6b7b12a6438658cab2d3e7cc8 = L.marker(
+                [34.50388623188698, -114.0095824781754],
+                {
+}
+            ).addTo(feature_group_0920ecd89f53c57b572645286a18c297);
+        
+    
+            var icon_eaaa059b5a0610fdd63952d9da38386c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_551a18edc69eb216704cdf398c32bb67 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3d6eacdab5ce0c43bdb376cdfa9b81f3 = $(`<div id="html_3d6eacdab5ce0c43bdb376cdfa9b81f3" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Lak1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 287</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 739 Healthcare Ave, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 685-6573</p>         </div>         </div>`)[0];
+                popup_551a18edc69eb216704cdf398c32bb67.setContent(html_3d6eacdab5ce0c43bdb376cdfa9b81f3);
+            
+        
+
+        marker_c9060fc6b7b12a6438658cab2d3e7cc8.bindPopup(popup_551a18edc69eb216704cdf398c32bb67)
+        ;
+
+        
+    
+    
+            marker_c9060fc6b7b12a6438658cab2d3e7cc8.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Lak1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c9060fc6b7b12a6438658cab2d3e7cc8.setIcon(icon_eaaa059b5a0610fdd63952d9da38386c);
+            
+    
+            var marker_14633685bc69ea9b6eab3c1456fef32a = L.marker(
+                [35.20368586296831, -114.34441177092316],
+                {
+}
+            ).addTo(feature_group_0920ecd89f53c57b572645286a18c297);
+        
+    
+            var icon_6b8c7c402b167bdccccda6446dc185dd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_761593b29edece9f96b146e3cae9b2ab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_efc9b57ad8600b0670dd35d1a4d9df0f = $(`<div id="html_efc9b57ad8600b0670dd35d1a4d9df0f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Lak2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 14</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 274</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 914 Healthcare Ave, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 436-1654</p>         </div>         </div>`)[0];
+                popup_761593b29edece9f96b146e3cae9b2ab.setContent(html_efc9b57ad8600b0670dd35d1a4d9df0f);
+            
+        
+
+        marker_14633685bc69ea9b6eab3c1456fef32a.bindPopup(popup_761593b29edece9f96b146e3cae9b2ab)
+        ;
+
+        
+    
+    
+            marker_14633685bc69ea9b6eab3c1456fef32a.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Lak2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_14633685bc69ea9b6eab3c1456fef32a.setIcon(icon_6b8c7c402b167bdccccda6446dc185dd);
+            
+    
+            var marker_2592f3da95c6b00b8aba3e598ad50eec = L.marker(
+                [36.01492139082748, -113.599197913257],
+                {
+}
+            ).addTo(feature_group_0920ecd89f53c57b572645286a18c297);
+        
+    
+            var icon_85883e49cdfd100e331ebebc44dbe1c2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_676bb1028867c5f743afa47404084e78 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6e8ef1137d1186d434e32a0f5d5beb96 = $(`<div id="html_6e8ef1137d1186d434e32a0f5d5beb96" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Lak3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 9</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 90</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 899 Healthcare Ave, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 872-8849</p>         </div>         </div>`)[0];
+                popup_676bb1028867c5f743afa47404084e78.setContent(html_6e8ef1137d1186d434e32a0f5d5beb96);
+            
+        
+
+        marker_2592f3da95c6b00b8aba3e598ad50eec.bindPopup(popup_676bb1028867c5f743afa47404084e78)
+        ;
+
+        
+    
+    
+            marker_2592f3da95c6b00b8aba3e598ad50eec.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Lak3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2592f3da95c6b00b8aba3e598ad50eec.setIcon(icon_85883e49cdfd100e331ebebc44dbe1c2);
+            
+    
+            var marker_0f9ce9f63c58ffbaa295534556dd000f = L.marker(
+                [34.49032341444362, -113.60746046493458],
+                {
+}
+            ).addTo(feature_group_0920ecd89f53c57b572645286a18c297);
+        
+    
+            var icon_34ff00d81747ff8e5fa7b698ba6dc8e7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_68efebb14d2ac929dae10da7f872928e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_755d7b7c92d6ec1db2076c9f9b5cb487 = $(`<div id="html_755d7b7c92d6ec1db2076c9f9b5cb487" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Lak4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 134</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 472 Healthcare Ave, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 999-7467</p>         </div>         </div>`)[0];
+                popup_68efebb14d2ac929dae10da7f872928e.setContent(html_755d7b7c92d6ec1db2076c9f9b5cb487);
+            
+        
+
+        marker_0f9ce9f63c58ffbaa295534556dd000f.bindPopup(popup_68efebb14d2ac929dae10da7f872928e)
+        ;
+
+        
+    
+    
+            marker_0f9ce9f63c58ffbaa295534556dd000f.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Lak4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0f9ce9f63c58ffbaa295534556dd000f.setIcon(icon_34ff00d81747ff8e5fa7b698ba6dc8e7);
+            
+    
+            var marker_85a1855f5ed56ff8fec5ee9244c5ec73 = L.marker(
+                [34.93329466131998, -113.94219502623689],
+                {
+}
+            ).addTo(feature_group_0920ecd89f53c57b572645286a18c297);
+        
+    
+            var icon_63109a4644464a005815adcced13d53b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2bf21f4f8072dae3247e8bf2e09634c1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bf273b06faecab42859d2dfc916db04d = $(`<div id="html_bf273b06faecab42859d2dfc916db04d" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Lak5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 177</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 884 Healthcare Ave, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 956-7878</p>         </div>         </div>`)[0];
+                popup_2bf21f4f8072dae3247e8bf2e09634c1.setContent(html_bf273b06faecab42859d2dfc916db04d);
+            
+        
+
+        marker_85a1855f5ed56ff8fec5ee9244c5ec73.bindPopup(popup_2bf21f4f8072dae3247e8bf2e09634c1)
+        ;
+
+        
+    
+    
+            marker_85a1855f5ed56ff8fec5ee9244c5ec73.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Lak5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_85a1855f5ed56ff8fec5ee9244c5ec73.setIcon(icon_63109a4644464a005815adcced13d53b);
+            
+    
+            feature_group_0920ecd89f53c57b572645286a18c297.addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+            var feature_group_a981ab4c86020557cead379308f0c417 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_117a944f995c7b8418f6eb668929e29b = L.marker(
+                [35.19657505764061, -114.17842098476285],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_7906c2a287090a0cc0ebb2aec371203a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1fade852fa5fdfe1d6b8572d6cf72632 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_34fa245958920681ba3b56840413714d = $(`<div id="html_34fa245958920681ba3b56840413714d" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 37</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 728 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 659-8253</p>         </div>         </div>`)[0];
+                popup_1fade852fa5fdfe1d6b8572d6cf72632.setContent(html_34fa245958920681ba3b56840413714d);
+            
+        
+
+        marker_117a944f995c7b8418f6eb668929e29b.bindPopup(popup_1fade852fa5fdfe1d6b8572d6cf72632)
+        ;
+
+        
+    
+    
+            marker_117a944f995c7b8418f6eb668929e29b.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_117a944f995c7b8418f6eb668929e29b.setIcon(icon_7906c2a287090a0cc0ebb2aec371203a);
+            
+    
+            var marker_b86494c401f674d526077befe81c77ef = L.marker(
+                [36.101616208156436, -113.50744186091079],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_061a4e87fe2b9613c773376646dc2116 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4688160941b77033ff3579ca50d60e51 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7b73075b150327792860645ed37c3a4a = $(`<div id="html_7b73075b150327792860645ed37c3a4a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 30</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 140 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 675-8547</p>         </div>         </div>`)[0];
+                popup_4688160941b77033ff3579ca50d60e51.setContent(html_7b73075b150327792860645ed37c3a4a);
+            
+        
+
+        marker_b86494c401f674d526077befe81c77ef.bindPopup(popup_4688160941b77033ff3579ca50d60e51)
+        ;
+
+        
+    
+    
+            marker_b86494c401f674d526077befe81c77ef.bindTooltip(
+                `<div>
+                     HHAH: Premier Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b86494c401f674d526077befe81c77ef.setIcon(icon_061a4e87fe2b9613c773376646dc2116);
+            
+    
+            var marker_0c7ddad51e28fae6742b1edaa58e2d7a = L.marker(
+                [36.07039988243415, -113.48174120219954],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_1f9feb8d8f306c2cf4dd5bcba025958b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_85c70f7874f4d455c932a4df91ce5bee = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b358a9a5452cb8701b170e5c5cdb689b = $(`<div id="html_b358a9a5452cb8701b170e5c5cdb689b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 83</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 558 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 410-2236</p>         </div>         </div>`)[0];
+                popup_85c70f7874f4d455c932a4df91ce5bee.setContent(html_b358a9a5452cb8701b170e5c5cdb689b);
+            
+        
+
+        marker_0c7ddad51e28fae6742b1edaa58e2d7a.bindPopup(popup_85c70f7874f4d455c932a4df91ce5bee)
+        ;
+
+        
+    
+    
+            marker_0c7ddad51e28fae6742b1edaa58e2d7a.bindTooltip(
+                `<div>
+                     HHAH: Elite Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0c7ddad51e28fae6742b1edaa58e2d7a.setIcon(icon_1f9feb8d8f306c2cf4dd5bcba025958b);
+            
+    
+            var marker_ccdc1fa3a231b71bb33663bd64711f0a = L.marker(
+                [36.01141320011048, -113.74183175866271],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_96f2573fc229d4931c3c9fc6acc82bdd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7ec942a86ad798198d892320b80a730b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_39a3e5d7e63c4df133b87bf111ed6c5c = $(`<div id="html_39a3e5d7e63c4df133b87bf111ed6c5c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 114</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 147 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 148-8502</p>         </div>         </div>`)[0];
+                popup_7ec942a86ad798198d892320b80a730b.setContent(html_39a3e5d7e63c4df133b87bf111ed6c5c);
+            
+        
+
+        marker_ccdc1fa3a231b71bb33663bd64711f0a.bindPopup(popup_7ec942a86ad798198d892320b80a730b)
+        ;
+
+        
+    
+    
+            marker_ccdc1fa3a231b71bb33663bd64711f0a.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ccdc1fa3a231b71bb33663bd64711f0a.setIcon(icon_96f2573fc229d4931c3c9fc6acc82bdd);
+            
+    
+            var marker_9b4a571b3ea672565107e18b7379e045 = L.marker(
+                [35.47087850455138, -113.95796974656882],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_3f3e01647e78d7e51f67999bbbdba38e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c3a49c37880c7eb5e7b488343bf4b501 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fe05b1c567f1c9640c06e16fd432355d = $(`<div id="html_fe05b1c567f1c9640c06e16fd432355d" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 42</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 563 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 370-9254</p>         </div>         </div>`)[0];
+                popup_c3a49c37880c7eb5e7b488343bf4b501.setContent(html_fe05b1c567f1c9640c06e16fd432355d);
+            
+        
+
+        marker_9b4a571b3ea672565107e18b7379e045.bindPopup(popup_c3a49c37880c7eb5e7b488343bf4b501)
+        ;
+
+        
+    
+    
+            marker_9b4a571b3ea672565107e18b7379e045.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9b4a571b3ea672565107e18b7379e045.setIcon(icon_3f3e01647e78d7e51f67999bbbdba38e);
+            
+    
+            var marker_97c8f3d02b501f324fdcdc2af677baa1 = L.marker(
+                [35.87272884962047, -113.51147927098528],
+                {
+}
+            ).addTo(feature_group_a981ab4c86020557cead379308f0c417);
+        
+    
+            var icon_35c01924456737a9220fd922a996aa1c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e773a7ed5a289086cb5048c99fa71a3e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5edb9c6cd795120faaa07efb5e08595e = $(`<div id="html_5edb9c6cd795120faaa07efb5e08595e" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 55</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 835 Medical Blvd, Lake Havasu City-Kingman</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 134-5771</p>         </div>         </div>`)[0];
+                popup_e773a7ed5a289086cb5048c99fa71a3e.setContent(html_5edb9c6cd795120faaa07efb5e08595e);
+            
+        
+
+        marker_97c8f3d02b501f324fdcdc2af677baa1.bindPopup(popup_e773a7ed5a289086cb5048c99fa71a3e)
+        ;
+
+        
+    
+    
+            marker_97c8f3d02b501f324fdcdc2af677baa1.bindTooltip(
+                `<div>
+                     HHAH: Guardian Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_97c8f3d02b501f324fdcdc2af677baa1.setIcon(icon_35c01924456737a9220fd922a996aa1c);
+            
+    
+            feature_group_a981ab4c86020557cead379308f0c417.addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+        
+    
+            var mouse_position_884c3be9f514b203028771e8adc22028 = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_884c3be9f514b203028771e8adc22028.options["latFormatter"] =
+                undefined;
+            mouse_position_884c3be9f514b203028771e8adc22028.options["lngFormatter"] =
+                undefined;
+            map_1c726e9676675c9ec8f1c2c07a45a768.addControl(mouse_position_884c3be9f514b203028771e8adc22028);
+        
+    
+            var layer_control_e4374a75aab51e35fe1bddc43b0bbb95_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_df748a4596c700d5ae4f24287613a952,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_da1f71bde85a585e17adfb5f73924ae5,
+                    "Lake Havasu City-Kingman, AZ Boundary" : geo_json_e28189c4a403947f351a60e99a0f4823,
+                    "Physician Groups (PGs)" : feature_group_0920ecd89f53c57b572645286a18c297,
+                    "Home Health At Home (HHAHs)" : feature_group_a981ab4c86020557cead379308f0c417,
+                },
+            };
+            let layer_control_e4374a75aab51e35fe1bddc43b0bbb95 = L.control.layers(
+                layer_control_e4374a75aab51e35fe1bddc43b0bbb95_layers.base_layers,
+                layer_control_e4374a75aab51e35fe1bddc43b0bbb95_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_1c726e9676675c9ec8f1c2c07a45a768);
+
+        
+    
+            map_1c726e9676675c9ec8f1c2c07a45a768.fitBounds(
+                [[34.209828, -114.754508], [37.000758, -112.53006]],
+                {}
+            );
+        
+</script>
+</html>58, -112.53006]],
+                {}
+            );
+        
+</script>
+</html>

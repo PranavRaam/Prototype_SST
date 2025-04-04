@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_ae5c284a9dd14eabbb93633125431f23 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Dothan, AL</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 8 PGs and 5 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_ae5c284a9dd14eabbb93633125431f23" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_ae5c284a9dd14eabbb93633125431f23 = L.map(
+                "map_ae5c284a9dd14eabbb93633125431f23",
+                {
+                    center: [31.253755211374752, -85.45953332008474],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_63fdd3add56d8c7e80c2fe5349ea913b = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_63fdd3add56d8c7e80c2fe5349ea913b.addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+        function geo_json_5ecacd9c8b7a35183d943ed75170eeaf_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+            }
+        }
+
+        function geo_json_5ecacd9c8b7a35183d943ed75170eeaf_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_5ecacd9c8b7a35183d943ed75170eeaf = L.geoJson(null, {
+                onEachFeature: geo_json_5ecacd9c8b7a35183d943ed75170eeaf_onEachFeature,
+            
+                style: geo_json_5ecacd9c8b7a35183d943ed75170eeaf_styler,
+            ...{
+}
+        });
+
+        function geo_json_5ecacd9c8b7a35183d943ed75170eeaf_add (data) {
+            geo_json_5ecacd9c8b7a35183d943ed75170eeaf
+                .addData(data);
+        }
+            geo_json_5ecacd9c8b7a35183d943ed75170eeaf_add({"bbox": [-88.473227, 24.396308, -79.975425, 35.008028], "features": [{"bbox": [-87.634744, 24.396308, -79.975425, 31.000681], "geometry": {"coordinates": [[[[-83.108738, 24.629489], [-83.088453, 24.692051], [-83.041107, 24.74091], [-82.979064, 24.776053], [-82.868886, 24.798089], [-82.775669, 24.798173], [-82.709779, 24.773122], [-82.655082, 24.713315], [-82.639914, 24.654914], [-82.656682, 24.583709], [-82.828181, 24.583765], [-82.872065, 24.562216], [-82.999742, 24.583917], [-82.999876, 24.476981], [-83.08256, 24.536873], [-83.108738, 24.629489]]], [[[-80.183871, 25.348183], [-80.333321, 25.099202], [-80.390435, 25.057189], [-80.399658, 25.023578], [-80.439101, 24.997989], [-80.462886, 24.955937], [-80.514343, 24.940628], [-80.640428, 24.838434], [-80.771092, 24.765951], [-80.852228, 24.748931], [-81.059736, 24.635864], [-81.147686, 24.649064], [-81.374801, 24.571488], [-81.465088, 24.552854], [-81.514615, 24.564757], [-81.527852, 24.553279], [-81.519881, 24.512555], [-81.539924, 24.486034], [-81.697199, 24.432314], [-81.749811, 24.438454], [-81.773685, 24.472735], [-81.770807, 24.496872], [-81.792362, 24.495613], [-81.781807, 24.460927], [-81.800697, 24.42714], [-81.920556, 24.396308], [-81.974468, 24.420822], [-81.974409, 24.471209], [-82.034272, 24.482496], [-82.067171, 24.523715], [-82.100333, 24.499998], [-82.16949, 24.4977], [-82.21417, 24.52742], [-82.21545, 24.58376], [-82.3265, 24.58373], [-82.28243, 24.67624], [-82.20073, 24.73817], [-82.10976, 24.74711], [-82.02695, 24.72572], [-81.89429, 24.76365], [-81.48849, 24.96635], [-81.25758, 24.9866], [-81.17055, 24.96577], [-81.29506, 25.09793], [-81.3423, 25.22483], [-81.31491, 25.35155], [-81.3252, 25.39062], [-81.42541, 25.5516], [-81.4876, 25.59205], [-81.51902, 25.65694], [-81.57623, 25.68604], [-81.68273, 25.67277], [-81.76672, 25.70025], [-81.87372, 25.83412], [-81.96444, 26.05361], [-82.00546, 26.28443], [-82.08688, 26.27195], [-82.16932, 26.28846], [-82.27636, 26.35102], [-82.32065, 26.39675], [-82.42578, 26.63809], [-82.44505, 26.76463], [-82.59439, 26.99023], [-82.67054, 27.15444], [-82.8323, 27.35572], [-82.90265, 27.48104], [-82.934925, 27.583699], [-82.91522, 27.68413], [-82.99389, 27.77767], [-83.02054, 27.87831], [-82.99746, 28.01275], [-83.01698, 28.24645], [-82.97418, 28.31574], [-82.89736, 28.35701], [-82.83914, 28.57458], [-82.87086, 28.6216], [-82.9235, 28.76713], [-82.9158, 28.8565], [-82.94177, 28.90683], [-82.94557, 28.96375], [-83.00568, 28.9468], [-83.0939, 28.94744], [-83.19827, 28.99505], [-83.25588, 29.08179], [-83.26208, 29.15572], [-83.33042, 29.21186], [-83.35723, 29.2917], [-83.53876, 29.41449], [-83.56633, 29.46484], [-83.58207, 29.56332], [-83.70578, 29.64405], [-83.7809, 29.79004], [-83.83029, 29.81972], [-83.919, 29.84194], [-84.06492, 29.94008], [-84.160797, 29.921266], [-84.18998, 29.83038], [-84.25923, 29.76815], [-84.32327, 29.74809], [-84.41995, 29.74696], [-84.47452, 29.68773], [-84.58868, 29.64074], [-84.71055, 29.55206], [-84.89636, 29.47121], [-85.06032, 29.43622], [-85.12957, 29.45328], [-85.25967, 29.52481], [-85.35451, 29.50537], [-85.44822, 29.53443], [-85.54274, 29.64934], [-85.57717, 29.74594], [-85.58962, 29.83756], [-85.70979, 29.93584], [-85.80356, 29.97816], [-86.0055, 30.10606], [-86.30638, 30.2094], [-86.4456, 30.23231], [-86.71348, 30.24363], [-87.17692, 30.17281], [-87.30281, 30.1683], [-87.51837, 30.12553], [-87.51838, 30.283901], [-87.450078, 30.3111], [-87.49998, 30.306201], [-87.504701, 30.324039], [-87.461078, 30.3353], [-87.429578, 30.406498], [-87.366939, 30.44048], [-87.425078, 30.465596], [-87.450371, 30.514462], [-87.394913, 30.614266], [-87.406474, 30.675146], [-87.529977, 30.740952], [-87.545432, 30.779389], [-87.634744, 30.86561], [-87.590933, 30.953513], [-87.598829, 30.997455], [-85.0019, 31.000681], [-85.005734, 30.975908], [-84.981127, 30.963386], [-84.983127, 30.934786], [-84.934424, 30.883588], [-84.925665, 30.842685], [-84.937424, 30.820889], [-84.914322, 30.753591], [-84.864693, 30.711542], [-82.214677, 30.568556], [-82.240403, 30.53777], [-82.20124, 30.485114], [-82.206728, 30.406775], [-82.161777, 30.357111], [-82.105241, 30.368896], [-82.066184, 30.355757], [-82.037218, 30.371848], [-82.043762, 30.414869], [-82.016906, 30.475111], [-82.005401, 30.563698], [-82.049023, 30.655295], [-82.035927, 30.706205], [-82.045608, 30.727552], [-82.036773, 30.754434], [-82.011603, 30.761878], [-82.02288, 30.787706], [-81.97364, 30.778719], [-81.949638, 30.827845], [-81.909111, 30.81568], [-81.901245, 30.82988], [-81.868515, 30.792906], [-81.793075, 30.787251], [-81.78263, 30.761454], [-81.76172, 30.775698], [-81.72013, 30.744719], [-81.672494, 30.73879], [-81.683096, 30.748492], [-81.662323, 30.754177], [-81.652153, 30.72887], [-81.624366, 30.73634], [-81.60987, 30.715933], [-81.601882, 30.729586], [-81.538391, 30.708656], [-81.532295, 30.724091], [-81.488464, 30.726309], [-81.451241, 30.709484], [-81.347015, 30.712444], [-81.380867, 30.627345], [-81.377674, 30.54446], [-81.353574, 30.44666], [-81.316897, 30.407721], [-81.335381, 30.361292], [-81.330627, 30.299481], [-81.186399, 29.76008], [-80.906836, 29.144706], [-80.522973, 28.608238], [-80.468605, 28.463078], [-80.481209, 28.425511], [-80.519428, 28.391084], [-80.543999, 28.271092], [-80.499773, 28.077233], [-80.332526, 27.761157], [-80.222395, 27.446957], [-80.039102, 27.029853], [-79.975425, 26.80025], [-79.982476, 26.569247], [-80.05453, 26.07312], [-80.06943, 25.75736], [-80.09178, 25.72111], [-80.11557, 25.52666], [-80.09456, 25.47567], [-80.139104, 25.433101], [-80.183871, 25.348183]]]], "type": "MultiPolygon"}, "id": "1", "properties": {"ALAND": 138963763779, "AWATER": 45970528648, "DIVISION": "5", "FUNCSTAT": "A", "GEOID": "12", "GEOIDFQ": "0400000US12", "INTPTLAT": "+28.3989775", "INTPTLON": "-082.5143005", "LSAD": "00", "MTFCC": "G4000", "NAME": "Florida", "REGION": "3", "STATEFP": "12", "STATENS": "00294478", "STUSPS": "FL"}, "type": "Feature"}, {"bbox": [-85.605165, 30.355757, -80.78296, 34.997639], "geometry": {"coordinates": [[[-81.095383, 31.520981], [-81.190758, 31.399876], [-81.171089, 31.370323], [-81.187675, 31.246258], [-81.234337, 31.170258], [-81.296417, 31.15188], [-81.290199, 31.093494], [-81.345306, 31.059362], [-81.353416, 31.037121], [-81.310709, 30.997329], [-81.304832, 30.970774], [-81.345207, 30.931503], [-81.362682, 30.845926], [-81.400482, 30.766426], [-81.359146, 30.744314], [-81.347015, 30.712444], [-81.451241, 30.709484], [-81.488464, 30.726309], [-81.532295, 30.724091], [-81.538391, 30.708656], [-81.601882, 30.729586], [-81.60987, 30.715933], [-81.624366, 30.73634], [-81.652153, 30.72887], [-81.662323, 30.754177], [-81.683096, 30.748492], [-81.672494, 30.73879], [-81.72013, 30.744719], [-81.76172, 30.775698], [-81.78263, 30.761454], [-81.793075, 30.787251], [-81.868515, 30.792906], [-81.901245, 30.82988], [-81.909111, 30.81568], [-81.949806, 30.827764], [-81.97364, 30.778719], [-82.02288, 30.787706], [-82.011603, 30.761878], [-82.036773, 30.754434], [-82.045527, 30.727881], [-82.035927, 30.706205], [-82.049023, 30.655295], [-82.005401, 30.563574], [-82.016906, 30.475111], [-82.043762, 30.414869], [-82.037157, 30.372033], [-82.066184, 30.355757], [-82.105241, 30.368896], [-82.161777, 30.357111], [-82.192786, 30.379065], [-82.21086, 30.425379], [-82.20124, 30.485114], [-82.240403, 30.53777], [-82.214677, 30.568556], [-84.864693, 30.711542], [-84.920123, 30.76599], [-84.937424, 30.820889], [-84.925665, 30.842685], [-84.934424, 30.883588], [-84.983127, 30.934786], [-84.982527, 30.965586], [-85.005734, 30.975908], [-84.999428, 31.013844], [-85.035615, 31.108192], [-85.107516, 31.186451], [-85.096763, 31.225651], [-85.114601, 31.277333], [-85.089774, 31.295026], [-85.092327, 31.364049], [-85.041361, 31.542495], [-85.05796, 31.57084], [-85.058169, 31.620227], [-85.12553, 31.694965], [-85.12523, 31.767063], [-85.141931, 31.781963], [-85.134131, 31.89216], [-85.11203, 31.89476], [-85.113131, 31.911859], [-85.07893, 31.940159], [-85.08673, 31.959158], [-85.067829, 31.967358], [-85.048825, 32.021701], [-85.05883, 32.046956], [-85.044761, 32.085836], [-85.061907, 32.132863], [-85.011267, 32.180493], [-84.963728, 32.195852], [-84.980229, 32.207751], [-84.973328, 32.21765], [-84.928227, 32.219851], [-84.912727, 32.24335], [-84.924427, 32.250149], [-84.888246, 32.25967], [-84.934648, 32.298916], [-85.006402, 32.326757], [-84.972154, 32.376914], [-84.98841, 32.385216], [-84.96873, 32.391457], [-84.980954, 32.406064], [-84.96303, 32.424244], [-84.99533, 32.453243], [-85.0071, 32.523868], [-85.067535, 32.579546], [-85.090886, 32.625135], [-85.083118, 32.636161], [-85.104532, 32.641011], [-85.088483, 32.657758], [-85.117037, 32.692033], [-85.113329, 32.735751], [-85.142987, 32.759934], [-85.122326, 32.774383], [-85.168048, 32.811841], [-85.156289, 32.850524], [-85.1844, 32.861317], [-85.605165, 34.984678], [-83.103363, 34.997639], [-83.12211, 34.964329], [-83.114059, 34.950279], [-83.127052, 34.954239], [-83.111755, 34.934963], [-83.156891, 34.930767], [-83.15699, 34.915123], [-83.168607, 34.919355], [-83.205261, 34.880165], [-83.242996, 34.877537], [-83.234703, 34.870743], [-83.248927, 34.845141], [-83.267196, 34.848469], [-83.270882, 34.818588], [-83.306366, 34.81567], [-83.300842, 34.804344], [-83.324142, 34.789246], [-83.318748, 34.757626], [-83.353416, 34.728424], [-83.342004, 34.68177], [-83.23258, 34.611597], [-83.159677, 34.603298], [-83.170978, 34.598098], [-83.158677, 34.578999], [-83.034565, 34.483571], [-82.995901, 34.472204], [-82.901551, 34.486764], [-82.858837, 34.45522], [-82.834457, 34.365221], [-82.79447, 34.340379], [-82.782128, 34.298278], [-82.746811, 34.266588], [-82.717459, 34.150546], [-82.642416, 34.093264], [-82.643661, 34.072105], [-82.594459, 34.029304], [-82.556765, 33.945324], [-82.524515, 33.94336], [-82.455105, 33.88165], [-82.32448, 33.820033], [-82.298286, 33.783518], [-82.247472, 33.752591], [-82.234572, 33.700217], [-82.186155, 33.620881], [-82.046335, 33.56383], [-81.985938, 33.486536], [-81.926336, 33.462937], [-81.913126, 33.438333], [-81.93243, 33.425706], [-81.909693, 33.411979], [-81.945181, 33.407531], [-81.924837, 33.37414], [-81.946337, 33.37064], [-81.939737, 33.344941], [-81.909137, 33.346641], [-81.913737, 33.320042], [-81.901384, 33.335774], [-81.880737, 33.302243], [-81.847336, 33.306843], [-81.863236, 33.288844], [-81.828336, 33.263045], [-81.847336, 33.266345], [-81.839636, 33.255245], [-81.852076, 33.247288], [-81.805238, 33.211441], [-81.768935, 33.217447], [-81.756835, 33.197947], [-81.772435, 33.180449], [-81.752135, 33.14855], [-81.704634, 33.11645], [-81.611657, 33.094259], [-81.612072, 33.080019], [-81.60132, 33.087049], [-81.602212, 33.073473], [-81.491954, 33.009093], [-81.49983, 32.963816], [-81.511347, 32.966721], [-81.502427, 32.935353], [-81.480812, 32.898614], [-81.464433, 32.898603], [-81.479445, 32.881082], [-81.452883, 32.872964], [-81.460722, 32.846038], [-81.426475, 32.840773], [-81.417984, 32.818196], [-81.431235, 32.784141], [-81.414456, 32.778149], [-81.43194, 32.768911], [-81.404932, 32.745559], [-81.427517, 32.701895], [-81.409012, 32.696551], [-81.397154, 32.661378], [-81.407193, 32.660519], [-81.393033, 32.651542], [-81.41866, 32.629392], [-81.366782, 32.576915], [-81.28058, 32.55603], [-81.279655, 32.536338], [-81.233794, 32.51831], [-81.233111, 32.498069], [-81.187141, 32.464149], [-81.205774, 32.450474], [-81.205405, 32.423339], [-81.159995, 32.340476], [-81.143857, 32.351543], [-81.128535, 32.338381], [-81.138013, 32.32824], [-81.119628, 32.286778], [-81.156607, 32.243284], [-81.152064, 32.222042], [-81.114032, 32.195701], [-81.111132, 32.172703], [-81.129756, 32.165839], [-81.112236, 32.150804], [-81.115367, 32.114705], [-81.038125, 32.083734], [-81.004305, 32.102367], [-80.925085, 32.041939], [-80.822762, 32.034244], [-80.78296, 31.995954], [-80.796272, 31.953459], [-80.855339, 31.910809], [-80.928589, 31.816982], [-80.970726, 31.798353], [-81.013812, 31.728643], [-81.056623, 31.714875], [-81.049789, 31.688633], [-81.095383, 31.520981]]], "type": "Polygon"}, "id": "21", "properties": {"ALAND": 149485311347, "AWATER": 4419673221, "DIVISION": "5", "FUNCSTAT": "A", "GEOID": "13", "GEOIDFQ": "0400000US13", "INTPTLAT": "+32.6295789", "INTPTLON": "-083.4235109", "LSAD": "00", "MTFCC": "G4000", "NAME": "Georgia", "REGION": "3", "STATEFP": "13", "STATENS": "01705317", "STUSPS": "GA"}, "type": "Feature"}, {"bbox": [-88.473227, 30.144689, -84.888246, 35.008028], "geometry": {"coordinates": [[[-85.127329, 31.762563], [-85.12553, 31.694965], [-85.058169, 31.620227], [-85.05796, 31.57084], [-85.041305, 31.540987], [-85.092327, 31.364049], [-85.089774, 31.295026], [-85.114601, 31.277333], [-85.096763, 31.225651], [-85.107516, 31.186451], [-85.035615, 31.108192], [-85.002499, 31.000685], [-87.598829, 30.997455], [-87.590933, 30.953513], [-87.634744, 30.86561], [-87.545432, 30.779389], [-87.529977, 30.740952], [-87.406474, 30.675146], [-87.394913, 30.614266], [-87.450371, 30.514462], [-87.425078, 30.465596], [-87.366939, 30.44048], [-87.429578, 30.406498], [-87.461078, 30.3353], [-87.502572, 30.327405], [-87.49998, 30.306201], [-87.450078, 30.3111], [-87.51838, 30.283901], [-87.518346, 30.229506], [-87.807153, 30.177378], [-87.987409, 30.17789], [-88.046104, 30.144689], [-88.128498, 30.172078], [-88.162022, 30.200093], [-88.303023, 30.177962], [-88.347719, 30.190088], [-88.384431, 30.158543], [-88.473227, 31.893856], [-88.097888, 34.892202], [-88.152413, 34.919741], [-88.202959, 35.008028], [-85.605165, 34.984678], [-85.1844, 32.861317], [-85.156289, 32.850524], [-85.168048, 32.811841], [-85.122326, 32.774383], [-85.142987, 32.759934], [-85.113329, 32.735751], [-85.117037, 32.692033], [-85.088483, 32.657758], [-85.104532, 32.641011], [-85.083118, 32.636161], [-85.090886, 32.625135], [-85.067535, 32.579546], [-85.0071, 32.523868], [-84.99533, 32.453243], [-84.96303, 32.424244], [-84.980954, 32.406064], [-84.96873, 32.391457], [-84.98841, 32.385216], [-84.972154, 32.376914], [-85.006402, 32.326757], [-84.934648, 32.298916], [-84.888246, 32.25967], [-84.924427, 32.250149], [-84.912727, 32.24335], [-84.928227, 32.219851], [-84.973328, 32.21765], [-84.980229, 32.207751], [-84.963728, 32.195852], [-85.011267, 32.180493], [-85.061907, 32.132863], [-85.044761, 32.085836], [-85.05883, 32.046956], [-85.048825, 32.021701], [-85.067829, 31.967358], [-85.08673, 31.959158], [-85.07893, 31.940159], [-85.113131, 31.911859], [-85.11203, 31.89476], [-85.134131, 31.89216], [-85.141931, 31.781963], [-85.127329, 31.762563]]], "type": "Polygon"}, "id": "22", "properties": {"ALAND": 131185049346, "AWATER": 4582326383, "DIVISION": "6", "FUNCSTAT": "A", "GEOID": "01", "GEOIDFQ": "0400000US01", "INTPTLAT": "+32.7395785", "INTPTLON": "-086.8434469", "LSAD": "00", "MTFCC": "G4000", "NAME": "Alabama", "REGION": "3", "STATEFP": "01", "STATENS": "01779775", "STUSPS": "AL"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_5ecacd9c8b7a35183d943ed75170eeaf.addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+        function geo_json_a4e2754f806df320a96ebd90f3e510bc_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+            }
+        }
+
+        function geo_json_a4e2754f806df320a96ebd90f3e510bc_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_a4e2754f806df320a96ebd90f3e510bc = L.geoJson(null, {
+                onEachFeature: geo_json_a4e2754f806df320a96ebd90f3e510bc_onEachFeature,
+            
+                style: geo_json_a4e2754f806df320a96ebd90f3e510bc_styler,
+            ...{
+}
+        });
+
+        function geo_json_a4e2754f806df320a96ebd90f3e510bc_add (data) {
+            geo_json_a4e2754f806df320a96ebd90f3e510bc
+                .addData(data);
+        }
+            geo_json_a4e2754f806df320a96ebd90f3e510bc_add({"features": [{"geometry": {"coordinates": [[[-85.416427, 31.619852], [-85.416038, 31.706664], [-85.216076, 31.702409], [-85.205069, 31.742569], [-85.154332, 31.773866], [-85.127329, 31.762563], [-85.12553, 31.694965], [-85.058169, 31.620227], [-85.05796, 31.57084], [-85.041305, 31.540987], [-85.092327, 31.364049], [-85.089774, 31.295026], [-85.114601, 31.277333], [-85.096763, 31.225651], [-85.107516, 31.186451], [-85.035615, 31.108192], [-85.002499, 31.000685], [-86.187246, 30.994021], [-86.193476, 31.192213], [-86.125482, 31.192754], [-86.124944, 31.182023], [-86.116734, 31.193015], [-85.710333, 31.195173], [-85.659692, 31.27098], [-85.486189, 31.245897], [-85.485442, 31.287095], [-85.417065, 31.286188], [-85.416427, 31.619852]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_a4e2754f806df320a96ebd90f3e510bc.addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+            var feature_group_534054a795128bdbb67e82c49996eda1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_ccf451901e643b1cf6cd4c2bf7849a85 = L.marker(
+                [31.09899790082931, -85.44161476315738],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_e4cff215e04d388f87dd3a5d4e22c324 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0ebb01ce1bdc2fb02e9ace6a7873bf60 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6842f3edbd9a9c4d3bb9e8a10ba9e4f7 = $(`<div id="html_6842f3edbd9a9c4d3bb9e8a10ba9e4f7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Dot1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 221</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 496 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 701-4094</p>         </div>         </div>`)[0];
+                popup_0ebb01ce1bdc2fb02e9ace6a7873bf60.setContent(html_6842f3edbd9a9c4d3bb9e8a10ba9e4f7);
+            
+        
+
+        marker_ccf451901e643b1cf6cd4c2bf7849a85.bindPopup(popup_0ebb01ce1bdc2fb02e9ace6a7873bf60)
+        ;
+
+        
+    
+    
+            marker_ccf451901e643b1cf6cd4c2bf7849a85.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Dot1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ccf451901e643b1cf6cd4c2bf7849a85.setIcon(icon_e4cff215e04d388f87dd3a5d4e22c324);
+            
+    
+            var marker_6e9cf5c631b1f1d8f4070db216a9db87 = L.marker(
+                [31.531290487394063, -85.40083848796836],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_f22b42e0d3a72144a11fbffeaa81a337 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e322280e6d1125d8bf6e00e5cad01fe9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a248af74c5d531b1c28a1d200c33399f = $(`<div id="html_a248af74c5d531b1c28a1d200c33399f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Dot2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 78</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 466 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 858-8968</p>         </div>         </div>`)[0];
+                popup_e322280e6d1125d8bf6e00e5cad01fe9.setContent(html_a248af74c5d531b1c28a1d200c33399f);
+            
+        
+
+        marker_6e9cf5c631b1f1d8f4070db216a9db87.bindPopup(popup_e322280e6d1125d8bf6e00e5cad01fe9)
+        ;
+
+        
+    
+    
+            marker_6e9cf5c631b1f1d8f4070db216a9db87.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Dot2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6e9cf5c631b1f1d8f4070db216a9db87.setIcon(icon_f22b42e0d3a72144a11fbffeaa81a337);
+            
+    
+            var marker_22264b120c9cde57b475e74119f4e3dc = L.marker(
+                [31.468803478482208, -85.24900150422064],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_abfbc457655321cc535793f92b027d50 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fe5275777c6f018014e8742f0b00a6f5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b50f91e6175d0f2f706b6b63f2073200 = $(`<div id="html_b50f91e6175d0f2f706b6b63f2073200" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Dot3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 273</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 868 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 744-9219</p>         </div>         </div>`)[0];
+                popup_fe5275777c6f018014e8742f0b00a6f5.setContent(html_b50f91e6175d0f2f706b6b63f2073200);
+            
+        
+
+        marker_22264b120c9cde57b475e74119f4e3dc.bindPopup(popup_fe5275777c6f018014e8742f0b00a6f5)
+        ;
+
+        
+    
+    
+            marker_22264b120c9cde57b475e74119f4e3dc.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Dot3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_22264b120c9cde57b475e74119f4e3dc.setIcon(icon_abfbc457655321cc535793f92b027d50);
+            
+    
+            var marker_13db04b1a610810b8fde6f9064283e92 = L.marker(
+                [31.256610592170297, -85.57767270009161],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_25d539d36a2474afc3bafee48131197e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_759523c15b84d2ca62de265fc61ad808 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85d4450b1289777f36c69a8de0cfc916 = $(`<div id="html_85d4450b1289777f36c69a8de0cfc916" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Dot4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 257</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 781 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 987-4976</p>         </div>         </div>`)[0];
+                popup_759523c15b84d2ca62de265fc61ad808.setContent(html_85d4450b1289777f36c69a8de0cfc916);
+            
+        
+
+        marker_13db04b1a610810b8fde6f9064283e92.bindPopup(popup_759523c15b84d2ca62de265fc61ad808)
+        ;
+
+        
+    
+    
+            marker_13db04b1a610810b8fde6f9064283e92.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Dot4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_13db04b1a610810b8fde6f9064283e92.setIcon(icon_25d539d36a2474afc3bafee48131197e);
+            
+    
+            var marker_7906a03fcc1e8e821780cbe92c7dea1e = L.marker(
+                [31.19005346380369, -85.56253279010315],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_526fc3da16f45d0cfde1fbd5fec64434 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_58a245306f49b6a1e6b6e8850e016f90 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54ce137e9accf60ece7e420f16167d8a = $(`<div id="html_54ce137e9accf60ece7e420f16167d8a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Dot5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 285</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 569 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 929-4986</p>         </div>         </div>`)[0];
+                popup_58a245306f49b6a1e6b6e8850e016f90.setContent(html_54ce137e9accf60ece7e420f16167d8a);
+            
+        
+
+        marker_7906a03fcc1e8e821780cbe92c7dea1e.bindPopup(popup_58a245306f49b6a1e6b6e8850e016f90)
+        ;
+
+        
+    
+    
+            marker_7906a03fcc1e8e821780cbe92c7dea1e.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Dot5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7906a03fcc1e8e821780cbe92c7dea1e.setIcon(icon_526fc3da16f45d0cfde1fbd5fec64434);
+            
+    
+            var marker_d229f82b6f983ef6bc838ac3d85ba971 = L.marker(
+                [31.188816471152183, -85.41417314327423],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_49cc170816169491a370d2bc0aeab021 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_59f1b6360401447e0e2ea666b92b7d42 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_156c8ba211a283ef77b4c3d9ba43dede = $(`<div id="html_156c8ba211a283ef77b4c3d9ba43dede" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Dot6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 220</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 935 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 752-5504</p>         </div>         </div>`)[0];
+                popup_59f1b6360401447e0e2ea666b92b7d42.setContent(html_156c8ba211a283ef77b4c3d9ba43dede);
+            
+        
+
+        marker_d229f82b6f983ef6bc838ac3d85ba971.bindPopup(popup_59f1b6360401447e0e2ea666b92b7d42)
+        ;
+
+        
+    
+    
+            marker_d229f82b6f983ef6bc838ac3d85ba971.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Dot6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d229f82b6f983ef6bc838ac3d85ba971.setIcon(icon_49cc170816169491a370d2bc0aeab021);
+            
+    
+            var marker_c6b1e108d51590c9d4c696f139d9c406 = L.marker(
+                [31.117314959485206, -85.13050298988522],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_9ab8d7f0ec09315d9318954735d76961 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_071c8fcf9ffec57634882bc3c1090311 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c1d765e93478bc76522ca3fb7b253d94 = $(`<div id="html_c1d765e93478bc76522ca3fb7b253d94" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Dot7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 213</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 922 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 732-6086</p>         </div>         </div>`)[0];
+                popup_071c8fcf9ffec57634882bc3c1090311.setContent(html_c1d765e93478bc76522ca3fb7b253d94);
+            
+        
+
+        marker_c6b1e108d51590c9d4c696f139d9c406.bindPopup(popup_071c8fcf9ffec57634882bc3c1090311)
+        ;
+
+        
+    
+    
+            marker_c6b1e108d51590c9d4c696f139d9c406.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Dot7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c6b1e108d51590c9d4c696f139d9c406.setIcon(icon_9ab8d7f0ec09315d9318954735d76961);
+            
+    
+            var marker_a4ee47c96f6234d25f9326c2d1884aa0 = L.marker(
+                [31.24849231222893, -85.34458606178511],
+                {
+}
+            ).addTo(feature_group_534054a795128bdbb67e82c49996eda1);
+        
+    
+            var icon_0a2c03549b0cc9cd469730b86352026b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4ac35aff0736cd5c3a636dc955176aad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ba6a7ed33eaea90f0d3333010d07fa4b = $(`<div id="html_ba6a7ed33eaea90f0d3333010d07fa4b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Dot8</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 246</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 328 Healthcare Ave, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 530-9835</p>         </div>         </div>`)[0];
+                popup_4ac35aff0736cd5c3a636dc955176aad.setContent(html_ba6a7ed33eaea90f0d3333010d07fa4b);
+            
+        
+
+        marker_a4ee47c96f6234d25f9326c2d1884aa0.bindPopup(popup_4ac35aff0736cd5c3a636dc955176aad)
+        ;
+
+        
+    
+    
+            marker_a4ee47c96f6234d25f9326c2d1884aa0.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Dot8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a4ee47c96f6234d25f9326c2d1884aa0.setIcon(icon_0a2c03549b0cc9cd469730b86352026b);
+            
+    
+            feature_group_534054a795128bdbb67e82c49996eda1.addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+            var feature_group_324c84846e6931b7c51280cf43b508e8 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_9b3264bd0d57c8cb1b793aa0d36889b3 = L.marker(
+                [31.38069466113867, -85.34161104511277],
+                {
+}
+            ).addTo(feature_group_324c84846e6931b7c51280cf43b508e8);
+        
+    
+            var icon_b1b41056f369a86e2f6f4008a701ed27 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_62f436dfa97bdb80a4a216a1839a1539 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5665a352beeb8a203f6b4cb784bf9725 = $(`<div id="html_5665a352beeb8a203f6b4cb784bf9725" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 139</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 700 Medical Blvd, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 834-7289</p>         </div>         </div>`)[0];
+                popup_62f436dfa97bdb80a4a216a1839a1539.setContent(html_5665a352beeb8a203f6b4cb784bf9725);
+            
+        
+
+        marker_9b3264bd0d57c8cb1b793aa0d36889b3.bindPopup(popup_62f436dfa97bdb80a4a216a1839a1539)
+        ;
+
+        
+    
+    
+            marker_9b3264bd0d57c8cb1b793aa0d36889b3.bindTooltip(
+                `<div>
+                     HHAH: Wellness Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9b3264bd0d57c8cb1b793aa0d36889b3.setIcon(icon_b1b41056f369a86e2f6f4008a701ed27);
+            
+    
+            var marker_fe22c45888ffe4e6d963756776fa833a = L.marker(
+                [31.145301885642812, -85.49984554185741],
+                {
+}
+            ).addTo(feature_group_324c84846e6931b7c51280cf43b508e8);
+        
+    
+            var icon_5d2aada0258aaa51250bd87ca49d26c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_05fe68012e626fb3c6b2a1dd83d93139 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f86af1fd02bee1623e5d56d08f04d1b9 = $(`<div id="html_f86af1fd02bee1623e5d56d08f04d1b9" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 105</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 290 Medical Blvd, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 465-2801</p>         </div>         </div>`)[0];
+                popup_05fe68012e626fb3c6b2a1dd83d93139.setContent(html_f86af1fd02bee1623e5d56d08f04d1b9);
+            
+        
+
+        marker_fe22c45888ffe4e6d963756776fa833a.bindPopup(popup_05fe68012e626fb3c6b2a1dd83d93139)
+        ;
+
+        
+    
+    
+            marker_fe22c45888ffe4e6d963756776fa833a.bindTooltip(
+                `<div>
+                     HHAH: Premier Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fe22c45888ffe4e6d963756776fa833a.setIcon(icon_5d2aada0258aaa51250bd87ca49d26c3);
+            
+    
+            var marker_51fff5c6dff9491002c72a93df4cfe83 = L.marker(
+                [31.341118759759983, -85.18453937445888],
+                {
+}
+            ).addTo(feature_group_324c84846e6931b7c51280cf43b508e8);
+        
+    
+            var icon_05398c71e559ef1899cc4c4e26593ea4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6dacac35baa1acf7e87bf5b8bb3b09c2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b1709994173f86c4051cbab35e1c3abc = $(`<div id="html_b1709994173f86c4051cbab35e1c3abc" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 55</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 653 Medical Blvd, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 506-5016</p>         </div>         </div>`)[0];
+                popup_6dacac35baa1acf7e87bf5b8bb3b09c2.setContent(html_b1709994173f86c4051cbab35e1c3abc);
+            
+        
+
+        marker_51fff5c6dff9491002c72a93df4cfe83.bindPopup(popup_6dacac35baa1acf7e87bf5b8bb3b09c2)
+        ;
+
+        
+    
+    
+            marker_51fff5c6dff9491002c72a93df4cfe83.bindTooltip(
+                `<div>
+                     HHAH: Wellness Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_51fff5c6dff9491002c72a93df4cfe83.setIcon(icon_05398c71e559ef1899cc4c4e26593ea4);
+            
+    
+            var marker_39435a72c502bac9556f50af58b7259a = L.marker(
+                [31.080212372610887, -85.77889256458465],
+                {
+}
+            ).addTo(feature_group_324c84846e6931b7c51280cf43b508e8);
+        
+    
+            var icon_332337f5119082f6863aac20f20878de = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d870eed39222469cdc30b0c1c2b1d844 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_938a85c66ba12bc6e4afa677061febf8 = $(`<div id="html_938a85c66ba12bc6e4afa677061febf8" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 135</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 519 Medical Blvd, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 341-9071</p>         </div>         </div>`)[0];
+                popup_d870eed39222469cdc30b0c1c2b1d844.setContent(html_938a85c66ba12bc6e4afa677061febf8);
+            
+        
+
+        marker_39435a72c502bac9556f50af58b7259a.bindPopup(popup_d870eed39222469cdc30b0c1c2b1d844)
+        ;
+
+        
+    
+    
+            marker_39435a72c502bac9556f50af58b7259a.bindTooltip(
+                `<div>
+                     HHAH: Guardian Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_39435a72c502bac9556f50af58b7259a.setIcon(icon_332337f5119082f6863aac20f20878de);
+            
+    
+            var marker_74862d9fcea95f76a015bf3ed18a3894 = L.marker(
+                [31.52112316129017, -85.3252928584039],
+                {
+}
+            ).addTo(feature_group_324c84846e6931b7c51280cf43b508e8);
+        
+    
+            var icon_60418cdd1a4d9989da805141e7d84e05 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_59620c2ec2a3bcc386b9de461554fdf8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8125dac299bd6d95b4e8e0b0987fd449 = $(`<div id="html_8125dac299bd6d95b4e8e0b0987fd449" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 51</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 650 Medical Blvd, Dothan</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 477-1602</p>         </div>         </div>`)[0];
+                popup_59620c2ec2a3bcc386b9de461554fdf8.setContent(html_8125dac299bd6d95b4e8e0b0987fd449);
+            
+        
+
+        marker_74862d9fcea95f76a015bf3ed18a3894.bindPopup(popup_59620c2ec2a3bcc386b9de461554fdf8)
+        ;
+
+        
+    
+    
+            marker_74862d9fcea95f76a015bf3ed18a3894.bindTooltip(
+                `<div>
+                     HHAH: Wellness Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_74862d9fcea95f76a015bf3ed18a3894.setIcon(icon_60418cdd1a4d9989da805141e7d84e05);
+            
+    
+            feature_group_324c84846e6931b7c51280cf43b508e8.addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_ae5c284a9dd14eabbb93633125431f23);
+        
+    
+            var mouse_position_9df58d75f482873915c25c111585898d = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_9df58d75f482873915c25c111585898d.options["latFormatter"] =
+                undefined;
+            mouse_position_9df58d75f482873915c25c111585898d.options["lngFormatter"] =
+                undefined;
+            map_ae5c284a9dd14eabbb93633125431f23.addControl(mouse_position_9df58d75f482873915c25c111585898d);
+        
+    
+            var layer_control_985c9e9ccf927ebef89b8f98cc01d6bc_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_63fdd3add56d8c7e80c2fe5349ea913b,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_5ecacd9c8b7a35183d943ed75170eeaf,
+                    "Dothan, AL Boundary" : geo_json_a4e2754f806df320a96ebd90f3e510bc,
+                    "Physician Groups (PGs)" : feature_group_534054a795128bdbb67e82c49996eda1,
+                    "Home Health At Home (HHAHs)" : feature_group_324c84846e6931b7c51280cf43b508e8,
+                },
+            };
+            let layer_control_985c9e9ccf927ebef89b8f98cc01d6bc = L.control.layers(
+                layer_control_985c9e9ccf927ebef89b8f98cc01d6bc_layers.base_layers,
+                layer_control_985c9e9ccf927ebef89b8f98cc01d6bc_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_ae5c284a9dd14eabbb93633125431f23);
+
+        
+    
+            map_ae5c284a9dd14eabbb93633125431f23.fitBounds(
+                [[30.994021, -86.193476], [31.773866, -85.002499]],
+                {}
+            );
+        
+</script>
+</html>

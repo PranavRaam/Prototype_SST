@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_21774fdc5f743ff79b96d437903dda4b {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Homosassa Springs, FL</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 7 PGs and 4 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_21774fdc5f743ff79b96d437903dda4b" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_21774fdc5f743ff79b96d437903dda4b = L.map(
+                "map_21774fdc5f743ff79b96d437903dda4b",
+                {
+                    center: [28.85147165255252, -82.58941458036459],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_b3649850cc9b009b770783558d19578b = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_b3649850cc9b009b770783558d19578b.addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+        function geo_json_f467efd861566aa0f25229e3a4a7399a_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+            }
+        }
+
+        function geo_json_f467efd861566aa0f25229e3a4a7399a_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_f467efd861566aa0f25229e3a4a7399a = L.geoJson(null, {
+                onEachFeature: geo_json_f467efd861566aa0f25229e3a4a7399a_onEachFeature,
+            
+                style: geo_json_f467efd861566aa0f25229e3a4a7399a_styler,
+            ...{
+}
+        });
+
+        function geo_json_f467efd861566aa0f25229e3a4a7399a_add (data) {
+            geo_json_f467efd861566aa0f25229e3a4a7399a
+                .addData(data);
+        }
+            geo_json_f467efd861566aa0f25229e3a4a7399a_add({"bbox": [-87.634744, 24.396308, -79.975425, 31.000681], "features": [{"bbox": [-87.634744, 24.396308, -79.975425, 31.000681], "geometry": {"coordinates": [[[[-83.108738, 24.629489], [-83.088453, 24.692051], [-83.041107, 24.74091], [-82.979064, 24.776053], [-82.868886, 24.798089], [-82.775669, 24.798173], [-82.709779, 24.773122], [-82.655082, 24.713315], [-82.639914, 24.654914], [-82.656682, 24.583709], [-82.828181, 24.583765], [-82.872065, 24.562216], [-82.999742, 24.583917], [-82.999876, 24.476981], [-83.08256, 24.536873], [-83.108738, 24.629489]]], [[[-80.183871, 25.348183], [-80.333321, 25.099202], [-80.390435, 25.057189], [-80.399658, 25.023578], [-80.439101, 24.997989], [-80.462886, 24.955937], [-80.514343, 24.940628], [-80.640428, 24.838434], [-80.771092, 24.765951], [-80.852228, 24.748931], [-81.059736, 24.635864], [-81.147686, 24.649064], [-81.374801, 24.571488], [-81.465088, 24.552854], [-81.514615, 24.564757], [-81.527852, 24.553279], [-81.519881, 24.512555], [-81.539924, 24.486034], [-81.697199, 24.432314], [-81.749811, 24.438454], [-81.773685, 24.472735], [-81.770807, 24.496872], [-81.792362, 24.495613], [-81.781807, 24.460927], [-81.800697, 24.42714], [-81.920556, 24.396308], [-81.974468, 24.420822], [-81.974409, 24.471209], [-82.034272, 24.482496], [-82.067171, 24.523715], [-82.100333, 24.499998], [-82.16949, 24.4977], [-82.21417, 24.52742], [-82.21545, 24.58376], [-82.3265, 24.58373], [-82.28243, 24.67624], [-82.20073, 24.73817], [-82.10976, 24.74711], [-82.02695, 24.72572], [-81.89429, 24.76365], [-81.48849, 24.96635], [-81.25758, 24.9866], [-81.17055, 24.96577], [-81.29506, 25.09793], [-81.3423, 25.22483], [-81.31491, 25.35155], [-81.3252, 25.39062], [-81.42541, 25.5516], [-81.4876, 25.59205], [-81.51902, 25.65694], [-81.57623, 25.68604], [-81.68273, 25.67277], [-81.76672, 25.70025], [-81.87372, 25.83412], [-81.96444, 26.05361], [-82.00546, 26.28443], [-82.08688, 26.27195], [-82.16932, 26.28846], [-82.27636, 26.35102], [-82.32065, 26.39675], [-82.42578, 26.63809], [-82.44505, 26.76463], [-82.59439, 26.99023], [-82.67054, 27.15444], [-82.8323, 27.35572], [-82.90265, 27.48104], [-82.934925, 27.583699], [-82.91522, 27.68413], [-82.99389, 27.77767], [-83.02054, 27.87831], [-82.99746, 28.01275], [-83.01698, 28.24645], [-82.97418, 28.31574], [-82.89736, 28.35701], [-82.83914, 28.57458], [-82.87086, 28.6216], [-82.9235, 28.76713], [-82.9158, 28.8565], [-82.94177, 28.90683], [-82.94557, 28.96375], [-83.00568, 28.9468], [-83.0939, 28.94744], [-83.19827, 28.99505], [-83.25588, 29.08179], [-83.26208, 29.15572], [-83.33042, 29.21186], [-83.35723, 29.2917], [-83.53876, 29.41449], [-83.56633, 29.46484], [-83.58207, 29.56332], [-83.70578, 29.64405], [-83.7809, 29.79004], [-83.83029, 29.81972], [-83.919, 29.84194], [-84.06492, 29.94008], [-84.160797, 29.921266], [-84.18998, 29.83038], [-84.25923, 29.76815], [-84.32327, 29.74809], [-84.41995, 29.74696], [-84.47452, 29.68773], [-84.58868, 29.64074], [-84.71055, 29.55206], [-84.89636, 29.47121], [-85.06032, 29.43622], [-85.12957, 29.45328], [-85.25967, 29.52481], [-85.35451, 29.50537], [-85.44822, 29.53443], [-85.54274, 29.64934], [-85.57717, 29.74594], [-85.58962, 29.83756], [-85.70979, 29.93584], [-85.80356, 29.97816], [-86.0055, 30.10606], [-86.30638, 30.2094], [-86.4456, 30.23231], [-86.71348, 30.24363], [-87.17692, 30.17281], [-87.30281, 30.1683], [-87.51837, 30.12553], [-87.51838, 30.283901], [-87.450078, 30.3111], [-87.49998, 30.306201], [-87.504701, 30.324039], [-87.461078, 30.3353], [-87.429578, 30.406498], [-87.366939, 30.44048], [-87.425078, 30.465596], [-87.450371, 30.514462], [-87.394913, 30.614266], [-87.406474, 30.675146], [-87.529977, 30.740952], [-87.545432, 30.779389], [-87.634744, 30.86561], [-87.590933, 30.953513], [-87.598829, 30.997455], [-85.0019, 31.000681], [-85.005734, 30.975908], [-84.981127, 30.963386], [-84.983127, 30.934786], [-84.934424, 30.883588], [-84.925665, 30.842685], [-84.937424, 30.820889], [-84.914322, 30.753591], [-84.864693, 30.711542], [-82.214677, 30.568556], [-82.240403, 30.53777], [-82.20124, 30.485114], [-82.206728, 30.406775], [-82.161777, 30.357111], [-82.105241, 30.368896], [-82.066184, 30.355757], [-82.037218, 30.371848], [-82.043762, 30.414869], [-82.016906, 30.475111], [-82.005401, 30.563698], [-82.049023, 30.655295], [-82.035927, 30.706205], [-82.045608, 30.727552], [-82.036773, 30.754434], [-82.011603, 30.761878], [-82.02288, 30.787706], [-81.97364, 30.778719], [-81.949638, 30.827845], [-81.909111, 30.81568], [-81.901245, 30.82988], [-81.868515, 30.792906], [-81.793075, 30.787251], [-81.78263, 30.761454], [-81.76172, 30.775698], [-81.72013, 30.744719], [-81.672494, 30.73879], [-81.683096, 30.748492], [-81.662323, 30.754177], [-81.652153, 30.72887], [-81.624366, 30.73634], [-81.60987, 30.715933], [-81.601882, 30.729586], [-81.538391, 30.708656], [-81.532295, 30.724091], [-81.488464, 30.726309], [-81.451241, 30.709484], [-81.347015, 30.712444], [-81.380867, 30.627345], [-81.377674, 30.54446], [-81.353574, 30.44666], [-81.316897, 30.407721], [-81.335381, 30.361292], [-81.330627, 30.299481], [-81.186399, 29.76008], [-80.906836, 29.144706], [-80.522973, 28.608238], [-80.468605, 28.463078], [-80.481209, 28.425511], [-80.519428, 28.391084], [-80.543999, 28.271092], [-80.499773, 28.077233], [-80.332526, 27.761157], [-80.222395, 27.446957], [-80.039102, 27.029853], [-79.975425, 26.80025], [-79.982476, 26.569247], [-80.05453, 26.07312], [-80.06943, 25.75736], [-80.09178, 25.72111], [-80.11557, 25.52666], [-80.09456, 25.47567], [-80.139104, 25.433101], [-80.183871, 25.348183]]]], "type": "MultiPolygon"}, "id": "1", "properties": {"ALAND": 138963763779, "AWATER": 45970528648, "DIVISION": "5", "FUNCSTAT": "A", "GEOID": "12", "GEOIDFQ": "0400000US12", "INTPTLAT": "+28.3989775", "INTPTLON": "-082.5143005", "LSAD": "00", "MTFCC": "G4000", "NAME": "Florida", "REGION": "3", "STATEFP": "12", "STATENS": "00294478", "STUSPS": "FL"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_f467efd861566aa0f25229e3a4a7399a.addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+        function geo_json_738a82d4c5b985876dd5d856fb536f6d_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+            }
+        }
+
+        function geo_json_738a82d4c5b985876dd5d856fb536f6d_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_738a82d4c5b985876dd5d856fb536f6d = L.geoJson(null, {
+                onEachFeature: geo_json_738a82d4c5b985876dd5d856fb536f6d_onEachFeature,
+            
+                style: geo_json_738a82d4c5b985876dd5d856fb536f6d_styler,
+            ...{
+}
+        });
+
+        function geo_json_738a82d4c5b985876dd5d856fb536f6d_add (data) {
+            geo_json_738a82d4c5b985876dd5d856fb536f6d
+                .addData(data);
+        }
+            geo_json_738a82d4c5b985876dd5d856fb536f6d_add({"features": [{"geometry": {"coordinates": [[[-83.187906, 28.986573], [-82.761568, 28.992091], [-82.71153, 29.030988], [-82.612653, 29.009271], [-82.595224, 29.029874], [-82.477893, 29.052565], [-82.315836, 28.973271], [-82.273585, 28.897216], [-82.183637, 28.823626], [-82.169289, 28.791929], [-82.187929, 28.777757], [-82.184809, 28.761771], [-82.249076, 28.717772], [-82.263052, 28.667634], [-82.418, 28.66592], [-82.418353, 28.694859], [-82.889544, 28.693213], [-82.92539, 28.77548], [-82.9158, 28.8565], [-82.94177, 28.90683], [-82.94557, 28.96375], [-83.08218, 28.94619], [-83.187906, 28.986573]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_738a82d4c5b985876dd5d856fb536f6d.addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+            var feature_group_5a83bb3ad76a587eb2359a305e5fa4e6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_818963a1794b20b41cd635617dd59492 = L.marker(
+                [28.831002576021646, -82.48514234270291],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_66127fe4049ab2f23848bff976c93f72 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1f0cb0d0abf5e5a39234a6b4d920e082 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_65ba21e867c91609f68f2104f9c96966 = $(`<div id="html_65ba21e867c91609f68f2104f9c96966" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Hom1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 244</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 391 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 772-2401</p>         </div>         </div>`)[0];
+                popup_1f0cb0d0abf5e5a39234a6b4d920e082.setContent(html_65ba21e867c91609f68f2104f9c96966);
+            
+        
+
+        marker_818963a1794b20b41cd635617dd59492.bindPopup(popup_1f0cb0d0abf5e5a39234a6b4d920e082)
+        ;
+
+        
+    
+    
+            marker_818963a1794b20b41cd635617dd59492.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Hom1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_818963a1794b20b41cd635617dd59492.setIcon(icon_66127fe4049ab2f23848bff976c93f72);
+            
+    
+            var marker_4a0a34b6245819e26459f28b56be5079 = L.marker(
+                [28.77834085930436, -82.3802666079577],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_811a6d84f2f9bcd369a2a42424558ec6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d2ff4a8fd08a331136619b89af7d7ac9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3ec23a7ff0eddfcb339bb22a762502ff = $(`<div id="html_3ec23a7ff0eddfcb339bb22a762502ff" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Hom2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 93</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 347 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 693-3008</p>         </div>         </div>`)[0];
+                popup_d2ff4a8fd08a331136619b89af7d7ac9.setContent(html_3ec23a7ff0eddfcb339bb22a762502ff);
+            
+        
+
+        marker_4a0a34b6245819e26459f28b56be5079.bindPopup(popup_d2ff4a8fd08a331136619b89af7d7ac9)
+        ;
+
+        
+    
+    
+            marker_4a0a34b6245819e26459f28b56be5079.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Hom2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4a0a34b6245819e26459f28b56be5079.setIcon(icon_811a6d84f2f9bcd369a2a42424558ec6);
+            
+    
+            var marker_9d0e7410fb9f41a4550af0f45f41ed48 = L.marker(
+                [28.81041477842701, -82.48008435773669],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_aca4a09b7b5f27c70c718bc41c9130a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_49227a73cf5b9f51d2c427c4c3f39222 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_43ef5b550cf7bbf4a00d7d0170668e66 = $(`<div id="html_43ef5b550cf7bbf4a00d7d0170668e66" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Hom3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 9</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 227</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 432 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 395-9722</p>         </div>         </div>`)[0];
+                popup_49227a73cf5b9f51d2c427c4c3f39222.setContent(html_43ef5b550cf7bbf4a00d7d0170668e66);
+            
+        
+
+        marker_9d0e7410fb9f41a4550af0f45f41ed48.bindPopup(popup_49227a73cf5b9f51d2c427c4c3f39222)
+        ;
+
+        
+    
+    
+            marker_9d0e7410fb9f41a4550af0f45f41ed48.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Hom3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9d0e7410fb9f41a4550af0f45f41ed48.setIcon(icon_aca4a09b7b5f27c70c718bc41c9130a9);
+            
+    
+            var marker_d77419659218554195f48eb191d4f60c = L.marker(
+                [28.80911331407598, -82.82271405277854],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_5bc859d336af94671a28ecd69579f120 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9b47ddac077e36b80bc30f37481aed49 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_45dc30a9a3c83e0870b970a51751635c = $(`<div id="html_45dc30a9a3c83e0870b970a51751635c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Hom4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 52</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 677 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 694-1107</p>         </div>         </div>`)[0];
+                popup_9b47ddac077e36b80bc30f37481aed49.setContent(html_45dc30a9a3c83e0870b970a51751635c);
+            
+        
+
+        marker_d77419659218554195f48eb191d4f60c.bindPopup(popup_9b47ddac077e36b80bc30f37481aed49)
+        ;
+
+        
+    
+    
+            marker_d77419659218554195f48eb191d4f60c.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Hom4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d77419659218554195f48eb191d4f60c.setIcon(icon_5bc859d336af94671a28ecd69579f120);
+            
+    
+            var marker_f3e4ceb78c35b0b341ff87cabcb58254 = L.marker(
+                [28.825168637080285, -82.66958485577022],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_d9666431902fd90d669dc9f9fab59aed = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6659a71f0c2893bd7007e4cc3d7c4a97 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c2a9b1c742e1a71c7cbb39cbb2e39551 = $(`<div id="html_c2a9b1c742e1a71c7cbb39cbb2e39551" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Hom5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 9</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 150</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 266 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 616-4599</p>         </div>         </div>`)[0];
+                popup_6659a71f0c2893bd7007e4cc3d7c4a97.setContent(html_c2a9b1c742e1a71c7cbb39cbb2e39551);
+            
+        
+
+        marker_f3e4ceb78c35b0b341ff87cabcb58254.bindPopup(popup_6659a71f0c2893bd7007e4cc3d7c4a97)
+        ;
+
+        
+    
+    
+            marker_f3e4ceb78c35b0b341ff87cabcb58254.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Hom5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f3e4ceb78c35b0b341ff87cabcb58254.setIcon(icon_d9666431902fd90d669dc9f9fab59aed);
+            
+    
+            var marker_10a14ebbdb0c2dcd753783b5e92afdc4 = L.marker(
+                [28.75335966134593, -82.3320179872311],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_ac9e9bfcecbfadf96c2ea6ff10a20cef = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a2fb37353a461448086a4ec2c86e8f78 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6c8b0b9f8bc5263c119e95cb614fc4cf = $(`<div id="html_6c8b0b9f8bc5263c119e95cb614fc4cf" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Hom6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 10</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 149</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 547 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 801-4315</p>         </div>         </div>`)[0];
+                popup_a2fb37353a461448086a4ec2c86e8f78.setContent(html_6c8b0b9f8bc5263c119e95cb614fc4cf);
+            
+        
+
+        marker_10a14ebbdb0c2dcd753783b5e92afdc4.bindPopup(popup_a2fb37353a461448086a4ec2c86e8f78)
+        ;
+
+        
+    
+    
+            marker_10a14ebbdb0c2dcd753783b5e92afdc4.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Hom6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_10a14ebbdb0c2dcd753783b5e92afdc4.setIcon(icon_ac9e9bfcecbfadf96c2ea6ff10a20cef);
+            
+    
+            var marker_f04530742742a4642626c62b5f4c7459 = L.marker(
+                [28.96540221966711, -82.97840331088031],
+                {
+}
+            ).addTo(feature_group_5a83bb3ad76a587eb2359a305e5fa4e6);
+        
+    
+            var icon_88e301bb9acfbeb028cb56c337ab933a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8bc8bc10e62aa749db656e60f8b58e87 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1ecaada1fa2c321c68e9802c4d6f7825 = $(`<div id="html_1ecaada1fa2c321c68e9802c4d6f7825" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Hom7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 279</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 236 Healthcare Ave, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 187-1569</p>         </div>         </div>`)[0];
+                popup_8bc8bc10e62aa749db656e60f8b58e87.setContent(html_1ecaada1fa2c321c68e9802c4d6f7825);
+            
+        
+
+        marker_f04530742742a4642626c62b5f4c7459.bindPopup(popup_8bc8bc10e62aa749db656e60f8b58e87)
+        ;
+
+        
+    
+    
+            marker_f04530742742a4642626c62b5f4c7459.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Hom7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f04530742742a4642626c62b5f4c7459.setIcon(icon_88e301bb9acfbeb028cb56c337ab933a);
+            
+    
+            feature_group_5a83bb3ad76a587eb2359a305e5fa4e6.addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+            var feature_group_8334214aa80e6964461dd87dc13ed7d6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cd9eed173164fbdf494b7c35c8ef7956 = L.marker(
+                [28.800234610344134, -82.70293564335718],
+                {
+}
+            ).addTo(feature_group_8334214aa80e6964461dd87dc13ed7d6);
+        
+    
+            var icon_98031fce0ef190b3ddc904f01eb93ec5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3f7b16dc8a1d3af6f873dcec93f984a3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c4097ecf573c9bbfba137c08267311cb = $(`<div id="html_c4097ecf573c9bbfba137c08267311cb" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 65</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 804 Medical Blvd, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 291-4135</p>         </div>         </div>`)[0];
+                popup_3f7b16dc8a1d3af6f873dcec93f984a3.setContent(html_c4097ecf573c9bbfba137c08267311cb);
+            
+        
+
+        marker_cd9eed173164fbdf494b7c35c8ef7956.bindPopup(popup_3f7b16dc8a1d3af6f873dcec93f984a3)
+        ;
+
+        
+    
+    
+            marker_cd9eed173164fbdf494b7c35c8ef7956.bindTooltip(
+                `<div>
+                     HHAH: Premier Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cd9eed173164fbdf494b7c35c8ef7956.setIcon(icon_98031fce0ef190b3ddc904f01eb93ec5);
+            
+    
+            var marker_895fc5ac969f7d707d3cb7bd206596aa = L.marker(
+                [28.90457891228723, -82.32089964321669],
+                {
+}
+            ).addTo(feature_group_8334214aa80e6964461dd87dc13ed7d6);
+        
+    
+            var icon_92d6c25599a3191c931d98d8474acd16 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_081459de132dbcbe38ddfb2043a2a7f7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a089b508539138260584bb8957e059e7 = $(`<div id="html_a089b508539138260584bb8957e059e7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 143</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 226 Medical Blvd, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 784-7833</p>         </div>         </div>`)[0];
+                popup_081459de132dbcbe38ddfb2043a2a7f7.setContent(html_a089b508539138260584bb8957e059e7);
+            
+        
+
+        marker_895fc5ac969f7d707d3cb7bd206596aa.bindPopup(popup_081459de132dbcbe38ddfb2043a2a7f7)
+        ;
+
+        
+    
+    
+            marker_895fc5ac969f7d707d3cb7bd206596aa.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_895fc5ac969f7d707d3cb7bd206596aa.setIcon(icon_92d6c25599a3191c931d98d8474acd16);
+            
+    
+            var marker_d578cdd8c837e6d154962db0dc1c5362 = L.marker(
+                [28.708235329842573, -82.38288166978914],
+                {
+}
+            ).addTo(feature_group_8334214aa80e6964461dd87dc13ed7d6);
+        
+    
+            var icon_339c05ff2b44e1862e2d155799e2bdc5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_679592c1a48adb2f9130bee54c377366 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b707875aebfd8091187dbc8c7855b64e = $(`<div id="html_b707875aebfd8091187dbc8c7855b64e" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 122</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 250 Medical Blvd, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 971-4504</p>         </div>         </div>`)[0];
+                popup_679592c1a48adb2f9130bee54c377366.setContent(html_b707875aebfd8091187dbc8c7855b64e);
+            
+        
+
+        marker_d578cdd8c837e6d154962db0dc1c5362.bindPopup(popup_679592c1a48adb2f9130bee54c377366)
+        ;
+
+        
+    
+    
+            marker_d578cdd8c837e6d154962db0dc1c5362.bindTooltip(
+                `<div>
+                     HHAH: Guardian Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d578cdd8c837e6d154962db0dc1c5362.setIcon(icon_339c05ff2b44e1862e2d155799e2bdc5);
+            
+    
+            var marker_2242471224822c4b6d554754b628ad35 = L.marker(
+                [28.91598563664613, -82.55344851537468],
+                {
+}
+            ).addTo(feature_group_8334214aa80e6964461dd87dc13ed7d6);
+        
+    
+            var icon_e0e0ea2a298890943d299efee9ce3569 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_15325b5e624249115e9cc807c3279800 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9f2436a68bd8550bae07fd98962c0f1d = $(`<div id="html_9f2436a68bd8550bae07fd98962c0f1d" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 136</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 969 Medical Blvd, Homosassa Springs</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 325-6176</p>         </div>         </div>`)[0];
+                popup_15325b5e624249115e9cc807c3279800.setContent(html_9f2436a68bd8550bae07fd98962c0f1d);
+            
+        
+
+        marker_2242471224822c4b6d554754b628ad35.bindPopup(popup_15325b5e624249115e9cc807c3279800)
+        ;
+
+        
+    
+    
+            marker_2242471224822c4b6d554754b628ad35.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2242471224822c4b6d554754b628ad35.setIcon(icon_e0e0ea2a298890943d299efee9ce3569);
+            
+    
+            feature_group_8334214aa80e6964461dd87dc13ed7d6.addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_21774fdc5f743ff79b96d437903dda4b);
+        
+    
+            var mouse_position_6ab9bc9dd83db09fdf6fe2aa61991385 = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_6ab9bc9dd83db09fdf6fe2aa61991385.options["latFormatter"] =
+                undefined;
+            mouse_position_6ab9bc9dd83db09fdf6fe2aa61991385.options["lngFormatter"] =
+                undefined;
+            map_21774fdc5f743ff79b96d437903dda4b.addControl(mouse_position_6ab9bc9dd83db09fdf6fe2aa61991385);
+        
+    
+            var layer_control_5cde1584e639d5941507348295ef82d6_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_b3649850cc9b009b770783558d19578b,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_f467efd861566aa0f25229e3a4a7399a,
+                    "Homosassa Springs, FL Boundary" : geo_json_738a82d4c5b985876dd5d856fb536f6d,
+                    "Physician Groups (PGs)" : feature_group_5a83bb3ad76a587eb2359a305e5fa4e6,
+                    "Home Health At Home (HHAHs)" : feature_group_8334214aa80e6964461dd87dc13ed7d6,
+                },
+            };
+            let layer_control_5cde1584e639d5941507348295ef82d6 = L.control.layers(
+                layer_control_5cde1584e639d5941507348295ef82d6_layers.base_layers,
+                layer_control_5cde1584e639d5941507348295ef82d6_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_21774fdc5f743ff79b96d437903dda4b);
+
+        
+    
+            map_21774fdc5f743ff79b96d437903dda4b.fitBounds(
+                [[28.66592, -83.187906], [29.052565, -82.169289]],
+                {}
+            );
+        
+</script>
+</html>

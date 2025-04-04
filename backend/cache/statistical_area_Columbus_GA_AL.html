@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_65ad3a8fafc2d743ab14f948865e319d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Columbus, GA-AL</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 3 PGs and 10 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_65ad3a8fafc2d743ab14f948865e319d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_65ad3a8fafc2d743ab14f948865e319d = L.map(
+                "map_65ad3a8fafc2d743ab14f948865e319d",
+                {
+                    center: [32.4177318817691, -84.84316145746106],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_12ae4f4310ee123e5c5a66b928c38174 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_12ae4f4310ee123e5c5a66b928c38174.addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+        function geo_json_49833dcdfd46892163be9492d1fe99f6_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "dashArray": "3,3", "fillColor": "transparent", "fillOpacity": 0, "opacity": 0.8, "weight": 1.5};
+            }
+        }
+
+        function geo_json_49833dcdfd46892163be9492d1fe99f6_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_49833dcdfd46892163be9492d1fe99f6 = L.geoJson(null, {
+                onEachFeature: geo_json_49833dcdfd46892163be9492d1fe99f6_onEachFeature,
+            
+                style: geo_json_49833dcdfd46892163be9492d1fe99f6_styler,
+            ...{
+}
+        });
+
+        function geo_json_49833dcdfd46892163be9492d1fe99f6_add (data) {
+            geo_json_49833dcdfd46892163be9492d1fe99f6
+                .addData(data);
+        }
+            geo_json_49833dcdfd46892163be9492d1fe99f6_add({"bbox": [-88.473227, 30.144689, -80.78296, 35.008028], "features": [{"bbox": [-85.605165, 30.355757, -80.78296, 34.997639], "geometry": {"coordinates": [[[-81.095383, 31.520981], [-81.190758, 31.399876], [-81.171089, 31.370323], [-81.187675, 31.246258], [-81.234337, 31.170258], [-81.296417, 31.15188], [-81.290199, 31.093494], [-81.345306, 31.059362], [-81.353416, 31.037121], [-81.310709, 30.997329], [-81.304832, 30.970774], [-81.345207, 30.931503], [-81.362682, 30.845926], [-81.400482, 30.766426], [-81.359146, 30.744314], [-81.347015, 30.712444], [-81.451241, 30.709484], [-81.488464, 30.726309], [-81.532295, 30.724091], [-81.538391, 30.708656], [-81.601882, 30.729586], [-81.60987, 30.715933], [-81.624366, 30.73634], [-81.652153, 30.72887], [-81.662323, 30.754177], [-81.683096, 30.748492], [-81.672494, 30.73879], [-81.72013, 30.744719], [-81.76172, 30.775698], [-81.78263, 30.761454], [-81.793075, 30.787251], [-81.868515, 30.792906], [-81.901245, 30.82988], [-81.909111, 30.81568], [-81.949806, 30.827764], [-81.97364, 30.778719], [-82.02288, 30.787706], [-82.011603, 30.761878], [-82.036773, 30.754434], [-82.045527, 30.727881], [-82.035927, 30.706205], [-82.049023, 30.655295], [-82.005401, 30.563574], [-82.016906, 30.475111], [-82.043762, 30.414869], [-82.037157, 30.372033], [-82.066184, 30.355757], [-82.105241, 30.368896], [-82.161777, 30.357111], [-82.192786, 30.379065], [-82.21086, 30.425379], [-82.20124, 30.485114], [-82.240403, 30.53777], [-82.214677, 30.568556], [-84.864693, 30.711542], [-84.920123, 30.76599], [-84.937424, 30.820889], [-84.925665, 30.842685], [-84.934424, 30.883588], [-84.983127, 30.934786], [-84.982527, 30.965586], [-85.005734, 30.975908], [-84.999428, 31.013844], [-85.035615, 31.108192], [-85.107516, 31.186451], [-85.096763, 31.225651], [-85.114601, 31.277333], [-85.089774, 31.295026], [-85.092327, 31.364049], [-85.041361, 31.542495], [-85.05796, 31.57084], [-85.058169, 31.620227], [-85.12553, 31.694965], [-85.12523, 31.767063], [-85.141931, 31.781963], [-85.134131, 31.89216], [-85.11203, 31.89476], [-85.113131, 31.911859], [-85.07893, 31.940159], [-85.08673, 31.959158], [-85.067829, 31.967358], [-85.048825, 32.021701], [-85.05883, 32.046956], [-85.044761, 32.085836], [-85.061907, 32.132863], [-85.011267, 32.180493], [-84.963728, 32.195852], [-84.980229, 32.207751], [-84.973328, 32.21765], [-84.928227, 32.219851], [-84.912727, 32.24335], [-84.924427, 32.250149], [-84.888246, 32.25967], [-84.934648, 32.298916], [-85.006402, 32.326757], [-84.972154, 32.376914], [-84.98841, 32.385216], [-84.96873, 32.391457], [-84.980954, 32.406064], [-84.96303, 32.424244], [-84.99533, 32.453243], [-85.0071, 32.523868], [-85.067535, 32.579546], [-85.090886, 32.625135], [-85.083118, 32.636161], [-85.104532, 32.641011], [-85.088483, 32.657758], [-85.117037, 32.692033], [-85.113329, 32.735751], [-85.142987, 32.759934], [-85.122326, 32.774383], [-85.168048, 32.811841], [-85.156289, 32.850524], [-85.1844, 32.861317], [-85.605165, 34.984678], [-83.103363, 34.997639], [-83.12211, 34.964329], [-83.114059, 34.950279], [-83.127052, 34.954239], [-83.111755, 34.934963], [-83.156891, 34.930767], [-83.15699, 34.915123], [-83.168607, 34.919355], [-83.205261, 34.880165], [-83.242996, 34.877537], [-83.234703, 34.870743], [-83.248927, 34.845141], [-83.267196, 34.848469], [-83.270882, 34.818588], [-83.306366, 34.81567], [-83.300842, 34.804344], [-83.324142, 34.789246], [-83.318748, 34.757626], [-83.353416, 34.728424], [-83.342004, 34.68177], [-83.23258, 34.611597], [-83.159677, 34.603298], [-83.170978, 34.598098], [-83.158677, 34.578999], [-83.034565, 34.483571], [-82.995901, 34.472204], [-82.901551, 34.486764], [-82.858837, 34.45522], [-82.834457, 34.365221], [-82.79447, 34.340379], [-82.782128, 34.298278], [-82.746811, 34.266588], [-82.717459, 34.150546], [-82.642416, 34.093264], [-82.643661, 34.072105], [-82.594459, 34.029304], [-82.556765, 33.945324], [-82.524515, 33.94336], [-82.455105, 33.88165], [-82.32448, 33.820033], [-82.298286, 33.783518], [-82.247472, 33.752591], [-82.234572, 33.700217], [-82.186155, 33.620881], [-82.046335, 33.56383], [-81.985938, 33.486536], [-81.926336, 33.462937], [-81.913126, 33.438333], [-81.93243, 33.425706], [-81.909693, 33.411979], [-81.945181, 33.407531], [-81.924837, 33.37414], [-81.946337, 33.37064], [-81.939737, 33.344941], [-81.909137, 33.346641], [-81.913737, 33.320042], [-81.901384, 33.335774], [-81.880737, 33.302243], [-81.847336, 33.306843], [-81.863236, 33.288844], [-81.828336, 33.263045], [-81.847336, 33.266345], [-81.839636, 33.255245], [-81.851137, 33.252545], [-81.853137, 33.250745], [-81.852076, 33.247288], [-81.805238, 33.211441], [-81.768935, 33.217447], [-81.756835, 33.197947], [-81.772435, 33.180449], [-81.752135, 33.14855], [-81.704634, 33.11645], [-81.611657, 33.094259], [-81.612072, 33.080019], [-81.60132, 33.087049], [-81.602212, 33.073473], [-81.491954, 33.009093], [-81.49983, 32.963816], [-81.511347, 32.966721], [-81.502427, 32.935353], [-81.480812, 32.898614], [-81.464433, 32.898603], [-81.479445, 32.881082], [-81.452883, 32.872964], [-81.460722, 32.846038], [-81.426475, 32.840773], [-81.417984, 32.818196], [-81.431235, 32.784141], [-81.414456, 32.778149], [-81.43194, 32.768911], [-81.404932, 32.745559], [-81.427517, 32.701895], [-81.409012, 32.696551], [-81.397154, 32.661378], [-81.407193, 32.660519], [-81.393033, 32.651542], [-81.41866, 32.629392], [-81.366782, 32.576915], [-81.28058, 32.55603], [-81.279655, 32.536338], [-81.233794, 32.51831], [-81.233111, 32.498069], [-81.187141, 32.464149], [-81.205774, 32.450474], [-81.205405, 32.423339], [-81.159995, 32.340476], [-81.143857, 32.351543], [-81.128535, 32.338381], [-81.138013, 32.32824], [-81.119628, 32.286778], [-81.156607, 32.243284], [-81.152064, 32.222042], [-81.114032, 32.195701], [-81.111132, 32.172703], [-81.129756, 32.165839], [-81.112236, 32.150804], [-81.115367, 32.114705], [-81.038125, 32.083734], [-81.004305, 32.102367], [-80.925085, 32.041939], [-80.822762, 32.034244], [-80.78296, 31.995954], [-80.796272, 31.953459], [-80.855339, 31.910809], [-80.928589, 31.816982], [-80.970726, 31.798353], [-81.013812, 31.728643], [-81.056623, 31.714875], [-81.049789, 31.688633], [-81.095383, 31.520981]]], "type": "Polygon"}, "id": "21", "properties": {"ALAND": 149485311347, "AWATER": 4419673221, "DIVISION": "5", "FUNCSTAT": "A", "GEOID": "13", "GEOIDFQ": "0400000US13", "INTPTLAT": "+32.6295789", "INTPTLON": "-083.4235109", "LSAD": "00", "MTFCC": "G4000", "NAME": "Georgia", "REGION": "3", "STATEFP": "13", "STATENS": "01705317", "STUSPS": "GA"}, "type": "Feature"}, {"bbox": [-88.473227, 30.144689, -84.888246, 35.008028], "geometry": {"coordinates": [[[-85.127329, 31.762563], [-85.12553, 31.694965], [-85.058169, 31.620227], [-85.05796, 31.57084], [-85.041305, 31.540987], [-85.092327, 31.364049], [-85.089774, 31.295026], [-85.114601, 31.277333], [-85.096763, 31.225651], [-85.107516, 31.186451], [-85.035615, 31.108192], [-85.002499, 31.000685], [-87.598829, 30.997455], [-87.590933, 30.953513], [-87.634744, 30.86561], [-87.545432, 30.779389], [-87.529977, 30.740952], [-87.406474, 30.675146], [-87.394913, 30.614266], [-87.450371, 30.514462], [-87.425078, 30.465596], [-87.366939, 30.44048], [-87.429578, 30.406498], [-87.461078, 30.3353], [-87.502572, 30.327405], [-87.49998, 30.306201], [-87.450078, 30.3111], [-87.51838, 30.283901], [-87.518346, 30.229506], [-87.807153, 30.177378], [-87.987409, 30.17789], [-88.046104, 30.144689], [-88.128498, 30.172078], [-88.162022, 30.200093], [-88.303023, 30.177962], [-88.347719, 30.190088], [-88.384431, 30.158543], [-88.473227, 31.893856], [-88.097888, 34.892202], [-88.152413, 34.919741], [-88.202959, 35.008028], [-85.605165, 34.984678], [-85.1844, 32.861317], [-85.156289, 32.850524], [-85.168048, 32.811841], [-85.122326, 32.774383], [-85.142987, 32.759934], [-85.113329, 32.735751], [-85.117037, 32.692033], [-85.088483, 32.657758], [-85.104532, 32.641011], [-85.083118, 32.636161], [-85.090886, 32.625135], [-85.067535, 32.579546], [-85.0071, 32.523868], [-84.99533, 32.453243], [-84.96303, 32.424244], [-84.980954, 32.406064], [-84.96873, 32.391457], [-84.98841, 32.385216], [-84.972154, 32.376914], [-85.006402, 32.326757], [-84.934648, 32.298916], [-84.888246, 32.25967], [-84.924427, 32.250149], [-84.912727, 32.24335], [-84.928227, 32.219851], [-84.973328, 32.21765], [-84.980229, 32.207751], [-84.963728, 32.195852], [-85.011267, 32.180493], [-85.061907, 32.132863], [-85.044761, 32.085836], [-85.05883, 32.046956], [-85.048825, 32.021701], [-85.067829, 31.967358], [-85.08673, 31.959158], [-85.07893, 31.940159], [-85.113131, 31.911859], [-85.11203, 31.89476], [-85.134131, 31.89216], [-85.141931, 31.781963], [-85.127329, 31.762563]]], "type": "Polygon"}, "id": "22", "properties": {"ALAND": 131185049346, "AWATER": 4582326383, "DIVISION": "6", "FUNCSTAT": "A", "GEOID": "01", "GEOIDFQ": "0400000US01", "INTPTLAT": "+32.7395785", "INTPTLON": "-086.8434469", "LSAD": "00", "MTFCC": "G4000", "NAME": "Alabama", "REGION": "3", "STATEFP": "01", "STATENS": "01779775", "STUSPS": "AL"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_49833dcdfd46892163be9492d1fe99f6.addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+        function geo_json_87de7a2b49aa6256c52775129b8deefd_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "fillColor": "#4F46E5", "fillOpacity": 0.2, "opacity": 0.9, "weight": 3};
+            }
+        }
+
+        function geo_json_87de7a2b49aa6256c52775129b8deefd_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_87de7a2b49aa6256c52775129b8deefd = L.geoJson(null, {
+                onEachFeature: geo_json_87de7a2b49aa6256c52775129b8deefd_onEachFeature,
+            
+                style: geo_json_87de7a2b49aa6256c52775129b8deefd_styler,
+            ...{
+}
+        });
+
+        function geo_json_87de7a2b49aa6256c52775129b8deefd_add (data) {
+            geo_json_87de7a2b49aa6256c52775129b8deefd
+                .addData(data);
+        }
+            geo_json_87de7a2b49aa6256c52775129b8deefd_add({"features": [{"geometry": {"coordinates": [[[-85.184914, 32.868944], [-84.751338, 32.8692], [-84.700538, 32.84464], [-84.570669, 32.845179], [-84.497646, 32.883561], [-84.475494, 32.876326], [-84.490086, 32.856899], [-84.46731, 32.853006], [-84.456641, 32.828662], [-84.414908, 32.83453], [-84.382542, 32.780281], [-84.352118, 32.783232], [-84.336132, 32.759708], [-84.287536, 32.750137], [-84.288743, 32.736151], [-84.33794, 32.720647], [-84.338884, 32.679043], [-84.364243, 32.679364], [-84.374617, 32.637355], [-84.408378, 32.610503], [-84.408866, 32.561923], [-84.444353, 32.562083], [-84.453232, 32.542374], [-84.433619, 32.493243], [-84.407808, 32.485267], [-84.408578, 32.443949], [-84.392117, 32.435347], [-84.389927, 32.297237], [-84.413304, 32.297531], [-84.410415, 32.231856], [-84.429451, 32.232151], [-84.42008, 32.191677], [-84.431214, 32.134058], [-84.527117, 32.134556], [-84.564231, 32.192195], [-84.599747, 32.192426], [-84.610519, 32.225552], [-84.649319, 32.232953], [-84.63112, 32.184054], [-84.65162, 32.160154], [-84.643557, 32.037005], [-84.65582, 31.920308], [-84.917264, 31.924663], [-84.974067, 31.950209], [-84.9537, 31.974781], [-85.042029, 31.975658], [-85.06823, 31.991857], [-85.048825, 32.021701], [-85.05593, 32.063055], [-85.185067, 32.061708], [-85.257747, 32.148251], [-85.427441, 32.146551], [-85.434045, 32.40984], [-85.330143, 32.410842], [-85.333843, 32.468639], [-85.059294, 32.472909], [-85.060784, 32.509177], [-85.00102, 32.510157], [-85.067535, 32.579546], [-85.090886, 32.625135], [-85.083118, 32.636161], [-85.104532, 32.641011], [-85.088483, 32.657758], [-85.117037, 32.692033], [-85.113329, 32.735751], [-85.142987, 32.759934], [-85.122326, 32.774383], [-85.167939, 32.811611], [-85.153388, 32.844865], [-85.184914, 32.868944]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_87de7a2b49aa6256c52775129b8deefd.addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+            var feature_group_9c3c470d098a989e28e797bfe8cb6a6c = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_80bd20508b9fdc0b93fe6f5d333f8f1f = L.marker(
+                [32.208603846684404, -85.22876904191682],
+                {
+}
+            ).addTo(feature_group_9c3c470d098a989e28e797bfe8cb6a6c);
+        
+    
+            var icon_5e26dcf12d05ac4efb9d52fbe2345dbd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0fa34f9a1e74fe2fcf6336156354d3d9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b9806b4881a1392a3338606064a445b2 = $(`<div id="html_b9806b4881a1392a3338606064a445b2" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Col1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 10</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 189</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 623 Healthcare Ave, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 100-8073</p>         </div>         </div>`)[0];
+                popup_0fa34f9a1e74fe2fcf6336156354d3d9.setContent(html_b9806b4881a1392a3338606064a445b2);
+            
+        
+
+        marker_80bd20508b9fdc0b93fe6f5d333f8f1f.bindPopup(popup_0fa34f9a1e74fe2fcf6336156354d3d9)
+        ;
+
+        
+    
+    
+            marker_80bd20508b9fdc0b93fe6f5d333f8f1f.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Col1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_80bd20508b9fdc0b93fe6f5d333f8f1f.setIcon(icon_5e26dcf12d05ac4efb9d52fbe2345dbd);
+            
+    
+            var marker_4d516836751ad55c4692c2cd32c3ed8c = L.marker(
+                [32.34478213625972, -84.62669522110575],
+                {
+}
+            ).addTo(feature_group_9c3c470d098a989e28e797bfe8cb6a6c);
+        
+    
+            var icon_9fe4e109dfc220704043dd586289f1ff = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_69321d7e650ac71f246cb0eb9832aed5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dac7a3d129f4eb8122274dd1cd912fc4 = $(`<div id="html_dac7a3d129f4eb8122274dd1cd912fc4" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Col2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 13</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 181</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 904 Healthcare Ave, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 468-7111</p>         </div>         </div>`)[0];
+                popup_69321d7e650ac71f246cb0eb9832aed5.setContent(html_dac7a3d129f4eb8122274dd1cd912fc4);
+            
+        
+
+        marker_4d516836751ad55c4692c2cd32c3ed8c.bindPopup(popup_69321d7e650ac71f246cb0eb9832aed5)
+        ;
+
+        
+    
+    
+            marker_4d516836751ad55c4692c2cd32c3ed8c.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Col2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4d516836751ad55c4692c2cd32c3ed8c.setIcon(icon_9fe4e109dfc220704043dd586289f1ff);
+            
+    
+            var marker_e3eda6cb6135ef92b7b0e897f89cd3ac = L.marker(
+                [32.649688270450724, -84.55391429250065],
+                {
+}
+            ).addTo(feature_group_9c3c470d098a989e28e797bfe8cb6a6c);
+        
+    
+            var icon_ac7a6c3a8071bb524f0607297fa8faa2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7559cd195f138a559f0c003c0dadeff6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1319e7d9cd53182a9fe02d40a6a48ff0 = $(`<div id="html_1319e7d9cd53182a9fe02d40a6a48ff0" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Col3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 274</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 287 Healthcare Ave, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 937-2294</p>         </div>         </div>`)[0];
+                popup_7559cd195f138a559f0c003c0dadeff6.setContent(html_1319e7d9cd53182a9fe02d40a6a48ff0);
+            
+        
+
+        marker_e3eda6cb6135ef92b7b0e897f89cd3ac.bindPopup(popup_7559cd195f138a559f0c003c0dadeff6)
+        ;
+
+        
+    
+    
+            marker_e3eda6cb6135ef92b7b0e897f89cd3ac.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Col3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e3eda6cb6135ef92b7b0e897f89cd3ac.setIcon(icon_ac7a6c3a8071bb524f0607297fa8faa2);
+            
+    
+            feature_group_9c3c470d098a989e28e797bfe8cb6a6c.addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+            var feature_group_542baac6a76c6dcbd48c19c9b916cca2 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_81799b638e761819b53b5b19cbd56721 = L.marker(
+                [32.28291131534977, -84.64133578404889],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_71cb36dedb9234341887cb45169d75ee = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ac756a561192e21a0016b0c410b3f501 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a37f61835dfea0a537331d1319c82b1f = $(`<div id="html_a37f61835dfea0a537331d1319c82b1f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 64</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 232 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 587-1549</p>         </div>         </div>`)[0];
+                popup_ac756a561192e21a0016b0c410b3f501.setContent(html_a37f61835dfea0a537331d1319c82b1f);
+            
+        
+
+        marker_81799b638e761819b53b5b19cbd56721.bindPopup(popup_ac756a561192e21a0016b0c410b3f501)
+        ;
+
+        
+    
+    
+            marker_81799b638e761819b53b5b19cbd56721.bindTooltip(
+                `<div>
+                     HHAH: Wellness Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_81799b638e761819b53b5b19cbd56721.setIcon(icon_71cb36dedb9234341887cb45169d75ee);
+            
+    
+            var marker_acd00e4b7c4ea0d49ae600fb3366cfa5 = L.marker(
+                [32.361478975202516, -84.8445637625904],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_ec0beb036e41e7439f514690d24c0a31 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_20a01f03ee4351c0e53173d09e28103c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_332845ed8321192aa0218d8ad43adffc = $(`<div id="html_332845ed8321192aa0218d8ad43adffc" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 55</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 663 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 899-9715</p>         </div>         </div>`)[0];
+                popup_20a01f03ee4351c0e53173d09e28103c.setContent(html_332845ed8321192aa0218d8ad43adffc);
+            
+        
+
+        marker_acd00e4b7c4ea0d49ae600fb3366cfa5.bindPopup(popup_20a01f03ee4351c0e53173d09e28103c)
+        ;
+
+        
+    
+    
+            marker_acd00e4b7c4ea0d49ae600fb3366cfa5.bindTooltip(
+                `<div>
+                     HHAH: Wellness Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_acd00e4b7c4ea0d49ae600fb3366cfa5.setIcon(icon_ec0beb036e41e7439f514690d24c0a31);
+            
+    
+            var marker_0f3b9692d22af1b04f696a806c590103 = L.marker(
+                [32.39246069918589, -84.9826100447912],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_e50b65b5dd0075d6e9705b0db2ae6fd1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e9b93026512de09388e97049868fcbb1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4348d04ef53f19799ce6eaf6b8c8fae8 = $(`<div id="html_4348d04ef53f19799ce6eaf6b8c8fae8" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 30</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 131 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 222-9441</p>         </div>         </div>`)[0];
+                popup_e9b93026512de09388e97049868fcbb1.setContent(html_4348d04ef53f19799ce6eaf6b8c8fae8);
+            
+        
+
+        marker_0f3b9692d22af1b04f696a806c590103.bindPopup(popup_e9b93026512de09388e97049868fcbb1)
+        ;
+
+        
+    
+    
+            marker_0f3b9692d22af1b04f696a806c590103.bindTooltip(
+                `<div>
+                     HHAH: Wellness Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0f3b9692d22af1b04f696a806c590103.setIcon(icon_e50b65b5dd0075d6e9705b0db2ae6fd1);
+            
+    
+            var marker_2ed95c7e3f2cc8f0b7562b810b9a7a65 = L.marker(
+                [32.66824262089527, -84.74998467129404],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_cc93543f48b7d5b2df61b23efd5b6107 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8335849cafec84cbc2a7232226ca5763 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_654d2c9e525f12baf71c3696cf2e45d1 = $(`<div id="html_654d2c9e525f12baf71c3696cf2e45d1" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 123</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 467 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 718-2792</p>         </div>         </div>`)[0];
+                popup_8335849cafec84cbc2a7232226ca5763.setContent(html_654d2c9e525f12baf71c3696cf2e45d1);
+            
+        
+
+        marker_2ed95c7e3f2cc8f0b7562b810b9a7a65.bindPopup(popup_8335849cafec84cbc2a7232226ca5763)
+        ;
+
+        
+    
+    
+            marker_2ed95c7e3f2cc8f0b7562b810b9a7a65.bindTooltip(
+                `<div>
+                     HHAH: Premier Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2ed95c7e3f2cc8f0b7562b810b9a7a65.setIcon(icon_cc93543f48b7d5b2df61b23efd5b6107);
+            
+    
+            var marker_51e9d53fff5962984a9843e27c55c934 = L.marker(
+                [32.77023527425685, -85.03608123291248],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_72bed49a985afc1db7adbd12fd1f6e4e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1490414eb5c9e83197035c13509e0244 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_43fcf300133a39e09b3e1036b61c9ed4 = $(`<div id="html_43fcf300133a39e09b3e1036b61c9ed4" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 139</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 498 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 965-2966</p>         </div>         </div>`)[0];
+                popup_1490414eb5c9e83197035c13509e0244.setContent(html_43fcf300133a39e09b3e1036b61c9ed4);
+            
+        
+
+        marker_51e9d53fff5962984a9843e27c55c934.bindPopup(popup_1490414eb5c9e83197035c13509e0244)
+        ;
+
+        
+    
+    
+            marker_51e9d53fff5962984a9843e27c55c934.bindTooltip(
+                `<div>
+                     HHAH: Elite Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_51e9d53fff5962984a9843e27c55c934.setIcon(icon_72bed49a985afc1db7adbd12fd1f6e4e);
+            
+    
+            var marker_3a0c58df15b8b9f0bbd64e9323462e6e = L.marker(
+                [32.46067185965677, -85.03043062976583],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_812c4f470bae0099da6305aa473fc06b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_11d57787db3c6c20900cef7634325439 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c74bd4be1090c4f68f2d85b30aee8b39 = $(`<div id="html_c74bd4be1090c4f68f2d85b30aee8b39" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 89</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 369 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 614-6820</p>         </div>         </div>`)[0];
+                popup_11d57787db3c6c20900cef7634325439.setContent(html_c74bd4be1090c4f68f2d85b30aee8b39);
+            
+        
+
+        marker_3a0c58df15b8b9f0bbd64e9323462e6e.bindPopup(popup_11d57787db3c6c20900cef7634325439)
+        ;
+
+        
+    
+    
+            marker_3a0c58df15b8b9f0bbd64e9323462e6e.bindTooltip(
+                `<div>
+                     HHAH: ComfortCare Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3a0c58df15b8b9f0bbd64e9323462e6e.setIcon(icon_812c4f470bae0099da6305aa473fc06b);
+            
+    
+            var marker_ce8c1cf9c296f5d1fe0fc46debe59a4f = L.marker(
+                [32.39025195837571, -84.43036206269988],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_3a25afe1d4bf566cd46361acb9fcc10a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e87442060bc5d1ec1e2edec528ae9854 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_697738726549a63bd22937fed1411fcb = $(`<div id="html_697738726549a63bd22937fed1411fcb" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 112</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 925 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 192-6173</p>         </div>         </div>`)[0];
+                popup_e87442060bc5d1ec1e2edec528ae9854.setContent(html_697738726549a63bd22937fed1411fcb);
+            
+        
+
+        marker_ce8c1cf9c296f5d1fe0fc46debe59a4f.bindPopup(popup_e87442060bc5d1ec1e2edec528ae9854)
+        ;
+
+        
+    
+    
+            marker_ce8c1cf9c296f5d1fe0fc46debe59a4f.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ce8c1cf9c296f5d1fe0fc46debe59a4f.setIcon(icon_3a25afe1d4bf566cd46361acb9fcc10a);
+            
+    
+            var marker_a7389820a944995b4f5f8297db862295 = L.marker(
+                [32.66159622659763, -85.02694402735202],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_93759a631a093d665466cbb63d457f0e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b371b6bc06b7418c4a4de3845d5b600c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_139523d7acd9e909c188d519910abb62 = $(`<div id="html_139523d7acd9e909c188d519910abb62" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 39</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 440 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 631-1662</p>         </div>         </div>`)[0];
+                popup_b371b6bc06b7418c4a4de3845d5b600c.setContent(html_139523d7acd9e909c188d519910abb62);
+            
+        
+
+        marker_a7389820a944995b4f5f8297db862295.bindPopup(popup_b371b6bc06b7418c4a4de3845d5b600c)
+        ;
+
+        
+    
+    
+            marker_a7389820a944995b4f5f8297db862295.bindTooltip(
+                `<div>
+                     HHAH: Guardian Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a7389820a944995b4f5f8297db862295.setIcon(icon_93759a631a093d665466cbb63d457f0e);
+            
+    
+            var marker_bf9b64e134f1df7303812d5dfb2673de = L.marker(
+                [32.75226042515856, -84.68408046303674],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_eacdfda778a370f415596357b6d9d203 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c2a37631d5a03d9f17088a8027fe6e64 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7bdf240651d06794b3c3f892f8cebaef = $(`<div id="html_7bdf240651d06794b3c3f892f8cebaef" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 82</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 666 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 609-8008</p>         </div>         </div>`)[0];
+                popup_c2a37631d5a03d9f17088a8027fe6e64.setContent(html_7bdf240651d06794b3c3f892f8cebaef);
+            
+        
+
+        marker_bf9b64e134f1df7303812d5dfb2673de.bindPopup(popup_c2a37631d5a03d9f17088a8027fe6e64)
+        ;
+
+        
+    
+    
+            marker_bf9b64e134f1df7303812d5dfb2673de.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bf9b64e134f1df7303812d5dfb2673de.setIcon(icon_eacdfda778a370f415596357b6d9d203);
+            
+    
+            var marker_7f98bba5eabf5331c335d0a42db00419 = L.marker(
+                [32.52319935911912, -84.61051915830606],
+                {
+}
+            ).addTo(feature_group_542baac6a76c6dcbd48c19c9b916cca2);
+        
+    
+            var icon_b1d984abac2c11d931fe446df167aafb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2ac4b0efb73e1de2cdb34fa793ef8779 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_131619c9bfd70fec6a199d499ed63d9b = $(`<div id="html_131619c9bfd70fec6a199d499ed63d9b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 117</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 365 Medical Blvd, Columbus</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 137-7873</p>         </div>         </div>`)[0];
+                popup_2ac4b0efb73e1de2cdb34fa793ef8779.setContent(html_131619c9bfd70fec6a199d499ed63d9b);
+            
+        
+
+        marker_7f98bba5eabf5331c335d0a42db00419.bindPopup(popup_2ac4b0efb73e1de2cdb34fa793ef8779)
+        ;
+
+        
+    
+    
+            marker_7f98bba5eabf5331c335d0a42db00419.bindTooltip(
+                `<div>
+                     HHAH: Wellness Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7f98bba5eabf5331c335d0a42db00419.setIcon(icon_b1d984abac2c11d931fe446df167aafb);
+            
+    
+            feature_group_542baac6a76c6dcbd48c19c9b916cca2.addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+        
+    
+            var mouse_position_ad0fb48c2393730d2cde838890f545eb = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_ad0fb48c2393730d2cde838890f545eb.options["latFormatter"] =
+                undefined;
+            mouse_position_ad0fb48c2393730d2cde838890f545eb.options["lngFormatter"] =
+                undefined;
+            map_65ad3a8fafc2d743ab14f948865e319d.addControl(mouse_position_ad0fb48c2393730d2cde838890f545eb);
+        
+    
+            var layer_control_79d8d11bac0a6db3a3d16cdb779f380f_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_12ae4f4310ee123e5c5a66b928c38174,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_49833dcdfd46892163be9492d1fe99f6,
+                    "Columbus, GA-AL Boundary" : geo_json_87de7a2b49aa6256c52775129b8deefd,
+                    "Physician Groups (PGs)" : feature_group_9c3c470d098a989e28e797bfe8cb6a6c,
+                    "Home Health At Home (HHAHs)" : feature_group_542baac6a76c6dcbd48c19c9b916cca2,
+                },
+            };
+            let layer_control_79d8d11bac0a6db3a3d16cdb779f380f = L.control.layers(
+                layer_control_79d8d11bac0a6db3a3d16cdb779f380f_layers.base_layers,
+                layer_control_79d8d11bac0a6db3a3d16cdb779f380f_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_65ad3a8fafc2d743ab14f948865e319d);
+
+        
+    
+            map_65ad3a8fafc2d743ab14f948865e319d.fitBounds(
+                [[31.920308, -85.434045], [32.883561, -84.287536]],
+                {}
+            );
+        
+</script>
+</html>

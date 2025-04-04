@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c386ed04762208973166e8f5f583a27d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+            <div style="position: fixed; 
+                        top: 10px; left: 50px; width: 300px; height: auto;
+                        background-color: white; border-radius: 8px;
+                        border: 2px solid #4F46E5; z-index: 9999; padding: 10px;
+                        font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                <h4 style="margin-top: 0; color: #1F2937;">Map View of Decatur, AL</h4>
+                <p style="font-size: 12px; margin-bottom: 0;">
+                    Showing 7 PGs and 10 HHAHs in this area.
+                </p>
+            </div>
+        
+    
+            <div class="folium-map" id="map_c386ed04762208973166e8f5f583a27d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c386ed04762208973166e8f5f583a27d = L.map(
+                "map_c386ed04762208973166e8f5f583a27d",
+                {
+                    center: [34.48962039852097, -87.10012402327287],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_68d8d1d3a02a31f2dd2914d089827782 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_68d8d1d3a02a31f2dd2914d089827782.addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+        function geo_json_e21f390c4f95bbe0292cb300aa7292ca_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+            }
+        }
+
+        function geo_json_e21f390c4f95bbe0292cb300aa7292ca_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_e21f390c4f95bbe0292cb300aa7292ca = L.geoJson(null, {
+                onEachFeature: geo_json_e21f390c4f95bbe0292cb300aa7292ca_onEachFeature,
+            
+                style: geo_json_e21f390c4f95bbe0292cb300aa7292ca_styler,
+            ...{
+}
+        });
+
+        function geo_json_e21f390c4f95bbe0292cb300aa7292ca_add (data) {
+            geo_json_e21f390c4f95bbe0292cb300aa7292ca
+                .addData(data);
+        }
+            geo_json_e21f390c4f95bbe0292cb300aa7292ca_add({"bbox": [-88.473227, 30.144689, -84.888246, 35.008028], "features": [{"bbox": [-88.473227, 30.144689, -84.888246, 35.008028], "geometry": {"coordinates": [[[-85.127329, 31.762563], [-85.12553, 31.694965], [-85.058169, 31.620227], [-85.05796, 31.57084], [-85.041305, 31.540987], [-85.092327, 31.364049], [-85.089774, 31.295026], [-85.114601, 31.277333], [-85.096763, 31.225651], [-85.107516, 31.186451], [-85.035615, 31.108192], [-85.002499, 31.000685], [-87.598829, 30.997455], [-87.590933, 30.953513], [-87.634744, 30.86561], [-87.545432, 30.779389], [-87.529977, 30.740952], [-87.406474, 30.675146], [-87.394913, 30.614266], [-87.450371, 30.514462], [-87.425078, 30.465596], [-87.366939, 30.44048], [-87.429578, 30.406498], [-87.461078, 30.3353], [-87.502572, 30.327405], [-87.49998, 30.306201], [-87.450078, 30.3111], [-87.51838, 30.283901], [-87.518346, 30.229506], [-87.807153, 30.177378], [-87.987409, 30.17789], [-88.046104, 30.144689], [-88.128498, 30.172078], [-88.162022, 30.200093], [-88.303023, 30.177962], [-88.347719, 30.190088], [-88.384431, 30.158543], [-88.473227, 31.893856], [-88.097888, 34.892202], [-88.152413, 34.919741], [-88.202959, 35.008028], [-85.605165, 34.984678], [-85.1844, 32.861317], [-85.156289, 32.850524], [-85.168048, 32.811841], [-85.122326, 32.774383], [-85.142987, 32.759934], [-85.113329, 32.735751], [-85.117037, 32.692033], [-85.088483, 32.657758], [-85.104532, 32.641011], [-85.083118, 32.636161], [-85.090886, 32.625135], [-85.067535, 32.579546], [-85.0071, 32.523868], [-84.99533, 32.453243], [-84.96303, 32.424244], [-84.980954, 32.406064], [-84.96873, 32.391457], [-84.98841, 32.385216], [-84.972154, 32.376914], [-85.006402, 32.326757], [-84.934648, 32.298916], [-84.888246, 32.25967], [-84.924427, 32.250149], [-84.912727, 32.24335], [-84.928227, 32.219851], [-84.973328, 32.21765], [-84.980229, 32.207751], [-84.963728, 32.195852], [-85.011267, 32.180493], [-85.061907, 32.132863], [-85.044761, 32.085836], [-85.05883, 32.046956], [-85.048825, 32.021701], [-85.067829, 31.967358], [-85.08673, 31.959158], [-85.07893, 31.940159], [-85.113131, 31.911859], [-85.11203, 31.89476], [-85.134131, 31.89216], [-85.141931, 31.781963], [-85.127329, 31.762563]]], "type": "Polygon"}, "id": "22", "properties": {"ALAND": 131185049346, "AWATER": 4582326383, "DIVISION": "6", "FUNCSTAT": "A", "GEOID": "01", "GEOIDFQ": "0400000US01", "INTPTLAT": "+32.7395785", "INTPTLON": "-086.8434469", "LSAD": "00", "MTFCC": "G4000", "NAME": "Alabama", "REGION": "3", "STATEFP": "01", "STATENS": "01779775", "STUSPS": "AL"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_e21f390c4f95bbe0292cb300aa7292ca.addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+        function geo_json_18a46c4d0473d62f61f3061d8331d3bb_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+            }
+        }
+
+        function geo_json_18a46c4d0473d62f61f3061d8331d3bb_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_18a46c4d0473d62f61f3061d8331d3bb = L.geoJson(null, {
+                onEachFeature: geo_json_18a46c4d0473d62f61f3061d8331d3bb_onEachFeature,
+            
+                style: geo_json_18a46c4d0473d62f61f3061d8331d3bb_styler,
+            ...{
+}
+        });
+
+        function geo_json_18a46c4d0473d62f61f3061d8331d3bb_add (data) {
+            geo_json_18a46c4d0473d62f61f3061d8331d3bb
+                .addData(data);
+        }
+            geo_json_18a46c4d0473d62f61f3061d8331d3bb_add({"features": [{"geometry": {"coordinates": [[[-86.749308, 34.559081], [-86.704135, 34.589011], [-86.65724, 34.549868], [-86.593016, 34.582811], [-86.553782, 34.562027], [-86.581936, 34.304694], [-87.529722, 34.304598], [-87.529667, 34.567081], [-87.515734, 34.567969], [-87.514788, 34.597849], [-87.476903, 34.637633], [-87.483576, 34.648254], [-87.445724, 34.651066], [-87.452685, 34.693013], [-87.426291, 34.709332], [-87.435827, 34.729532], [-87.415927, 34.764173], [-87.434391, 34.773614], [-87.42651, 34.800022], [-87.344224, 34.796493], [-87.297905, 34.750812], [-87.216254, 34.761148], [-87.138858, 34.724101], [-87.085502, 34.669525], [-86.923305, 34.586692], [-86.833971, 34.555567], [-86.749308, 34.559081]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_18a46c4d0473d62f61f3061d8331d3bb.addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+            var feature_group_1483f70150b34be4a03cea8a09ebf441 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_9929928f9674dd82edc1103ee856bde7 = L.marker(
+                [34.60587561854445, -87.35780255616486],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_756a30d738cd30f571324c30f4a8066e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_45a85346cbdb9cae367cd533d472ae4a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a0e6ad6b5f602b21cfe04f4fb6f571b = $(`<div id="html_3a0e6ad6b5f602b21cfe04f4fb6f571b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Dec1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 287</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 841 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 999-6239</p>         </div>         </div>`)[0];
+                popup_45a85346cbdb9cae367cd533d472ae4a.setContent(html_3a0e6ad6b5f602b21cfe04f4fb6f571b);
+            
+        
+
+        marker_9929928f9674dd82edc1103ee856bde7.bindPopup(popup_45a85346cbdb9cae367cd533d472ae4a)
+        ;
+
+        
+    
+    
+            marker_9929928f9674dd82edc1103ee856bde7.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Dec1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9929928f9674dd82edc1103ee856bde7.setIcon(icon_756a30d738cd30f571324c30f4a8066e);
+            
+    
+            var marker_bc9015323c2b3f4faffa51c6afdc8c6e = L.marker(
+                [34.629390837120425, -87.4195194880966],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_9a4439af516f0ef4a9cb3f6e21136f69 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a1b681f5756469eec8c08ebb502b676a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75b40b1b3b850707abe2f21809bd6748 = $(`<div id="html_75b40b1b3b850707abe2f21809bd6748" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Dec2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 9</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 140</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 714 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 582-4188</p>         </div>         </div>`)[0];
+                popup_a1b681f5756469eec8c08ebb502b676a.setContent(html_75b40b1b3b850707abe2f21809bd6748);
+            
+        
+
+        marker_bc9015323c2b3f4faffa51c6afdc8c6e.bindPopup(popup_a1b681f5756469eec8c08ebb502b676a)
+        ;
+
+        
+    
+    
+            marker_bc9015323c2b3f4faffa51c6afdc8c6e.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Dec2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bc9015323c2b3f4faffa51c6afdc8c6e.setIcon(icon_9a4439af516f0ef4a9cb3f6e21136f69);
+            
+    
+            var marker_beb633f3fc93e203df7ebe602711769e = L.marker(
+                [34.371860090064686, -87.11160438519987],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_4d3f63ad092b7f26b8f79def6608e7b8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4a9c8eb558959af3ff66a19a007141e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8e8f0f467f8d70835ea6ea7493582645 = $(`<div id="html_8e8f0f467f8d70835ea6ea7493582645" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Dec3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 279</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 474 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 161-8908</p>         </div>         </div>`)[0];
+                popup_4a9c8eb558959af3ff66a19a007141e8.setContent(html_8e8f0f467f8d70835ea6ea7493582645);
+            
+        
+
+        marker_beb633f3fc93e203df7ebe602711769e.bindPopup(popup_4a9c8eb558959af3ff66a19a007141e8)
+        ;
+
+        
+    
+    
+            marker_beb633f3fc93e203df7ebe602711769e.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Dec3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_beb633f3fc93e203df7ebe602711769e.setIcon(icon_4d3f63ad092b7f26b8f79def6608e7b8);
+            
+    
+            var marker_a10627388a570aeb70d4f1928b0a092e = L.marker(
+                [34.4794327276094, -86.67854145923228],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_7b92104cdfc10154eebcd75b8cb10340 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_02392159e0b602a5d1dcf1ae614483fd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ec800fae2893afc4d467e03272dd7b28 = $(`<div id="html_ec800fae2893afc4d467e03272dd7b28" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Dec4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 150</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 165 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 142-7460</p>         </div>         </div>`)[0];
+                popup_02392159e0b602a5d1dcf1ae614483fd.setContent(html_ec800fae2893afc4d467e03272dd7b28);
+            
+        
+
+        marker_a10627388a570aeb70d4f1928b0a092e.bindPopup(popup_02392159e0b602a5d1dcf1ae614483fd)
+        ;
+
+        
+    
+    
+            marker_a10627388a570aeb70d4f1928b0a092e.bindTooltip(
+                `<div>
+                     PG: PG-Group D-Dec4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a10627388a570aeb70d4f1928b0a092e.setIcon(icon_7b92104cdfc10154eebcd75b8cb10340);
+            
+    
+            var marker_2000cc6bca04e26c38324f6abe7f9333 = L.marker(
+                [34.66185665928064, -87.099767657504],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_191a28bb793a64efc918f6d110d911cd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c7a2494350d3b0799715fa1e1de9ae03 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b75e3bcb39a10402f5b178fe73851d5b = $(`<div id="html_b75e3bcb39a10402f5b178fe73851d5b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Dec5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 10</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 218</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 458 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 975-9794</p>         </div>         </div>`)[0];
+                popup_c7a2494350d3b0799715fa1e1de9ae03.setContent(html_b75e3bcb39a10402f5b178fe73851d5b);
+            
+        
+
+        marker_2000cc6bca04e26c38324f6abe7f9333.bindPopup(popup_c7a2494350d3b0799715fa1e1de9ae03)
+        ;
+
+        
+    
+    
+            marker_2000cc6bca04e26c38324f6abe7f9333.bindTooltip(
+                `<div>
+                     PG: PG-Group A-Dec5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2000cc6bca04e26c38324f6abe7f9333.setIcon(icon_191a28bb793a64efc918f6d110d911cd);
+            
+    
+            var marker_a02e8343f5a85bfaff595fa2626b52b9 = L.marker(
+                [34.48079526854454, -86.81936809742706],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_fea359e4eaee7f5467e76c78c39cfd22 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ce5c5042ea4b559d4a92c608b3d0c3a8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f4d55d45aa1e7bb9c9b23c0de8a6f80f = $(`<div id="html_f4d55d45aa1e7bb9c9b23c0de8a6f80f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Dec6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 238</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 659 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 376-6475</p>         </div>         </div>`)[0];
+                popup_ce5c5042ea4b559d4a92c608b3d0c3a8.setContent(html_f4d55d45aa1e7bb9c9b23c0de8a6f80f);
+            
+        
+
+        marker_a02e8343f5a85bfaff595fa2626b52b9.bindPopup(popup_ce5c5042ea4b559d4a92c608b3d0c3a8)
+        ;
+
+        
+    
+    
+            marker_a02e8343f5a85bfaff595fa2626b52b9.bindTooltip(
+                `<div>
+                     PG: PG-Group B-Dec6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a02e8343f5a85bfaff595fa2626b52b9.setIcon(icon_fea359e4eaee7f5467e76c78c39cfd22);
+            
+    
+            var marker_8cf19a5bdfd3cf1261efaca680123671 = L.marker(
+                [34.45431867440303, -87.25979898427724],
+                {
+}
+            ).addTo(feature_group_1483f70150b34be4a03cea8a09ebf441);
+        
+    
+            var icon_7d849db783bafcae6719bdb542a8902e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_72eb7be3fa97a870d74205182aae555a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a23306f138438333c77a789d042e99cf = $(`<div id="html_a23306f138438333c77a789d042e99cf" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Dec7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 231</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 540 Healthcare Ave, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 853-2391</p>         </div>         </div>`)[0];
+                popup_72eb7be3fa97a870d74205182aae555a.setContent(html_a23306f138438333c77a789d042e99cf);
+            
+        
+
+        marker_8cf19a5bdfd3cf1261efaca680123671.bindPopup(popup_72eb7be3fa97a870d74205182aae555a)
+        ;
+
+        
+    
+    
+            marker_8cf19a5bdfd3cf1261efaca680123671.bindTooltip(
+                `<div>
+                     PG: PG-Group C-Dec7
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8cf19a5bdfd3cf1261efaca680123671.setIcon(icon_7d849db783bafcae6719bdb542a8902e);
+            
+    
+            feature_group_1483f70150b34be4a03cea8a09ebf441.addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+            var feature_group_bd1d6fc8b52cee402dee6a6416d36ab7 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_746720f2e90c123c02fb221b75d0eaf8 = L.marker(
+                [34.59241683357609, -87.20550926206836],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_02389224951ec06ac41afd8f6de01f05 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8ee9f76ba0dcd3da6be6983955767b08 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8e09bc8fb30257f9aeeb9f8f938a0925 = $(`<div id="html_8e09bc8fb30257f9aeeb9f8f938a0925" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Guardian Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 63</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 232 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 386-7069</p>         </div>         </div>`)[0];
+                popup_8ee9f76ba0dcd3da6be6983955767b08.setContent(html_8e09bc8fb30257f9aeeb9f8f938a0925);
+            
+        
+
+        marker_746720f2e90c123c02fb221b75d0eaf8.bindPopup(popup_8ee9f76ba0dcd3da6be6983955767b08)
+        ;
+
+        
+    
+    
+            marker_746720f2e90c123c02fb221b75d0eaf8.bindTooltip(
+                `<div>
+                     HHAH: Guardian Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_746720f2e90c123c02fb221b75d0eaf8.setIcon(icon_02389224951ec06ac41afd8f6de01f05);
+            
+    
+            var marker_c339c7576361fc72a507b6679786e93d = L.marker(
+                [34.39835452110664, -86.71542998634375],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_9ab567ff155abfd58606d381022fe172 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ad910b4a5d0255ffed2df1faebf7b9c3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_902426d49f2eb384b04067ee35ea646c = $(`<div id="html_902426d49f2eb384b04067ee35ea646c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Care</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 105</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 596 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 732-4577</p>         </div>         </div>`)[0];
+                popup_ad910b4a5d0255ffed2df1faebf7b9c3.setContent(html_902426d49f2eb384b04067ee35ea646c);
+            
+        
+
+        marker_c339c7576361fc72a507b6679786e93d.bindPopup(popup_ad910b4a5d0255ffed2df1faebf7b9c3)
+        ;
+
+        
+    
+    
+            marker_c339c7576361fc72a507b6679786e93d.bindTooltip(
+                `<div>
+                     HHAH: Elite Care
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c339c7576361fc72a507b6679786e93d.setIcon(icon_9ab567ff155abfd58606d381022fe172);
+            
+    
+            var marker_96d16d650a4b8fe2e9b3a55d74c886b1 = L.marker(
+                [34.44451862973248, -87.25600575955494],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_b06b3042fbfa9d7726e0ffbfd3f8782e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9138988fdbaac5162f30ebb2d93f3c11 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1fc92d7155e2c08941fb0dc6d35950af = $(`<div id="html_1fc92d7155e2c08941fb0dc6d35950af" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 50</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 930 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 197-5483</p>         </div>         </div>`)[0];
+                popup_9138988fdbaac5162f30ebb2d93f3c11.setContent(html_1fc92d7155e2c08941fb0dc6d35950af);
+            
+        
+
+        marker_96d16d650a4b8fe2e9b3a55d74c886b1.bindPopup(popup_9138988fdbaac5162f30ebb2d93f3c11)
+        ;
+
+        
+    
+    
+            marker_96d16d650a4b8fe2e9b3a55d74c886b1.bindTooltip(
+                `<div>
+                     HHAH: Wellness Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_96d16d650a4b8fe2e9b3a55d74c886b1.setIcon(icon_b06b3042fbfa9d7726e0ffbfd3f8782e);
+            
+    
+            var marker_9acedd98d163cd91e3f306128b0ba7ac = L.marker(
+                [34.575124133584836, -87.1921355058799],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_1570ef422778189a487dc9f1ea7ac96d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c278d257ae8f7dff7aa631824a84eabe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c4e036218e8e736aa3c9b986839bd59e = $(`<div id="html_c4e036218e8e736aa3c9b986839bd59e" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 149</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 172 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 810-7836</p>         </div>         </div>`)[0];
+                popup_c278d257ae8f7dff7aa631824a84eabe.setContent(html_c4e036218e8e736aa3c9b986839bd59e);
+            
+        
+
+        marker_9acedd98d163cd91e3f306128b0ba7ac.bindPopup(popup_c278d257ae8f7dff7aa631824a84eabe)
+        ;
+
+        
+    
+    
+            marker_9acedd98d163cd91e3f306128b0ba7ac.bindTooltip(
+                `<div>
+                     HHAH: Wellness Network
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9acedd98d163cd91e3f306128b0ba7ac.setIcon(icon_1570ef422778189a487dc9f1ea7ac96d);
+            
+    
+            var marker_adfc63f9247baec0a0d9384d778d59c2 = L.marker(
+                [34.43398811912902, -87.07915851291158],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_f243627dfc55351a21408a1b45cf03f1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a3d4ba2eaac4b6ab5459608d3f234f3a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_19f55226a5a0e5f5880fd62918055757 = $(`<div id="html_19f55226a5a0e5f5880fd62918055757" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 71</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 523 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 525-1733</p>         </div>         </div>`)[0];
+                popup_a3d4ba2eaac4b6ab5459608d3f234f3a.setContent(html_19f55226a5a0e5f5880fd62918055757);
+            
+        
+
+        marker_adfc63f9247baec0a0d9384d778d59c2.bindPopup(popup_a3d4ba2eaac4b6ab5459608d3f234f3a)
+        ;
+
+        
+    
+    
+            marker_adfc63f9247baec0a0d9384d778d59c2.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_adfc63f9247baec0a0d9384d778d59c2.setIcon(icon_f243627dfc55351a21408a1b45cf03f1);
+            
+    
+            var marker_2bac8c246ffc93789ea1577a831251f4 = L.marker(
+                [34.68345437767475, -87.1166683027014],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_1a646412857282a364bbc21981add1df = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_69df394b3bdf287021ae026163018e41 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3c909b576f376be0334714961ce04fba = $(`<div id="html_3c909b576f376be0334714961ce04fba" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Care</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 100</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 333 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 877-5169</p>         </div>         </div>`)[0];
+                popup_69df394b3bdf287021ae026163018e41.setContent(html_3c909b576f376be0334714961ce04fba);
+            
+        
+
+        marker_2bac8c246ffc93789ea1577a831251f4.bindPopup(popup_69df394b3bdf287021ae026163018e41)
+        ;
+
+        
+    
+    
+            marker_2bac8c246ffc93789ea1577a831251f4.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Care
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2bac8c246ffc93789ea1577a831251f4.setIcon(icon_1a646412857282a364bbc21981add1df);
+            
+    
+            var marker_4e2944eafe19b5f5014c8c6e1b76f66c = L.marker(
+                [34.58159751881129, -87.31801798191779],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_302136690b193e35fa4ff524b9a32b00 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_884920585a1fb5245ba7c647fd58f9fa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6428438b45e87ef63b41630123628166 = $(`<div id="html_6428438b45e87ef63b41630123628166" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 62</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 198 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 644-7335</p>         </div>         </div>`)[0];
+                popup_884920585a1fb5245ba7c647fd58f9fa.setContent(html_6428438b45e87ef63b41630123628166);
+            
+        
+
+        marker_4e2944eafe19b5f5014c8c6e1b76f66c.bindPopup(popup_884920585a1fb5245ba7c647fd58f9fa)
+        ;
+
+        
+    
+    
+            marker_4e2944eafe19b5f5014c8c6e1b76f66c.bindTooltip(
+                `<div>
+                     HHAH: Premier Partners
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4e2944eafe19b5f5014c8c6e1b76f66c.setIcon(icon_302136690b193e35fa4ff524b9a32b00);
+            
+    
+            var marker_c7054c60196cb16bbe1beafe0c6a38ad = L.marker(
+                [34.40632203072687, -86.68494940177635],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_db3487d30dafb0aaf9b8b03618e6f257 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_32bf7934531c18eb6f0166dfa47ec707 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5b707b74132f819afef059de2cdd6dd4 = $(`<div id="html_5b707b74132f819afef059de2cdd6dd4" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 74</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 327 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 153-3209</p>         </div>         </div>`)[0];
+                popup_32bf7934531c18eb6f0166dfa47ec707.setContent(html_5b707b74132f819afef059de2cdd6dd4);
+            
+        
+
+        marker_c7054c60196cb16bbe1beafe0c6a38ad.bindPopup(popup_32bf7934531c18eb6f0166dfa47ec707)
+        ;
+
+        
+    
+    
+            marker_c7054c60196cb16bbe1beafe0c6a38ad.bindTooltip(
+                `<div>
+                     HHAH: Wellness Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c7054c60196cb16bbe1beafe0c6a38ad.setIcon(icon_db3487d30dafb0aaf9b8b03618e6f257);
+            
+    
+            var marker_99337cec8fa0221606801679e0901bfe = L.marker(
+                [34.645490424867425, -87.05904676132107],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_4b5fdb90e920901ee42217124699d3ed = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "gray",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b8f9bc408fefa9d88ef299800aafb8bd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_642eabadc7fc7d1566731543a8ebc7da = $(`<div id="html_642eabadc7fc7d1566731543a8ebc7da" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 149</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 485 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 511-4268</p>         </div>         </div>`)[0];
+                popup_b8f9bc408fefa9d88ef299800aafb8bd.setContent(html_642eabadc7fc7d1566731543a8ebc7da);
+            
+        
+
+        marker_99337cec8fa0221606801679e0901bfe.bindPopup(popup_b8f9bc408fefa9d88ef299800aafb8bd)
+        ;
+
+        
+    
+    
+            marker_99337cec8fa0221606801679e0901bfe.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_99337cec8fa0221606801679e0901bfe.setIcon(icon_4b5fdb90e920901ee42217124699d3ed);
+            
+    
+            var marker_282f3c55bf632bf69f1391ec2c2830c2 = L.marker(
+                [34.381775167063395, -86.80170156179017],
+                {
+}
+            ).addTo(feature_group_bd1d6fc8b52cee402dee6a6416d36ab7);
+        
+    
+            var icon_bf971f64ce9d3f3727418ae0cd7a7b29 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_27e94eec0a0a24d2f3fcce26c783b818 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4a03c74fa1496c10805fe607b2ef95fe = $(`<div id="html_4a03c74fa1496c10805fe607b2ef95fe" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">CaringHands Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 106</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 751 Medical Blvd, Decatur</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 761-3028</p>         </div>         </div>`)[0];
+                popup_27e94eec0a0a24d2f3fcce26c783b818.setContent(html_4a03c74fa1496c10805fe607b2ef95fe);
+            
+        
+
+        marker_282f3c55bf632bf69f1391ec2c2830c2.bindPopup(popup_27e94eec0a0a24d2f3fcce26c783b818)
+        ;
+
+        
+    
+    
+            marker_282f3c55bf632bf69f1391ec2c2830c2.bindTooltip(
+                `<div>
+                     HHAH: CaringHands Agency
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_282f3c55bf632bf69f1391ec2c2830c2.setIcon(icon_bf971f64ce9d3f3727418ae0cd7a7b29);
+            
+    
+            feature_group_bd1d6fc8b52cee402dee6a6416d36ab7.addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_c386ed04762208973166e8f5f583a27d);
+        
+    
+            var mouse_position_2ed51178147c86d1226c70b9a8b72f1e = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_2ed51178147c86d1226c70b9a8b72f1e.options["latFormatter"] =
+                undefined;
+            mouse_position_2ed51178147c86d1226c70b9a8b72f1e.options["lngFormatter"] =
+                undefined;
+            map_c386ed04762208973166e8f5f583a27d.addControl(mouse_position_2ed51178147c86d1226c70b9a8b72f1e);
+        
+    
+            var layer_control_2d2e928bbdb1c1a47e3bcdf894200d53_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_68d8d1d3a02a31f2dd2914d089827782,
+                },
+                overlays :  {
+                    "State Boundaries" : geo_json_e21f390c4f95bbe0292cb300aa7292ca,
+                    "Decatur, AL Boundary" : geo_json_18a46c4d0473d62f61f3061d8331d3bb,
+                    "Physician Groups (PGs)" : feature_group_1483f70150b34be4a03cea8a09ebf441,
+                    "Home Health At Home (HHAHs)" : feature_group_bd1d6fc8b52cee402dee6a6416d36ab7,
+                },
+            };
+            let layer_control_2d2e928bbdb1c1a47e3bcdf894200d53 = L.control.layers(
+                layer_control_2d2e928bbdb1c1a47e3bcdf894200d53_layers.base_layers,
+                layer_control_2d2e928bbdb1c1a47e3bcdf894200d53_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_c386ed04762208973166e8f5f583a27d);
+
+        
+    
+            map_c386ed04762208973166e8f5f583a27d.fitBounds(
+                [[34.304598, -87.529722], [34.800022, -86.553782]],
+                {}
+            );
+        
+</script>
+</html>

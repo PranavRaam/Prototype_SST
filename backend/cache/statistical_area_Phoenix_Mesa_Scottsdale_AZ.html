@@ -25,7 +25,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_4b753a13847232749d6b381204ca406a {
+                #map_9f9edb2e7b2164a43752944e6f522f45 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -50,19 +50,19 @@
                         font-family: Arial; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
                 <h4 style="margin-top: 0; color: #1F2937;">Map View of Phoenix-Mesa-Chandler, AZ</h4>
                 <p style="font-size: 12px; margin-bottom: 0;">
-                    Showing 7 PGs and 6 HHAHs in this area.
+                    Showing 8 PGs and 9 HHAHs in this area.
                 </p>
             </div>
         
     
-            <div class="folium-map" id="map_4b753a13847232749d6b381204ca406a" ></div>
+            <div class="folium-map" id="map_9f9edb2e7b2164a43752944e6f522f45" ></div>
         
 </body>
 <script>
     
     
-            var map_4b753a13847232749d6b381204ca406a = L.map(
-                "map_4b753a13847232749d6b381204ca406a",
+            var map_9f9edb2e7b2164a43752944e6f522f45 = L.map(
+                "map_9f9edb2e7b2164a43752944e6f522f45",
                 {
                     center: [33.1844453569537, -112.0695631098796],
                     crs: L.CRS.EPSG3857,
@@ -79,7 +79,7 @@
 
         
     
-            var tile_layer_760bba4ecea831c9632a64ca77cf7cc1 = L.tileLayer(
+            var tile_layer_298d8623ec41c88b08fc48fb39103fc4 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
                 {
   "minZoom": 0,
@@ -96,83 +96,83 @@
             );
         
     
-            tile_layer_760bba4ecea831c9632a64ca77cf7cc1.addTo(map_4b753a13847232749d6b381204ca406a);
+            tile_layer_298d8623ec41c88b08fc48fb39103fc4.addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
-        function geo_json_0b313d3740daa32b43a0676ab5195d6c_styler(feature) {
+        function geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_styler(feature) {
             switch(feature.id) {
                 default:
-                    return {"color": "#6B7280", "fillColor": "transparent", "fillOpacity": 0, "weight": 1.5};
+                    return {"color": "#6B7280", "dashArray": "3,3", "fillColor": "transparent", "fillOpacity": 0, "opacity": 0.8, "weight": 1.5};
             }
         }
 
-        function geo_json_0b313d3740daa32b43a0676ab5195d6c_onEachFeature(feature, layer) {
+        function geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_onEachFeature(feature, layer) {
             layer.on({
             });
         };
-        var geo_json_0b313d3740daa32b43a0676ab5195d6c = L.geoJson(null, {
-                onEachFeature: geo_json_0b313d3740daa32b43a0676ab5195d6c_onEachFeature,
+        var geo_json_3951967cc04fe2fc14d33ce8e8e3aad3 = L.geoJson(null, {
+                onEachFeature: geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_onEachFeature,
             
-                style: geo_json_0b313d3740daa32b43a0676ab5195d6c_styler,
+                style: geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_styler,
             ...{
 }
         });
 
-        function geo_json_0b313d3740daa32b43a0676ab5195d6c_add (data) {
-            geo_json_0b313d3740daa32b43a0676ab5195d6c
+        function geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_add (data) {
+            geo_json_3951967cc04fe2fc14d33ce8e8e3aad3
                 .addData(data);
         }
-            geo_json_0b313d3740daa32b43a0676ab5195d6c_add({"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "features": [{"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "geometry": {"coordinates": [[[-110.75069, 37.003007], [-109.045172, 36.998977], [-109.050033, 31.332348], [-111.07498, 31.332342], [-114.813692, 32.494069], [-114.805678, 32.546332], [-114.791408, 32.556461], [-114.792808, 32.569524], [-114.813934, 32.562213], [-114.799402, 32.592618], [-114.80844, 32.619426], [-114.763784, 32.643403], [-114.70294, 32.744793], [-114.617395, 32.728257], [-114.539224, 32.749812], [-114.526856, 32.757094], [-114.529633, 32.795477], [-114.468971, 32.845155], [-114.462929, 32.907944], [-114.480925, 32.936276], [-114.468379, 32.970745], [-114.492938, 32.971781], [-114.511343, 33.023455], [-114.571653, 33.036624], [-114.618788, 33.027202], [-114.645979, 33.048902], [-114.662317, 33.03267], [-114.68902, 33.084035], [-114.706488, 33.08816], [-114.675359, 33.185488], [-114.673626, 33.223121], [-114.689541, 33.246428], [-114.672088, 33.258499], [-114.731223, 33.302433], [-114.698035, 33.352442], [-114.725282, 33.405048], [-114.643302, 33.416746], [-114.592369, 33.498675], [-114.524215, 33.553068], [-114.540617, 33.591412], [-114.521845, 33.612544], [-114.533194, 33.65166], [-114.514057, 33.660179], [-114.531523, 33.675108], [-114.494197, 33.707922], [-114.52805, 33.814963], [-114.529883, 33.857563], [-114.503017, 33.867998], [-114.525872, 33.901008], [-114.50792, 33.903807], [-114.535478, 33.934651], [-114.438266, 34.022609], [-114.434181, 34.087379], [-114.415908, 34.107636], [-114.229715, 34.186928], [-114.164648, 34.259699], [-114.131211, 34.26273], [-114.138282, 34.30323], [-114.176909, 34.349306], [-114.226107, 34.365916], [-114.335372, 34.450038], [-114.386699, 34.457911], [-114.380838, 34.529724], [-114.43681, 34.596074], [-114.424202, 34.610453], [-114.457985, 34.657113], [-114.470477, 34.711368], [-114.552682, 34.766871], [-114.586842, 34.835672], [-114.635176, 34.875003], [-114.637524, 35.027053], [-114.602908, 35.068588], [-114.646764, 35.101868], [-114.578263, 35.12881], [-114.569258, 35.183424], [-114.604607, 35.355239], [-114.678642, 35.497628], [-114.65677, 35.534964], [-114.675667, 35.580033], [-114.653534, 35.609672], [-114.689507, 35.651429], [-114.680631, 35.684046], [-114.705597, 35.708274], [-114.694267, 35.756633], [-114.712026, 35.805529], [-114.695277, 35.831091], [-114.705856, 35.850508], [-114.661636, 35.871233], [-114.708112, 35.909933], [-114.740536, 35.975545], [-114.743005, 36.00845], [-114.722096, 36.028952], [-114.741262, 36.038044], [-114.735285, 36.056648], [-114.754508, 36.086171], [-114.630474, 36.142218], [-114.615455, 36.129653], [-114.57109, 36.151099], [-114.511218, 36.150576], [-114.504715, 36.127188], [-114.4626, 36.139644], [-114.445042, 36.125346], [-114.405624, 36.146983], [-114.370181, 36.142624], [-114.306939, 36.082487], [-114.313591, 36.059048], [-114.270862, 36.045523], [-114.243865, 36.015266], [-114.15139, 36.023133], [-114.137112, 36.038491], [-114.111998, 36.09491], [-114.120865, 36.11085], [-114.096994, 36.120823], [-114.066798, 36.179087], [-114.043944, 36.19335], [-114.050616, 37.000167], [-110.75069, 37.003007]]], "type": "Polygon"}, "id": "55", "properties": {"ALAND": 294366106734, "AWATER": 854003932, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "04", "GEOIDFQ": "0400000US04", "INTPTLAT": "+34.2039362", "INTPTLON": "-111.6063449", "LSAD": "00", "MTFCC": "G4000", "NAME": "Arizona", "REGION": "4", "STATEFP": "04", "STATENS": "01779777", "STUSPS": "AZ"}, "type": "Feature"}], "type": "FeatureCollection"});
+            geo_json_3951967cc04fe2fc14d33ce8e8e3aad3_add({"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "features": [{"bbox": [-114.813934, 31.332342, -109.045172, 37.003007], "geometry": {"coordinates": [[[-110.75069, 37.003007], [-109.045172, 36.998977], [-109.050033, 31.332348], [-111.07498, 31.332342], [-114.813692, 32.494069], [-114.805678, 32.546332], [-114.791408, 32.556461], [-114.792808, 32.569524], [-114.813934, 32.562213], [-114.799402, 32.592618], [-114.80844, 32.619426], [-114.763784, 32.643403], [-114.70294, 32.744793], [-114.617395, 32.728257], [-114.539224, 32.749812], [-114.526856, 32.757094], [-114.529633, 32.795477], [-114.468971, 32.845155], [-114.462929, 32.907944], [-114.480925, 32.936276], [-114.468379, 32.970745], [-114.492938, 32.971781], [-114.511343, 33.023455], [-114.571653, 33.036624], [-114.618788, 33.027202], [-114.645979, 33.048902], [-114.662317, 33.03267], [-114.68902, 33.084035], [-114.706488, 33.08816], [-114.675359, 33.185488], [-114.673626, 33.223121], [-114.689541, 33.246428], [-114.672088, 33.258499], [-114.731223, 33.302433], [-114.698035, 33.352442], [-114.725282, 33.405048], [-114.643302, 33.416746], [-114.592369, 33.498675], [-114.524215, 33.553068], [-114.540617, 33.591412], [-114.521845, 33.612544], [-114.533194, 33.65166], [-114.514057, 33.660179], [-114.531523, 33.675108], [-114.494197, 33.707922], [-114.52805, 33.814963], [-114.529883, 33.857563], [-114.503017, 33.867998], [-114.525872, 33.901008], [-114.50792, 33.903807], [-114.535478, 33.934651], [-114.438266, 34.022609], [-114.434181, 34.087379], [-114.415908, 34.107636], [-114.229715, 34.186928], [-114.164648, 34.259699], [-114.131211, 34.26273], [-114.138282, 34.30323], [-114.176909, 34.349306], [-114.226107, 34.365916], [-114.335372, 34.450038], [-114.386699, 34.457911], [-114.380838, 34.529724], [-114.43681, 34.596074], [-114.424202, 34.610453], [-114.457985, 34.657113], [-114.470477, 34.711368], [-114.552682, 34.766871], [-114.586842, 34.835672], [-114.635176, 34.875003], [-114.637524, 35.027053], [-114.602908, 35.068588], [-114.646764, 35.101868], [-114.578263, 35.12881], [-114.569258, 35.183424], [-114.604607, 35.355239], [-114.678642, 35.497628], [-114.65677, 35.534964], [-114.675667, 35.580033], [-114.653534, 35.609672], [-114.689507, 35.651429], [-114.680631, 35.684046], [-114.705597, 35.708274], [-114.694267, 35.756633], [-114.712026, 35.805529], [-114.695277, 35.831091], [-114.705856, 35.850508], [-114.661636, 35.871233], [-114.708112, 35.909933], [-114.740536, 35.975545], [-114.743005, 36.00845], [-114.722096, 36.028952], [-114.741262, 36.038044], [-114.735285, 36.056648], [-114.754508, 36.086171], [-114.630474, 36.142218], [-114.615455, 36.129653], [-114.57109, 36.151099], [-114.511218, 36.150576], [-114.504715, 36.127188], [-114.4626, 36.139644], [-114.445042, 36.125346], [-114.405624, 36.146983], [-114.370181, 36.142624], [-114.306939, 36.082487], [-114.313591, 36.059048], [-114.270862, 36.045523], [-114.243865, 36.015266], [-114.15139, 36.023133], [-114.137112, 36.038491], [-114.111998, 36.09491], [-114.120865, 36.11085], [-114.096994, 36.120823], [-114.066798, 36.179087], [-114.043944, 36.19335], [-114.050616, 37.000167], [-110.75069, 37.003007]]], "type": "Polygon"}, "id": "55", "properties": {"ALAND": 294366106734, "AWATER": 854003932, "DIVISION": "8", "FUNCSTAT": "A", "GEOID": "04", "GEOIDFQ": "0400000US04", "INTPTLAT": "+34.2039362", "INTPTLON": "-111.6063449", "LSAD": "00", "MTFCC": "G4000", "NAME": "Arizona", "REGION": "4", "STATEFP": "04", "STATENS": "01779777", "STUSPS": "AZ"}, "type": "Feature"}], "type": "FeatureCollection"});
 
         
     
-            geo_json_0b313d3740daa32b43a0676ab5195d6c.addTo(map_4b753a13847232749d6b381204ca406a);
+            geo_json_3951967cc04fe2fc14d33ce8e8e3aad3.addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
-        function geo_json_491114d69936abe1d09dfe023a3c880b_styler(feature) {
+        function geo_json_215becdda7620ac3d003785de6ae8b6a_styler(feature) {
             switch(feature.id) {
                 default:
-                    return {"color": "#312E81", "dashArray": "5, 5", "fillColor": "#4F46E5", "fillOpacity": 0.2, "weight": 3};
+                    return {"color": "#312E81", "fillColor": "#4F46E5", "fillOpacity": 0.2, "opacity": 0.9, "weight": 3};
             }
         }
 
-        function geo_json_491114d69936abe1d09dfe023a3c880b_onEachFeature(feature, layer) {
+        function geo_json_215becdda7620ac3d003785de6ae8b6a_onEachFeature(feature, layer) {
             layer.on({
             });
         };
-        var geo_json_491114d69936abe1d09dfe023a3c880b = L.geoJson(null, {
-                onEachFeature: geo_json_491114d69936abe1d09dfe023a3c880b_onEachFeature,
+        var geo_json_215becdda7620ac3d003785de6ae8b6a = L.geoJson(null, {
+                onEachFeature: geo_json_215becdda7620ac3d003785de6ae8b6a_onEachFeature,
             
-                style: geo_json_491114d69936abe1d09dfe023a3c880b_styler,
+                style: geo_json_215becdda7620ac3d003785de6ae8b6a_styler,
             ...{
 }
         });
 
-        function geo_json_491114d69936abe1d09dfe023a3c880b_add (data) {
-            geo_json_491114d69936abe1d09dfe023a3c880b
+        function geo_json_215becdda7620ac3d003785de6ae8b6a_add (data) {
+            geo_json_215becdda7620ac3d003785de6ae8b6a
                 .addData(data);
         }
-            geo_json_491114d69936abe1d09dfe023a3c880b_add({"features": [{"geometry": {"coordinates": [[[-111.039976, 33.466019], [-110.974706, 33.342095], [-110.946684, 33.250053], [-110.781754, 32.983891], [-110.71648, 33.040915], [-110.721105, 33.0762], [-110.690017, 33.078469], [-110.677893, 33.111365], [-110.656508, 33.113692], [-110.634961, 33.142031], [-110.593459, 33.133926], [-110.549703, 33.153094], [-110.54547, 33.169057], [-110.525015, 33.15957], [-110.534323, 33.167713], [-110.504733, 33.186248], [-110.449021, 33.194526], [-110.449233, 32.513995], [-111.157567, 32.501624], [-113.333894, 32.505188], [-113.333751, 34.000039], [-112.743951, 33.999898], [-112.276168, 33.882469], [-112.235051, 33.916408], [-112.240348, 33.956643], [-112.196771, 33.973935], [-112.182912, 34.012483], [-112.161128, 34.017717], [-112.153647, 34.040909], [-112.164758, 34.04817], [-111.726334, 34.000041], [-111.454415, 34.00475], [-111.433096, 33.984401], [-111.452552, 33.965928], [-111.451736, 33.920995], [-111.405203, 33.919436], [-111.412824, 33.885881], [-111.38721, 33.862488], [-111.392497, 33.8359], [-111.372317, 33.823924], [-111.388326, 33.805353], [-111.386812, 33.750044], [-111.356291, 33.738835], [-111.331394, 33.688338], [-111.223687, 33.602857], [-111.20704, 33.636878], [-111.153354, 33.677606], [-111.039976, 33.466019]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+            geo_json_215becdda7620ac3d003785de6ae8b6a_add({"features": [{"geometry": {"coordinates": [[[-111.039976, 33.466019], [-110.974706, 33.342095], [-110.946684, 33.250053], [-110.781754, 32.983891], [-110.71648, 33.040915], [-110.721105, 33.0762], [-110.690017, 33.078469], [-110.677893, 33.111365], [-110.656508, 33.113692], [-110.634961, 33.142031], [-110.593459, 33.133926], [-110.549703, 33.153094], [-110.54547, 33.169057], [-110.525015, 33.15957], [-110.534323, 33.167713], [-110.504733, 33.186248], [-110.449021, 33.194526], [-110.449233, 32.513995], [-111.157567, 32.501624], [-113.333894, 32.505188], [-113.333751, 34.000039], [-112.743951, 33.999898], [-112.276168, 33.882469], [-112.235051, 33.916408], [-112.240348, 33.956643], [-112.196771, 33.973935], [-112.182912, 34.012483], [-112.161128, 34.017717], [-112.153647, 34.040909], [-112.164758, 34.04817], [-111.726334, 34.000041], [-111.454415, 34.00475], [-111.433096, 33.984401], [-111.452552, 33.965928], [-111.451736, 33.920995], [-111.405203, 33.919436], [-111.412824, 33.885881], [-111.38721, 33.862488], [-111.392497, 33.8359], [-111.372317, 33.823924], [-111.388326, 33.805353], [-111.386812, 33.750044], [-111.356291, 33.738835], [-111.331394, 33.688338], [-111.223687, 33.602857], [-111.20704, 33.636878], [-111.153354, 33.677606], [-111.039976, 33.466019]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
 
         
     
-            geo_json_491114d69936abe1d09dfe023a3c880b.addTo(map_4b753a13847232749d6b381204ca406a);
+            geo_json_215becdda7620ac3d003785de6ae8b6a.addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
-            var feature_group_58c75e8512fe4aede2c079c0b3bc4f7b = L.featureGroup(
+            var feature_group_5dfde5c9d4a49d19fda70c44ce89d475 = L.featureGroup(
                 {
 }
             );
         
     
-            var marker_df90da7310d77af4ccb2c39465c6d714 = L.marker(
-                [33.76081394119349, -112.82932934088844],
+            var marker_cef13d9cc1ef804b27adb45a474dc58a = L.marker(
+                [32.752557248696185, -112.56805135037321],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_e4585cbf638820cb0ded7efb02dffc37 = L.AwesomeMarkers.icon(
+            var icon_3c230bfe77808f6b9637f050e8332cf1 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -183,24 +183,24 @@
             );
         
     
-        var popup_cca5e5e021d5ad8f67e41cee802ce198 = L.popup({
+        var popup_eca2c0a9bfac9ce7e74b5b5e30dc4ca1 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_8b32a4b32d626c00a00fdb93a9ccb25c = $(`<div id="html_8b32a4b32d626c00a00fdb93a9ccb25c" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pho1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 133</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 152 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 577-9375</p>         </div>         </div>`)[0];
-                popup_cca5e5e021d5ad8f67e41cee802ce198.setContent(html_8b32a4b32d626c00a00fdb93a9ccb25c);
+                var html_2e6d4ba6ec35605e5b769f968c122b79 = $(`<div id="html_2e6d4ba6ec35605e5b769f968c122b79" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pho1</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 91</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 503 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 716-5577</p>         </div>         </div>`)[0];
+                popup_eca2c0a9bfac9ce7e74b5b5e30dc4ca1.setContent(html_2e6d4ba6ec35605e5b769f968c122b79);
             
         
 
-        marker_df90da7310d77af4ccb2c39465c6d714.bindPopup(popup_cca5e5e021d5ad8f67e41cee802ce198)
+        marker_cef13d9cc1ef804b27adb45a474dc58a.bindPopup(popup_eca2c0a9bfac9ce7e74b5b5e30dc4ca1)
         ;
 
         
     
     
-            marker_df90da7310d77af4ccb2c39465c6d714.bindTooltip(
+            marker_cef13d9cc1ef804b27adb45a474dc58a.bindTooltip(
                 `<div>
                      PG: PG-Group A-Pho1
                  </div>`,
@@ -210,17 +210,17 @@
             );
         
     
-                marker_df90da7310d77af4ccb2c39465c6d714.setIcon(icon_e4585cbf638820cb0ded7efb02dffc37);
+                marker_cef13d9cc1ef804b27adb45a474dc58a.setIcon(icon_3c230bfe77808f6b9637f050e8332cf1);
             
     
-            var marker_85111cc592d3a887df21d44ac1f47611 = L.marker(
-                [32.698031272089814, -110.83271602092381],
+            var marker_b03d65ecaae5dfc224b7285a445882e1 = L.marker(
+                [33.21058406594614, -111.9417823630956],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_5be68244a5e6afe5281eaf2283d1c1b1 = L.AwesomeMarkers.icon(
+            var icon_9facb27a53da1520f01398ac6ba3b4d8 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -231,24 +231,24 @@
             );
         
     
-        var popup_cb791dc7d64acda96fa572ab959c3519 = L.popup({
+        var popup_dd852af5d9507a1f3bac6f4ef1525254 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_42e16065a2ad1717cce1b2b42318bdf7 = $(`<div id="html_42e16065a2ad1717cce1b2b42318bdf7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Pho2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 15</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 281</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 895 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 350-3964</p>         </div>         </div>`)[0];
-                popup_cb791dc7d64acda96fa572ab959c3519.setContent(html_42e16065a2ad1717cce1b2b42318bdf7);
+                var html_38f0cc1b5a6f39c342286a972115ba52 = $(`<div id="html_38f0cc1b5a6f39c342286a972115ba52" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Pho2</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 193</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 301 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 585-3539</p>         </div>         </div>`)[0];
+                popup_dd852af5d9507a1f3bac6f4ef1525254.setContent(html_38f0cc1b5a6f39c342286a972115ba52);
             
         
 
-        marker_85111cc592d3a887df21d44ac1f47611.bindPopup(popup_cb791dc7d64acda96fa572ab959c3519)
+        marker_b03d65ecaae5dfc224b7285a445882e1.bindPopup(popup_dd852af5d9507a1f3bac6f4ef1525254)
         ;
 
         
     
     
-            marker_85111cc592d3a887df21d44ac1f47611.bindTooltip(
+            marker_b03d65ecaae5dfc224b7285a445882e1.bindTooltip(
                 `<div>
                      PG: PG-Group B-Pho2
                  </div>`,
@@ -258,17 +258,17 @@
             );
         
     
-                marker_85111cc592d3a887df21d44ac1f47611.setIcon(icon_5be68244a5e6afe5281eaf2283d1c1b1);
+                marker_b03d65ecaae5dfc224b7285a445882e1.setIcon(icon_9facb27a53da1520f01398ac6ba3b4d8);
             
     
-            var marker_7736bec73f77a831607bce0925145c7c = L.marker(
-                [33.80222443750963, -112.90433082617484],
+            var marker_d4032b16df48a7b44b1bd3ac09c38f6e = L.marker(
+                [32.81493912705191, -111.64115170904122],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_ec369dee89e8e5b7a12968798ac4de17 = L.AwesomeMarkers.icon(
+            var icon_5858a6b790bbca7aa523b6e29fda2b0d = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -279,24 +279,24 @@
             );
         
     
-        var popup_60c6dbdc719ad74503d92ae668cd9251 = L.popup({
+        var popup_b2d2d553b20649ecce0d8d1ecb7f5048 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_5243d02c890a64ab2ef9e694d2149180 = $(`<div id="html_5243d02c890a64ab2ef9e694d2149180" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Pho3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 275</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 227 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 127-1871</p>         </div>         </div>`)[0];
-                popup_60c6dbdc719ad74503d92ae668cd9251.setContent(html_5243d02c890a64ab2ef9e694d2149180);
+                var html_1b3d110026d0d0bc2a295ceec05151a8 = $(`<div id="html_1b3d110026d0d0bc2a295ceec05151a8" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Pho3</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 11</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 228</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 531 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 370-3680</p>         </div>         </div>`)[0];
+                popup_b2d2d553b20649ecce0d8d1ecb7f5048.setContent(html_1b3d110026d0d0bc2a295ceec05151a8);
             
         
 
-        marker_7736bec73f77a831607bce0925145c7c.bindPopup(popup_60c6dbdc719ad74503d92ae668cd9251)
+        marker_d4032b16df48a7b44b1bd3ac09c38f6e.bindPopup(popup_b2d2d553b20649ecce0d8d1ecb7f5048)
         ;
 
         
     
     
-            marker_7736bec73f77a831607bce0925145c7c.bindTooltip(
+            marker_d4032b16df48a7b44b1bd3ac09c38f6e.bindTooltip(
                 `<div>
                      PG: PG-Group C-Pho3
                  </div>`,
@@ -306,17 +306,17 @@
             );
         
     
-                marker_7736bec73f77a831607bce0925145c7c.setIcon(icon_ec369dee89e8e5b7a12968798ac4de17);
+                marker_d4032b16df48a7b44b1bd3ac09c38f6e.setIcon(icon_5858a6b790bbca7aa523b6e29fda2b0d);
             
     
-            var marker_d31a38ac848a8f0e0de231ddac07b697 = L.marker(
-                [33.21908924289295, -111.74270803735229],
+            var marker_873d0e8154462ae6963638321587e873 = L.marker(
+                [32.73705131883732, -112.22836713166386],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_56d56163398cfd1b9cd90b6a31e8a781 = L.AwesomeMarkers.icon(
+            var icon_6e233a03e8160af0a352be06e91a9c5e = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -327,24 +327,24 @@
             );
         
     
-        var popup_5a05b8ff3df9443e0af4a4f8ccb5ae10 = L.popup({
+        var popup_ad9e138dd073ad02d0753abcf898f7c9 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_ff824ea1fe5c1b2646fa78d008e06269 = $(`<div id="html_ff824ea1fe5c1b2646fa78d008e06269" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Pho4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 12</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 283</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 651 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 994-1279</p>         </div>         </div>`)[0];
-                popup_5a05b8ff3df9443e0af4a4f8ccb5ae10.setContent(html_ff824ea1fe5c1b2646fa78d008e06269);
+                var html_bd8b6dc314b4fb3bace1f62bd3a0b261 = $(`<div id="html_bd8b6dc314b4fb3bace1f62bd3a0b261" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Pho4</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 155</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 286 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 432-8183</p>         </div>         </div>`)[0];
+                popup_ad9e138dd073ad02d0753abcf898f7c9.setContent(html_bd8b6dc314b4fb3bace1f62bd3a0b261);
             
         
 
-        marker_d31a38ac848a8f0e0de231ddac07b697.bindPopup(popup_5a05b8ff3df9443e0af4a4f8ccb5ae10)
+        marker_873d0e8154462ae6963638321587e873.bindPopup(popup_ad9e138dd073ad02d0753abcf898f7c9)
         ;
 
         
     
     
-            marker_d31a38ac848a8f0e0de231ddac07b697.bindTooltip(
+            marker_873d0e8154462ae6963638321587e873.bindTooltip(
                 `<div>
                      PG: PG-Group D-Pho4
                  </div>`,
@@ -354,19 +354,19 @@
             );
         
     
-                marker_d31a38ac848a8f0e0de231ddac07b697.setIcon(icon_56d56163398cfd1b9cd90b6a31e8a781);
+                marker_873d0e8154462ae6963638321587e873.setIcon(icon_6e233a03e8160af0a352be06e91a9c5e);
             
     
-            var marker_c46a3038e5b8be667822e59ebfac698f = L.marker(
-                [33.855845337350935, -111.91319570154288],
+            var marker_d6b4249d8bc0229a2044b38fb25f65fa = L.marker(
+                [32.66755425026488, -111.12224426626894],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_fe40e36ed7b77d49a2a9ed0cca9a9743 = L.AwesomeMarkers.icon(
+            var icon_d7acf947b4d93755a187efc14dd2218a = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "blue",
   "iconColor": "white",
   "icon": "user-md",
   "prefix": "fa",
@@ -375,24 +375,24 @@
             );
         
     
-        var popup_fb43a548a60b5d22b1af64741a6490fb = L.popup({
+        var popup_782aa6e2cf8b07e75d2cba0ff4a83436 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_88550f3f25f6afdb6ee5e08e5f93ac04 = $(`<div id="html_88550f3f25f6afdb6ee5e08e5f93ac04" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pho5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 117</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 111 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 799-3226</p>         </div>         </div>`)[0];
-                popup_fb43a548a60b5d22b1af64741a6490fb.setContent(html_88550f3f25f6afdb6ee5e08e5f93ac04);
+                var html_ca67612bff3e71b743a0b000c660988b = $(`<div id="html_ca67612bff3e71b743a0b000c660988b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group A-Pho5</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group A</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 263</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 922 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 846-3196</p>         </div>         </div>`)[0];
+                popup_782aa6e2cf8b07e75d2cba0ff4a83436.setContent(html_ca67612bff3e71b743a0b000c660988b);
             
         
 
-        marker_c46a3038e5b8be667822e59ebfac698f.bindPopup(popup_fb43a548a60b5d22b1af64741a6490fb)
+        marker_d6b4249d8bc0229a2044b38fb25f65fa.bindPopup(popup_782aa6e2cf8b07e75d2cba0ff4a83436)
         ;
 
         
     
     
-            marker_c46a3038e5b8be667822e59ebfac698f.bindTooltip(
+            marker_d6b4249d8bc0229a2044b38fb25f65fa.bindTooltip(
                 `<div>
                      PG: PG-Group A-Pho5
                  </div>`,
@@ -402,19 +402,19 @@
             );
         
     
-                marker_c46a3038e5b8be667822e59ebfac698f.setIcon(icon_fe40e36ed7b77d49a2a9ed0cca9a9743);
+                marker_d6b4249d8bc0229a2044b38fb25f65fa.setIcon(icon_d7acf947b4d93755a187efc14dd2218a);
             
     
-            var marker_3a64d9a535da7f523e800de54a34c7cd = L.marker(
-                [33.19990804937151, -112.34104701904839],
+            var marker_505d63860e3a1b716b194ddc286a3468 = L.marker(
+                [33.47725020621398, -112.7377943006879],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_c1512ea35ae0c9e3ceaf8a10cc853e14 = L.AwesomeMarkers.icon(
+            var icon_e8be0afddc4b998eff5c623ead302fc6 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "gray",
+  "markerColor": "blue",
   "iconColor": "white",
   "icon": "user-md",
   "prefix": "fa",
@@ -423,24 +423,24 @@
             );
         
     
-        var popup_23da6a09d65c3dccbfd829183d77dcea = L.popup({
+        var popup_4de006f2685aee4aa8e6cfd4a86e88b8 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_06b4c868b79f1b69690fc8a9734d44c1 = $(`<div id="html_06b4c868b79f1b69690fc8a9734d44c1" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Pho6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 187</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 638 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 868-2211</p>         </div>         </div>`)[0];
-                popup_23da6a09d65c3dccbfd829183d77dcea.setContent(html_06b4c868b79f1b69690fc8a9734d44c1);
+                var html_f01bb845524e01da40db9a874c1d3a65 = $(`<div id="html_f01bb845524e01da40db9a874c1d3a65" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group B-Pho6</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group B</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 55</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 782 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 597-4713</p>         </div>         </div>`)[0];
+                popup_4de006f2685aee4aa8e6cfd4a86e88b8.setContent(html_f01bb845524e01da40db9a874c1d3a65);
             
         
 
-        marker_3a64d9a535da7f523e800de54a34c7cd.bindPopup(popup_23da6a09d65c3dccbfd829183d77dcea)
+        marker_505d63860e3a1b716b194ddc286a3468.bindPopup(popup_4de006f2685aee4aa8e6cfd4a86e88b8)
         ;
 
         
     
     
-            marker_3a64d9a535da7f523e800de54a34c7cd.bindTooltip(
+            marker_505d63860e3a1b716b194ddc286a3468.bindTooltip(
                 `<div>
                      PG: PG-Group B-Pho6
                  </div>`,
@@ -450,19 +450,19 @@
             );
         
     
-                marker_3a64d9a535da7f523e800de54a34c7cd.setIcon(icon_c1512ea35ae0c9e3ceaf8a10cc853e14);
+                marker_505d63860e3a1b716b194ddc286a3468.setIcon(icon_e8be0afddc4b998eff5c623ead302fc6);
             
     
-            var marker_f43a1a9e23f726a2324ab02e1ab8b667 = L.marker(
-                [33.48140864761967, -112.62536896385004],
+            var marker_cf67da04340872e6e024acd3a99aa5cd = L.marker(
+                [32.97088138568965, -111.2009581025232],
                 {
 }
-            ).addTo(feature_group_58c75e8512fe4aede2c079c0b3bc4f7b);
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var icon_a578e0c6c0d0e9d7268625cb5705ab7d = L.AwesomeMarkers.icon(
+            var icon_ad24bbc9842516f461371811d4d535a4 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "blue",
   "iconColor": "white",
   "icon": "user-md",
   "prefix": "fa",
@@ -471,24 +471,24 @@
             );
         
     
-        var popup_e7c8db80c0df5ccfc1c221bb84e763fd = L.popup({
+        var popup_f2778be3d05bd62778bc08d884ed5cf2 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_bb2c513e470b3c915fcd2a81c4e3fb1b = $(`<div id="html_bb2c513e470b3c915fcd2a81c4e3fb1b" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Pho7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 15</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 165</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 446 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 866-9727</p>         </div>         </div>`)[0];
-                popup_e7c8db80c0df5ccfc1c221bb84e763fd.setContent(html_bb2c513e470b3c915fcd2a81c4e3fb1b);
+                var html_2f5fcf63eb76606f2b1aee17a788fb4a = $(`<div id="html_2f5fcf63eb76606f2b1aee17a788fb4a" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group C-Pho7</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group C</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 255</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 610 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 663-9537</p>         </div>         </div>`)[0];
+                popup_f2778be3d05bd62778bc08d884ed5cf2.setContent(html_2f5fcf63eb76606f2b1aee17a788fb4a);
             
         
 
-        marker_f43a1a9e23f726a2324ab02e1ab8b667.bindPopup(popup_e7c8db80c0df5ccfc1c221bb84e763fd)
+        marker_cf67da04340872e6e024acd3a99aa5cd.bindPopup(popup_f2778be3d05bd62778bc08d884ed5cf2)
         ;
 
         
     
     
-            marker_f43a1a9e23f726a2324ab02e1ab8b667.bindTooltip(
+            marker_cf67da04340872e6e024acd3a99aa5cd.bindTooltip(
                 `<div>
                      PG: PG-Group C-Pho7
                  </div>`,
@@ -498,56 +498,47 @@
             );
         
     
-                marker_f43a1a9e23f726a2324ab02e1ab8b667.setIcon(icon_a578e0c6c0d0e9d7268625cb5705ab7d);
+                marker_cf67da04340872e6e024acd3a99aa5cd.setIcon(icon_ad24bbc9842516f461371811d4d535a4);
             
     
-            feature_group_58c75e8512fe4aede2c079c0b3bc4f7b.addTo(map_4b753a13847232749d6b381204ca406a);
-        
-    
-            var feature_group_04d576037c6772096f15f84f3dfde41f = L.featureGroup(
+            var marker_25e151471469193e5f0de2436077a072 = L.marker(
+                [33.281810791950555, -112.03684703040506],
                 {
 }
-            );
+            ).addTo(feature_group_5dfde5c9d4a49d19fda70c44ce89d475);
         
     
-            var marker_3e2072d06f32c5e516d4c26426900ab1 = L.marker(
-                [33.03240418607632, -112.7210073933345],
+            var icon_249c6d8f00d5d4515f7e1f9b707c4e9c = L.AwesomeMarkers.icon(
                 {
-}
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
-        
-    
-            var icon_117b4cf681e2c9c73dc2c01bfd058180 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "orange",
+  "markerColor": "blue",
   "iconColor": "white",
-  "icon": "home",
+  "icon": "user-md",
   "prefix": "fa",
   "extraClasses": "fa-rotate-0",
 }
             );
         
     
-        var popup_4db5a76d62c490a1eec5b3b6f2454092 = L.popup({
+        var popup_340550783650a55cb2a7ffd9f6dc6f07 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_ab5251688f526aa57cb3b617d4198837 = $(`<div id="html_ab5251688f526aa57cb3b617d4198837" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 140</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 721 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 232-8318</p>         </div>         </div>`)[0];
-                popup_4db5a76d62c490a1eec5b3b6f2454092.setContent(html_ab5251688f526aa57cb3b617d4198837);
+                var html_b44d0415f5df4e487478b81bfca870dc = $(`<div id="html_b44d0415f5df4e487478b81bfca870dc" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">PG-Group D-Pho8</h4>             <p style="margin: 4px 0;"><strong>Group:</strong> Group D</p>             <p style="margin: 4px 0;"><strong>Physicians:</strong> 10</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 274</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 410 Healthcare Ave, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 135-9359</p>         </div>         </div>`)[0];
+                popup_340550783650a55cb2a7ffd9f6dc6f07.setContent(html_b44d0415f5df4e487478b81bfca870dc);
             
         
 
-        marker_3e2072d06f32c5e516d4c26426900ab1.bindPopup(popup_4db5a76d62c490a1eec5b3b6f2454092)
+        marker_25e151471469193e5f0de2436077a072.bindPopup(popup_340550783650a55cb2a7ffd9f6dc6f07)
         ;
 
         
     
     
-            marker_3e2072d06f32c5e516d4c26426900ab1.bindTooltip(
+            marker_25e151471469193e5f0de2436077a072.bindTooltip(
                 `<div>
-                     HHAH: ComfortCare Associates
+                     PG: PG-Group D-Pho8
                  </div>`,
                 {
   "sticky": true,
@@ -555,17 +546,26 @@
             );
         
     
-                marker_3e2072d06f32c5e516d4c26426900ab1.setIcon(icon_117b4cf681e2c9c73dc2c01bfd058180);
+                marker_25e151471469193e5f0de2436077a072.setIcon(icon_249c6d8f00d5d4515f7e1f9b707c4e9c);
             
     
-            var marker_574f3ef1e9a565dcdfcce98192289aeb = L.marker(
-                [33.52562011679472, -112.49517006353035],
-                {
-}
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
+            feature_group_5dfde5c9d4a49d19fda70c44ce89d475.addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
-            var icon_21ef8f0fafc847d06971d8c8c21185d9 = L.AwesomeMarkers.icon(
+            var feature_group_5a8c7883461f81719886fbee69ed701f = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_ca6d842e0cf06d114400de77e652f019 = L.marker(
+                [33.4746118702018, -112.49284223189773],
+                {
+}
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
+        
+    
+            var icon_cc7eee45432b9406704df64cdc1f8136 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "green",
   "iconColor": "white",
@@ -576,26 +576,26 @@
             );
         
     
-        var popup_8eb4bf4658fd09fb1523b7481317b849 = L.popup({
+        var popup_8cde605a51abe9fc4829e2e6091980b4 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_e9d372ecc66ff3997d541ae47c337bcd = $(`<div id="html_e9d372ecc66ff3997d541ae47c337bcd" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 75</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 561 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 252-5327</p>         </div>         </div>`)[0];
-                popup_8eb4bf4658fd09fb1523b7481317b849.setContent(html_e9d372ecc66ff3997d541ae47c337bcd);
+                var html_6d0c2eb86bb5ac90c1ffebceb9263b21 = $(`<div id="html_6d0c2eb86bb5ac90c1ffebceb9263b21" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 6</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 42</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 640 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 576-1675</p>         </div>         </div>`)[0];
+                popup_8cde605a51abe9fc4829e2e6091980b4.setContent(html_6d0c2eb86bb5ac90c1ffebceb9263b21);
             
         
 
-        marker_574f3ef1e9a565dcdfcce98192289aeb.bindPopup(popup_8eb4bf4658fd09fb1523b7481317b849)
+        marker_ca6d842e0cf06d114400de77e652f019.bindPopup(popup_8cde605a51abe9fc4829e2e6091980b4)
         ;
 
         
     
     
-            marker_574f3ef1e9a565dcdfcce98192289aeb.bindTooltip(
+            marker_ca6d842e0cf06d114400de77e652f019.bindTooltip(
                 `<div>
-                     HHAH: Wellness Network
+                     HHAH: HomeHealth Services
                  </div>`,
                 {
   "sticky": true,
@@ -603,17 +603,17 @@
             );
         
     
-                marker_574f3ef1e9a565dcdfcce98192289aeb.setIcon(icon_21ef8f0fafc847d06971d8c8c21185d9);
+                marker_ca6d842e0cf06d114400de77e652f019.setIcon(icon_cc7eee45432b9406704df64cdc1f8136);
             
     
-            var marker_56eaf7a554eb8d2b89870ad888398c92 = L.marker(
-                [33.30083039180838, -112.5700129746347],
+            var marker_49f72be0bf2e01bc645e51040b8659cf = L.marker(
+                [33.87263724823467, -112.9477259710487],
                 {
 }
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
         
     
-            var icon_b36344d7fb27313b2b70d39cf3ab98a5 = L.AwesomeMarkers.icon(
+            var icon_8d28fde14fcddd234ed9dd2b3bdf1d6d = L.AwesomeMarkers.icon(
                 {
   "markerColor": "green",
   "iconColor": "white",
@@ -624,26 +624,26 @@
             );
         
     
-        var popup_f4abd506cccc5e5f4fca96033fdb337d = L.popup({
+        var popup_25186cec862facd2531eac2dc0634ccb = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_a6fa3a4a2271be56fa1704d5e8097aa3 = $(`<div id="html_a6fa3a4a2271be56fa1704d5e8097aa3" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Partners</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 112</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 919 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 577-5612</p>         </div>         </div>`)[0];
-                popup_f4abd506cccc5e5f4fca96033fdb337d.setContent(html_a6fa3a4a2271be56fa1704d5e8097aa3);
+                var html_629b8d04ec57c33c013ec145507590ad = $(`<div id="html_629b8d04ec57c33c013ec145507590ad" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Wellness Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 5</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 124</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 704 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 444-3483</p>         </div>         </div>`)[0];
+                popup_25186cec862facd2531eac2dc0634ccb.setContent(html_629b8d04ec57c33c013ec145507590ad);
             
         
 
-        marker_56eaf7a554eb8d2b89870ad888398c92.bindPopup(popup_f4abd506cccc5e5f4fca96033fdb337d)
+        marker_49f72be0bf2e01bc645e51040b8659cf.bindPopup(popup_25186cec862facd2531eac2dc0634ccb)
         ;
 
         
     
     
-            marker_56eaf7a554eb8d2b89870ad888398c92.bindTooltip(
+            marker_49f72be0bf2e01bc645e51040b8659cf.bindTooltip(
                 `<div>
-                     HHAH: HomeHealth Partners
+                     HHAH: Wellness Services
                  </div>`,
                 {
   "sticky": true,
@@ -651,19 +651,19 @@
             );
         
     
-                marker_56eaf7a554eb8d2b89870ad888398c92.setIcon(icon_b36344d7fb27313b2b70d39cf3ab98a5);
+                marker_49f72be0bf2e01bc645e51040b8659cf.setIcon(icon_8d28fde14fcddd234ed9dd2b3bdf1d6d);
             
     
-            var marker_4413140f9acc3a57932e6f378384335c = L.marker(
-                [33.22661054394659, -111.22072029990582],
+            var marker_38a4b4a65ef15fbcb090624befef84af = L.marker(
+                [33.52390363340369, -111.80322434176189],
                 {
 }
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
         
     
-            var icon_89d6ef3c611fbab3662932950ad1190c = L.AwesomeMarkers.icon(
+            var icon_07418eda94b5b71aea20e2f824d2fc14 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "gray",
+  "markerColor": "green",
   "iconColor": "white",
   "icon": "home",
   "prefix": "fa",
@@ -672,26 +672,26 @@
             );
         
     
-        var popup_658e7a1c161a33fe0fef1775b5969b55 = L.popup({
+        var popup_8a4466ec282155b867299176107e06eb = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_ea22af9cfd35412cae11be522e32bafa = $(`<div id="html_ea22af9cfd35412cae11be522e32bafa" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Agency</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 39</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 584 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 141-6724</p>         </div>         </div>`)[0];
-                popup_658e7a1c161a33fe0fef1775b5969b55.setContent(html_ea22af9cfd35412cae11be522e32bafa);
+                var html_5c71756d5fc193e0df4ff949041f584e = $(`<div id="html_5c71756d5fc193e0df4ff949041f584e" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 26</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 457 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 640-5196</p>         </div>         </div>`)[0];
+                popup_8a4466ec282155b867299176107e06eb.setContent(html_5c71756d5fc193e0df4ff949041f584e);
             
         
 
-        marker_4413140f9acc3a57932e6f378384335c.bindPopup(popup_658e7a1c161a33fe0fef1775b5969b55)
+        marker_38a4b4a65ef15fbcb090624befef84af.bindPopup(popup_8a4466ec282155b867299176107e06eb)
         ;
 
         
     
     
-            marker_4413140f9acc3a57932e6f378384335c.bindTooltip(
+            marker_38a4b4a65ef15fbcb090624befef84af.bindTooltip(
                 `<div>
-                     HHAH: HomeHealth Agency
+                     HHAH: Elite Network
                  </div>`,
                 {
   "sticky": true,
@@ -699,19 +699,19 @@
             );
         
     
-                marker_4413140f9acc3a57932e6f378384335c.setIcon(icon_89d6ef3c611fbab3662932950ad1190c);
+                marker_38a4b4a65ef15fbcb090624befef84af.setIcon(icon_07418eda94b5b71aea20e2f824d2fc14);
             
     
-            var marker_b522038306b8aa54f81faaeace5018e3 = L.marker(
-                [33.191699177183054, -112.47013584016801],
+            var marker_a33b89ac3c12b79cecd919ed2262f4c9 = L.marker(
+                [33.163369231824525, -111.71129406001273],
                 {
 }
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
         
     
-            var icon_cf546d5afa54f90e06197b4acf2efa02 = L.AwesomeMarkers.icon(
+            var icon_3d9082c047a424c6ca703dc4fd88fd81 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "gray",
+  "markerColor": "green",
   "iconColor": "white",
   "icon": "home",
   "prefix": "fa",
@@ -720,26 +720,26 @@
             );
         
     
-        var popup_43d1a8280fad668184a96da216405363 = L.popup({
+        var popup_342ac6fc4d3be5997097a748bb754258 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_d0aeb74766fe24c3c850e33bcc55562f = $(`<div id="html_d0aeb74766fe24c3c850e33bcc55562f" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Network</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 4</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 92</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 316 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 410-9051</p>         </div>         </div>`)[0];
-                popup_43d1a8280fad668184a96da216405363.setContent(html_d0aeb74766fe24c3c850e33bcc55562f);
+                var html_f223ee5dc7ded999bcf956f661de6239 = $(`<div id="html_f223ee5dc7ded999bcf956f661de6239" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Premier Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 150</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 614 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 442-9530</p>         </div>         </div>`)[0];
+                popup_342ac6fc4d3be5997097a748bb754258.setContent(html_f223ee5dc7ded999bcf956f661de6239);
             
         
 
-        marker_b522038306b8aa54f81faaeace5018e3.bindPopup(popup_43d1a8280fad668184a96da216405363)
+        marker_a33b89ac3c12b79cecd919ed2262f4c9.bindPopup(popup_342ac6fc4d3be5997097a748bb754258)
         ;
 
         
     
     
-            marker_b522038306b8aa54f81faaeace5018e3.bindTooltip(
+            marker_a33b89ac3c12b79cecd919ed2262f4c9.bindTooltip(
                 `<div>
-                     HHAH: HomeHealth Network
+                     HHAH: Premier Services
                  </div>`,
                 {
   "sticky": true,
@@ -747,19 +747,19 @@
             );
         
     
-                marker_b522038306b8aa54f81faaeace5018e3.setIcon(icon_cf546d5afa54f90e06197b4acf2efa02);
+                marker_a33b89ac3c12b79cecd919ed2262f4c9.setIcon(icon_3d9082c047a424c6ca703dc4fd88fd81);
             
     
-            var marker_70020c66fb3c5a4ebca7de3541d2235c = L.marker(
-                [33.546578809009716, -112.75204131366641],
+            var marker_e3637dc27ddfb5471a1aa17c0efb917d = L.marker(
+                [33.266461133584265, -112.03358565583524],
                 {
 }
-            ).addTo(feature_group_04d576037c6772096f15f84f3dfde41f);
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
         
     
-            var icon_7c45ca14fefdbd4ed4c79f74d01fec70 = L.AwesomeMarkers.icon(
+            var icon_5c766eac5a3724462e287133ad17750a = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "gray",
+  "markerColor": "green",
   "iconColor": "white",
   "icon": "home",
   "prefix": "fa",
@@ -768,26 +768,26 @@
             );
         
     
-        var popup_7a33ee6af9c5d3c027d5c21123cd9de6 = L.popup({
+        var popup_6da0003a636020051b766524cce84b02 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_5636083273b2a09507881610f6effed6 = $(`<div id="html_5636083273b2a09507881610f6effed6" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Care</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 20</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 110 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 140-2534</p>         </div>         </div>`)[0];
-                popup_7a33ee6af9c5d3c027d5c21123cd9de6.setContent(html_5636083273b2a09507881610f6effed6);
+                var html_f2c3dc741a7fd84c96ef56e2098220a7 = $(`<div id="html_f2c3dc741a7fd84c96ef56e2098220a7" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">ComfortCare Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 3</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 67</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 207 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 142-5697</p>         </div>         </div>`)[0];
+                popup_6da0003a636020051b766524cce84b02.setContent(html_f2c3dc741a7fd84c96ef56e2098220a7);
             
         
 
-        marker_70020c66fb3c5a4ebca7de3541d2235c.bindPopup(popup_7a33ee6af9c5d3c027d5c21123cd9de6)
+        marker_e3637dc27ddfb5471a1aa17c0efb917d.bindPopup(popup_6da0003a636020051b766524cce84b02)
         ;
 
         
     
     
-            marker_70020c66fb3c5a4ebca7de3541d2235c.bindTooltip(
+            marker_e3637dc27ddfb5471a1aa17c0efb917d.bindTooltip(
                 `<div>
-                     HHAH: Elite Care
+                     HHAH: ComfortCare Group
                  </div>`,
                 {
   "sticky": true,
@@ -795,10 +795,202 @@
             );
         
     
-                marker_70020c66fb3c5a4ebca7de3541d2235c.setIcon(icon_7c45ca14fefdbd4ed4c79f74d01fec70);
+                marker_e3637dc27ddfb5471a1aa17c0efb917d.setIcon(icon_5c766eac5a3724462e287133ad17750a);
             
     
-            feature_group_04d576037c6772096f15f84f3dfde41f.addTo(map_4b753a13847232749d6b381204ca406a);
+            var marker_23534f954b32cb55c2979d245ea639aa = L.marker(
+                [33.69210704101704, -111.63901649049974],
+                {
+}
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
+        
+    
+            var icon_32fdfd64391ed0e116c075be141f021b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8a48abf46c34eb64b585ea82a044a296 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8d108efffb45c285540cce1dc59499cc = $(`<div id="html_8d108efffb45c285540cce1dc59499cc" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 8</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 136</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 310 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 207-3961</p>         </div>         </div>`)[0];
+                popup_8a48abf46c34eb64b585ea82a044a296.setContent(html_8d108efffb45c285540cce1dc59499cc);
+            
+        
+
+        marker_23534f954b32cb55c2979d245ea639aa.bindPopup(popup_8a48abf46c34eb64b585ea82a044a296)
+        ;
+
+        
+    
+    
+            marker_23534f954b32cb55c2979d245ea639aa.bindTooltip(
+                `<div>
+                     HHAH: Elite Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_23534f954b32cb55c2979d245ea639aa.setIcon(icon_32fdfd64391ed0e116c075be141f021b);
+            
+    
+            var marker_f90704313a0177d8bc39a515158a74de = L.marker(
+                [32.9915762710775, -110.8548770750357],
+                {
+}
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
+        
+    
+            var icon_2a37c5c805077ffbc2f56cac62c1d3e7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_04383596a915c6af237835adbcac3e3c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_785fbe8fbedbd87d4d2de5e06406e4cb = $(`<div id="html_785fbe8fbedbd87d4d2de5e06406e4cb" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Group</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 101</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Inactive</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 331 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 638-6980</p>         </div>         </div>`)[0];
+                popup_04383596a915c6af237835adbcac3e3c.setContent(html_785fbe8fbedbd87d4d2de5e06406e4cb);
+            
+        
+
+        marker_f90704313a0177d8bc39a515158a74de.bindPopup(popup_04383596a915c6af237835adbcac3e3c)
+        ;
+
+        
+    
+    
+            marker_f90704313a0177d8bc39a515158a74de.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Group
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f90704313a0177d8bc39a515158a74de.setIcon(icon_2a37c5c805077ffbc2f56cac62c1d3e7);
+            
+    
+            var marker_62924059945616c6b2e7d06b4150e3d5 = L.marker(
+                [32.99894022211579, -113.03183557627182],
+                {
+}
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
+        
+    
+            var icon_d8273a02f661bdcf881d1a992a3fd1c4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a1dca2eff64c94df2e6648cb379f76ba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3729574ef3f7b3a0fafb825014223220 = $(`<div id="html_3729574ef3f7b3a0fafb825014223220" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">Elite Associates</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 7</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 138</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Active</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 981 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 988-1173</p>         </div>         </div>`)[0];
+                popup_a1dca2eff64c94df2e6648cb379f76ba.setContent(html_3729574ef3f7b3a0fafb825014223220);
+            
+        
+
+        marker_62924059945616c6b2e7d06b4150e3d5.bindPopup(popup_a1dca2eff64c94df2e6648cb379f76ba)
+        ;
+
+        
+    
+    
+            marker_62924059945616c6b2e7d06b4150e3d5.bindTooltip(
+                `<div>
+                     HHAH: Elite Associates
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_62924059945616c6b2e7d06b4150e3d5.setIcon(icon_d8273a02f661bdcf881d1a992a3fd1c4);
+            
+    
+            var marker_037166fe0a8fd99fb8cdfbc9ecec9873 = L.marker(
+                [33.834234075767505, -112.60070353023663],
+                {
+}
+            ).addTo(feature_group_5a8c7883461f81719886fbee69ed701f);
+        
+    
+            var icon_a0ba4688e70467340db1df24aeb0aeb0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_08501abb6451b75c9fb47fa8d1826a88 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0239547a885aa807b4798b501cc57ab1 = $(`<div id="html_0239547a885aa807b4798b501cc57ab1" style="width: 100.0%; height: 100.0%;">         <div style="min-width: 180px;">             <h4 style="margin-top: 0; margin-bottom: 8px; color: #1F2937;">HomeHealth Services</h4>             <p style="margin: 4px 0;"><strong>Services:</strong> 2</p>             <p style="margin: 4px 0;"><strong>Patients:</strong> 95</p>             <p style="margin: 4px 0;"><strong>Status:</strong> Onboarding</p>             <p style="margin: 4px 0;"><strong>Address:</strong> 816 Medical Blvd, Phoenix-Mesa-Scottsdale</p>             <p style="margin: 4px 0;"><strong>Contact:</strong> (555) 628-2952</p>         </div>         </div>`)[0];
+                popup_08501abb6451b75c9fb47fa8d1826a88.setContent(html_0239547a885aa807b4798b501cc57ab1);
+            
+        
+
+        marker_037166fe0a8fd99fb8cdfbc9ecec9873.bindPopup(popup_08501abb6451b75c9fb47fa8d1826a88)
+        ;
+
+        
+    
+    
+            marker_037166fe0a8fd99fb8cdfbc9ecec9873.bindTooltip(
+                `<div>
+                     HHAH: HomeHealth Services
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_037166fe0a8fd99fb8cdfbc9ecec9873.setIcon(icon_a0ba4688e70467340db1df24aeb0aeb0);
+            
+    
+            feature_group_5a8c7883461f81719886fbee69ed701f.addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
             L.control.fullscreen(
@@ -808,10 +1000,10 @@
   "titleCancel": "Exit Full Screen",
   "forceSeparateButton": false,
 }
-            ).addTo(map_4b753a13847232749d6b381204ca406a);
+            ).addTo(map_9f9edb2e7b2164a43752944e6f522f45);
         
     
-            var mouse_position_2d42b53d96406cb2b5f987a35bda69b8 = new L.Control.MousePosition(
+            var mouse_position_65152498c8a4f1b4eab02d19ea682835 = new L.Control.MousePosition(
                 {
   "position": "bottomright",
   "separator": " : ",
@@ -821,37 +1013,37 @@
   "prefix": "",
 }
             );
-            mouse_position_2d42b53d96406cb2b5f987a35bda69b8.options["latFormatter"] =
+            mouse_position_65152498c8a4f1b4eab02d19ea682835.options["latFormatter"] =
                 undefined;
-            mouse_position_2d42b53d96406cb2b5f987a35bda69b8.options["lngFormatter"] =
+            mouse_position_65152498c8a4f1b4eab02d19ea682835.options["lngFormatter"] =
                 undefined;
-            map_4b753a13847232749d6b381204ca406a.addControl(mouse_position_2d42b53d96406cb2b5f987a35bda69b8);
+            map_9f9edb2e7b2164a43752944e6f522f45.addControl(mouse_position_65152498c8a4f1b4eab02d19ea682835);
         
     
-            var layer_control_92e3fa0604d3bec9f749fbfcfb1976f5_layers = {
+            var layer_control_f98e69e8788ffc3b086d34431d6ec627_layers = {
                 base_layers : {
-                    "cartodbpositron" : tile_layer_760bba4ecea831c9632a64ca77cf7cc1,
+                    "cartodbpositron" : tile_layer_298d8623ec41c88b08fc48fb39103fc4,
                 },
                 overlays :  {
-                    "State Boundaries" : geo_json_0b313d3740daa32b43a0676ab5195d6c,
-                    "Phoenix-Mesa-Chandler, AZ Boundary" : geo_json_491114d69936abe1d09dfe023a3c880b,
-                    "Physician Groups (PGs)" : feature_group_58c75e8512fe4aede2c079c0b3bc4f7b,
-                    "Home Health At Home (HHAHs)" : feature_group_04d576037c6772096f15f84f3dfde41f,
+                    "State Boundaries" : geo_json_3951967cc04fe2fc14d33ce8e8e3aad3,
+                    "Phoenix-Mesa-Chandler, AZ Boundary" : geo_json_215becdda7620ac3d003785de6ae8b6a,
+                    "Physician Groups (PGs)" : feature_group_5dfde5c9d4a49d19fda70c44ce89d475,
+                    "Home Health At Home (HHAHs)" : feature_group_5a8c7883461f81719886fbee69ed701f,
                 },
             };
-            let layer_control_92e3fa0604d3bec9f749fbfcfb1976f5 = L.control.layers(
-                layer_control_92e3fa0604d3bec9f749fbfcfb1976f5_layers.base_layers,
-                layer_control_92e3fa0604d3bec9f749fbfcfb1976f5_layers.overlays,
+            let layer_control_f98e69e8788ffc3b086d34431d6ec627 = L.control.layers(
+                layer_control_f98e69e8788ffc3b086d34431d6ec627_layers.base_layers,
+                layer_control_f98e69e8788ffc3b086d34431d6ec627_layers.overlays,
                 {
   "position": "topright",
   "collapsed": true,
   "autoZIndex": true,
 }
-            ).addTo(map_4b753a13847232749d6b381204ca406a);
+            ).addTo(map_9f9edb2e7b2164a43752944e6f522f45);
 
         
     
-            map_4b753a13847232749d6b381204ca406a.fitBounds(
+            map_9f9edb2e7b2164a43752944e6f522f45.fitBounds(
                 [[32.501624, -113.333894], [34.04817, -110.449021]],
                 {}
             );
