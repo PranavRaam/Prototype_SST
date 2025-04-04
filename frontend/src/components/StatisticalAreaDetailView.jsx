@@ -36,92 +36,28 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         setError(null);
         setUseFallbackMap(false);
         
-        // Detect if we're on localhost or production
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        console.log(`Running on ${isLocalhost ? 'localhost' : 'production'}`);
-        
         // Encode the statistical area name for URL
         const encodedArea = encodeURIComponent(statisticalArea);
         console.log(`Requesting map for ${encodedArea}`);
         
-        // If in production, reduce quality further and prioritize lightweight mode
-        // On localhost, we can use higher quality settings
+        // Set high-quality parameters for all environments
         const apiUrl = getApiUrl(`/api/statistical-area-map/${encodedArea}`) +
-          `?force_regen=false&use_cached=true&detailed=${isLocalhost}&zoom=${isLocalhost ? 11 : 9}` +
-          `&exact_boundary=true&display_pgs=true&display_hhahs=true&lightweight=${!isLocalhost}&t=${Date.now()}`;
+          `?force_regen=false&use_cached=true&detailed=true&zoom=11&exact_boundary=true&display_pgs=true&display_hhahs=true&t=${Date.now()}`;
         console.log(`Full request URL: ${apiUrl}`);
         
-        // Set a shorter timeout for production environments
-        const requestTimeout = isLocalhost ? 15000 : 8000;
+        // Just set the map URL and let it load however long it takes
+        setMapUrl(apiUrl);
         
-        // On production, check if direct iframe works first before doing a fetch
-        if (!isLocalhost) {
-          console.log("Production environment detected, using direct iframe embedding");
-          setMapUrl(apiUrl);
-          
-          // Set a timer for fallback if iframe doesn't load quickly
-          const fallbackTimer = setTimeout(() => {
-            console.log("Iframe loading taking too long, switching to static fallback");
-            const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
-            setMapUrl(fallbackUrl);
-            setUseFallbackMap(true);
-          }, 7000); // 7 seconds before fallback
-          
-          return () => clearTimeout(fallbackTimer);
-        }
-        
-        // Only do fetch on localhost
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
-          
-          // First try with CORS mode
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'omit',
-            headers: {
-              'Accept': 'text/html',
-              'Cache-Control': 'max-age=3600',
-              'X-Requested-With': 'XMLHttpRequest'
-            },
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          console.log(`Response status: ${response.status} ${response.statusText}`);
-          
-          if (!response.ok) {
-            throw new Error(`Failed to load statistical area map: ${response.status} ${response.statusText}`);
-          }
-          
-          // Map was successfully accessed
-          console.log(`Setting map URL to: ${apiUrl}`);
-          setMapUrl(apiUrl);
-          setIsLoading(false);
-        } catch (initialError) {
-          console.warn(`Initial fetch attempt failed: ${initialError.message}`);
-          console.log("Falling back to direct iframe embedding");
-          setMapUrl(apiUrl);
-        }
+        // Don't set isLoading to false here - we'll let the iframe onLoad handler manage that
       } catch (err) {
         console.error(`Error loading map: ${err.message}`);
         setError(err.message);
         setIsLoading(false);
-        
-        // Try to load the fallback static map as last resort
-        const encodedArea = encodeURIComponent(statisticalArea);
-        const fallbackUrl = getApiUrl(`/api/static-fallback-map/${encodedArea}`);
-        setMapUrl(fallbackUrl);
-        setUseFallbackMap(true);
       }
     };
 
-    // Start loading map with a short delay to prioritize UI rendering
-    const timer = setTimeout(() => {
-      checkMap();
-    }, 100);
+    // Start loading map
+    checkMap();
     
     // Setup event listener for cross-origin messaging from the map iframe
     const handleMapMessage = (event) => {
@@ -135,7 +71,6 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     window.addEventListener('message', handleMapMessage);
     
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('message', handleMapMessage);
     };
   }, [statisticalArea, retryCount]);
@@ -309,39 +244,23 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
         </div>
         <div className="area-map-info">
           <p>The highlighted area shows the exact boundaries of {statisticalArea}. Use the zoom controls to explore further.</p>
-          {useFallbackMap && (
-            <div className="fallback-notice">
-              <p><strong>Note:</strong> Using simplified map view. The interactive map could not be loaded at this time.</p>
-              <button 
-                className="retry-button" 
-                onClick={() => setRetryCount(prev => prev + 1)}
-                style={{ padding: '5px 10px', marginTop: '5px' }}
-              >
-                Try Interactive Map
-              </button>
+          <div className="map-info-legend">
+            <div className="legend-item">
+              <span className="legend-color" style={{ backgroundColor: 'rgba(79, 70, 229, 0.2)', border: '2px solid #312E81' }}></span>
+              <span className="legend-label">Statistical Area Boundary</span>
             </div>
-          )}
-          {!useFallbackMap && (
-            <>
-              <div className="map-info-legend">
-                <div className="legend-item">
-                  <span className="legend-color" style={{ backgroundColor: 'rgba(79, 70, 229, 0.2)', border: '2px solid #312E81' }}></span>
-                  <span className="legend-label">Statistical Area Boundary</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color marker-circle" style={{ backgroundColor: 'blue' }}></span>
-                  <span className="legend-label">Physician Groups (PGs)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color marker-circle" style={{ backgroundColor: 'green' }}></span>
-                  <span className="legend-label">Home Health At Home (HHAHs)</span>
-                </div>
-              </div>
-              <p className="map-controls-info">
-                <strong>Map Controls:</strong> You can toggle layers on/off using the layers control icon <span style={{ backgroundColor: '#fff', padding: '2px 6px', border: '1px solid #ccc', borderRadius: '4px' }}><b>⊞</b></span> in the top-right corner. The "Statistical Area Boundary" checkbox toggles the highlighted region, and the "Exact Border" checkbox (if present) controls state/county borders.
-              </p>
-            </>
-          )}
+            <div className="legend-item">
+              <span className="legend-color marker-circle" style={{ backgroundColor: 'blue' }}></span>
+              <span className="legend-label">Physician Groups (PGs)</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-color marker-circle" style={{ backgroundColor: 'green' }}></span>
+              <span className="legend-label">Home Health At Home (HHAHs)</span>
+            </div>
+          </div>
+          <p className="map-controls-info">
+            <strong>Map Controls:</strong> You can toggle layers on/off using the layers control icon <span style={{ backgroundColor: '#fff', padding: '2px 6px', border: '1px solid #ccc', borderRadius: '4px' }}><b>⊞</b></span> in the top-right corner. The "Statistical Area Boundary" checkbox toggles the highlighted region, and the "Exact Border" checkbox (if present) controls state/county borders.
+          </p>
         </div>
       </div>
       

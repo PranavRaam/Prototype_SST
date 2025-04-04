@@ -637,24 +637,11 @@ def generate_statistical_area_map(area_name, zoom=9, exact_boundary=True, detail
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
-    # Check if we're running on Render (common environment variable)
-    is_render = os.environ.get('RENDER', False) or os.environ.get('IS_RENDER', False)
-    
-    # If we're on Render and lightweight is requested, use the simplified map
-    if lightweight and (is_render or os.environ.get('USE_SIMPLIFIED_MAPS', False)):
-        logger.info(f"Using simplified map generation for {area_name} due to hosting environment constraints")
-        simplified_map = generate_simplified_map(area_name, zoom)
-        if simplified_map:
-            return simplified_map
-    
+    # Always use detailed map generation, regardless of environment or settings
     logger.info(f"Generating detailed map for statistical area: {area_name}")
     
     # Generate cache filename
     cache_file = os.path.join(CACHE_DIR, f"statistical_area_{area_name.replace(' ', '_').replace(',', '').replace('-', '_')}.html")
-    
-    # Add suffix for lightweight version
-    if lightweight:
-        cache_file = cache_file.replace('.html', '_lightweight.html')
     
     # Check cache first if use_cached is True and force_regen is False
     if use_cached and not force_regen and os.path.exists(cache_file):

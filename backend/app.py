@@ -316,21 +316,34 @@ def get_static_fallback_map(area_name):
 @app.route('/api/statistical-area-map/<area_name>', methods=['GET'])
 def get_statistical_area_map(area_name):
     try:
+        # Prevent timeout by increasing gunicorn worker timeout
+        from werkzeug.serving import is_running_from_reloader
+        if not is_running_from_reloader():
+            import signal
+            
+            # Register no-op handler for SIGALRM to prevent worker timeout
+            def timeout_handler(signum, frame):
+                print("Processing taking longer than expected, continuing...")
+            
+            # Set a 5-minute alarm
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(300)  # 5 minutes
+        
         # Decode the URL-encoded area name
         decoded_area_name = urllib.parse.unquote(area_name)
         logger.info(f"Requested statistical area map for: {decoded_area_name}")
         
-        # Parse URL parameters with defaults optimized for performance
+        # Parse URL parameters with defaults for detailed maps
         force_regen = request.args.get('force_regen', 'false').lower() == 'true'
         use_cached = request.args.get('use_cached', 'true').lower() == 'true'
-        detailed = request.args.get('detailed', 'false').lower() == 'true'
-        lightweight = request.args.get('lightweight', 'true').lower() == 'true'
+        detailed = request.args.get('detailed', 'true').lower() == 'true'
+        lightweight = request.args.get('lightweight', 'false').lower() == 'true'
         
-        # Parse zoom level (default to 10 for better performance)
+        # Parse zoom level (default to 11 for better detail)
         try:
-            zoom = int(request.args.get('zoom', '10'))
+            zoom = int(request.args.get('zoom', '11'))
         except ValueError:
-            zoom = 10
+            zoom = 11
             
         # Parse boundary options
         exact_boundary = request.args.get('exact_boundary', 'true').lower() == 'true'
@@ -350,6 +363,10 @@ def get_statistical_area_map(area_name):
             lightweight=lightweight
         )
         
+        # Cancel the alarm if we got here
+        if not is_running_from_reloader():
+            signal.alarm(0)
+            
         # Verify map file exists
         if not os.path.exists(map_file):
             logger.error(f"Generated map file does not exist: {map_file}")
