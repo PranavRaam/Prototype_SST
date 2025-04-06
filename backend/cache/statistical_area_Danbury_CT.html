@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = true;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4d0a9b2a353f78eabf74a98d5f01ed9d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_4d0a9b2a353f78eabf74a98d5f01ed9d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4d0a9b2a353f78eabf74a98d5f01ed9d = L.map(
+                "map_4d0a9b2a353f78eabf74a98d5f01ed9d",
+                {
+                    center: [40.7128, -74.006],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_d5d8c61a662035696b7a915cd69fe462 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d5d8c61a662035696b7a915cd69fe462.addTo(map_4d0a9b2a353f78eabf74a98d5f01ed9d);
+        
+    
+            var circle_11955c172009b6e3b675c5d598273b8e = L.circle(
+                [40.7128, -74.006],
+                {"bubblingMouseEvents": true, "color": "#4F46E5", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#4F46E5", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.8, "radius": 20000, "stroke": true, "weight": 2.5}
+            ).addTo(map_4d0a9b2a353f78eabf74a98d5f01ed9d);
+        
+    
+            var feature_group_20d777e31cfbab646f3c8d4b642eff80 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_22f55e63fc52839adb89c352c2a932c7 = L.marker(
+                [40.76979110464965, -74.01729226242394],
+                {
+}
+            ).addTo(feature_group_20d777e31cfbab646f3c8d4b642eff80);
+        
+    
+            var icon_8ccde15f24b5738b1c7c2cee3a43df92 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_22f55e63fc52839adb89c352c2a932c7.bindTooltip(
+                `<div>
+                     PG: Physician Group 1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_22f55e63fc52839adb89c352c2a932c7.setIcon(icon_8ccde15f24b5738b1c7c2cee3a43df92);
+            
+    
+            var marker_ccc28b476e532e4331a06f1694cede81 = L.marker(
+                [40.7916507036282, -73.98228942910552],
+                {
+}
+            ).addTo(feature_group_20d777e31cfbab646f3c8d4b642eff80);
+        
+    
+            var icon_d99aab449621b80dc5cd7fe14e72918f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_ccc28b476e532e4331a06f1694cede81.bindTooltip(
+                `<div>
+                     PG: Physician Group 2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ccc28b476e532e4331a06f1694cede81.setIcon(icon_d99aab449621b80dc5cd7fe14e72918f);
+            
+    
+            var marker_9518b32d51d99ccaa77150c215159122 = L.marker(
+                [40.62011537629173, -73.90976907461238],
+                {
+}
+            ).addTo(feature_group_20d777e31cfbab646f3c8d4b642eff80);
+        
+    
+            var icon_180f3231cb233094aa92b60b4f1f42c4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "user-md",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_9518b32d51d99ccaa77150c215159122.bindTooltip(
+                `<div>
+                     PG: Physician Group 3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9518b32d51d99ccaa77150c215159122.setIcon(icon_180f3231cb233094aa92b60b4f1f42c4);
+            
+    
+            feature_group_20d777e31cfbab646f3c8d4b642eff80.addTo(map_4d0a9b2a353f78eabf74a98d5f01ed9d);
+        
+    
+            var feature_group_0653b7701e0b5e3547501a680f19028a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_68408778503ee909c201872f0eb9edad = L.marker(
+                [40.76998565227098, -73.91408023026966],
+                {
+}
+            ).addTo(feature_group_0653b7701e0b5e3547501a680f19028a);
+        
+    
+            var icon_4fdaa33b04e448ddedec9551034490c1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_68408778503ee909c201872f0eb9edad.bindTooltip(
+                `<div>
+                     HHAH: Home Health Service 1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_68408778503ee909c201872f0eb9edad.setIcon(icon_4fdaa33b04e448ddedec9551034490c1);
+            
+    
+            var marker_a912e667b49475b104dba6164fb34e4d = L.marker(
+                [40.762634472260636, -74.00233734209719],
+                {
+}
+            ).addTo(feature_group_0653b7701e0b5e3547501a680f19028a);
+        
+    
+            var icon_505c2c985dcd092a1c6d250ed71e2892 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_a912e667b49475b104dba6164fb34e4d.bindTooltip(
+                `<div>
+                     HHAH: Home Health Service 2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a912e667b49475b104dba6164fb34e4d.setIcon(icon_505c2c985dcd092a1c6d250ed71e2892);
+            
+    
+            var marker_ef198b9bd547d68228fd70ec18ace4ee = L.marker(
+                [40.6790591316293, -73.874223385509],
+                {
+}
+            ).addTo(feature_group_0653b7701e0b5e3547501a680f19028a);
+        
+    
+            var icon_2f8959bc211bf24d7463fb38c856b547 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_ef198b9bd547d68228fd70ec18ace4ee.bindTooltip(
+                `<div>
+                     HHAH: Home Health Service 3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ef198b9bd547d68228fd70ec18ace4ee.setIcon(icon_2f8959bc211bf24d7463fb38c856b547);
+            
+    
+            var marker_f69c9748b1538527f28481617f318d64 = L.marker(
+                [40.71005002796221, -74.16571324348993],
+                {
+}
+            ).addTo(feature_group_0653b7701e0b5e3547501a680f19028a);
+        
+    
+            var icon_eb213d2195b2a9416aa21839c235946e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_f69c9748b1538527f28481617f318d64.bindTooltip(
+                `<div>
+                     HHAH: Home Health Service 4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f69c9748b1538527f28481617f318d64.setIcon(icon_eb213d2195b2a9416aa21839c235946e);
+            
+    
+            feature_group_0653b7701e0b5e3547501a680f19028a.addTo(map_4d0a9b2a353f78eabf74a98d5f01ed9d);
+        
+    
+            var layer_control_d6c4e257a9bd95f65f447abdba9130da_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_d5d8c61a662035696b7a915cd69fe462,
+                },
+                overlays :  {
+                    "Physician Groups (PGs)" : feature_group_20d777e31cfbab646f3c8d4b642eff80,
+                    "Home Health At Home (HHAHs)" : feature_group_0653b7701e0b5e3547501a680f19028a,
+                },
+            };
+            let layer_control_d6c4e257a9bd95f65f447abdba9130da = L.control.layers(
+                layer_control_d6c4e257a9bd95f65f447abdba9130da_layers.base_layers,
+                layer_control_d6c4e257a9bd95f65f447abdba9130da_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_4d0a9b2a353f78eabf74a98d5f01ed9d);
+
+        
+</script>
+</html>

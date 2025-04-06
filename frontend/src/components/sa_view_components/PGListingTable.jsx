@@ -19,7 +19,7 @@ const PGListingTable = () => {
             <th>PG Name</th>
             <th>Total patients</th>
             <th>Patients remaining (30 CPO)</th>
-            <th>Active/Reactive Outcomes</th>
+            <th>Active Reactive Outcomes</th>
           </tr>
         </thead>
         <tbody>

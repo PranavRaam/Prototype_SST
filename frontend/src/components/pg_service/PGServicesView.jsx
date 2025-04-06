@@ -6,6 +6,7 @@ import '../patients/PatientFormComponent.css';
 
 const PGServicesView = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handlePatientSelect = (patient) => {
     setSelectedPatient(patient);
@@ -13,6 +14,10 @@ const PGServicesView = () => {
 
   const handleBackToMain = () => {
     setSelectedPatient(null);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   // If a patient is selected, render the PatientDetailView
@@ -40,11 +45,29 @@ const PGServicesView = () => {
           </button>
           <h1 className="pg-services-page-title">PG Services</h1>
         </div>
+        <div className="pg-services-search-container">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search patients by name, PG, or HHAH..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="pg-services-search-input"
+            />
+            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8" strokeWidth="2"/>
+              <path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
       </header>
       
       <main className="pg-services-main-content">
         <div className="pg-services-content-card">
-          <PatientFormComponent onPatientClick={handlePatientSelect} />
+          <PatientFormComponent 
+            onPatientClick={handlePatientSelect} 
+            searchQuery={searchQuery}
+          />
         </div>
       </main>
     </div>

@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './PatientFormComponent.css';
 import * as XLSX from 'xlsx';
 
-const PatientFormComponent = ({ onPatientClick }) => {
+const PatientFormComponent = ({ onPatientClick, searchQuery = '' }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
   const [patients, setPatients] = useState([
@@ -35,7 +35,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Regular follow-up required",
         "cpoMinsCaptured": 120,
         "newDocs": 2,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "123 Oak Street, Springfield, IL 62704"
       },
       {
         "id": 2,
@@ -64,7 +65,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Patient has mobility issues",
         "cpoMinsCaptured": 95,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "456 Maple Avenue, Riverside, CA 92501"
       },
       {
         "id": 3,
@@ -93,7 +95,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Needs assistance with medication management",
         "cpoMinsCaptured": 25,
         "newDocs": 1,
-        "newCpoDocsCreated": 0
+        "newCpoDocsCreated": 0,
+        "address": "789 Pine Lane, Lakewood, WA 98499"
       },
       {
         "id": 4,
@@ -122,7 +125,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Post-surgical care needed",
         "cpoMinsCaptured": 150,
         "newDocs": 4,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "1010 Elm Court, Austin, TX 78701"
       },
       {
         "id": 5,
@@ -151,7 +155,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Weekly mental health check-ins",
         "cpoMinsCaptured": 20,
         "newDocs": 2,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "222 Birch Street, Portland, OR 97205"
       },
       {
         "id": 6,
@@ -180,7 +185,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Physical therapy 3x weekly",
         "cpoMinsCaptured": 85,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "345 Cedar Road, Miami, FL 33101"
       },
       {
         "id": 7,
@@ -209,7 +215,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Cardiac monitoring required",
         "cpoMinsCaptured": 110,
         "newDocs": 4,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "678 Willow Drive, Boston, MA 02108"
       },
       {
         "id": 8,
@@ -238,7 +245,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Needs assistance with daily activities",
         "cpoMinsCaptured": 95,
         "newDocs": 2,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "901 Spruce Avenue, Seattle, WA 98101"
       },
       {
         "id": 9,
@@ -267,7 +275,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Pain management protocol in place",
         "cpoMinsCaptured": 130,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "234 Aspen Circle, Denver, CO 80202"
       },
       {
         "id": 10,
@@ -296,7 +305,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Oxygen therapy monitoring",
         "cpoMinsCaptured": 30,
         "newDocs": 1,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "567 Redwood Lane, San Francisco, CA 94102"
       },
       {
         "id": 11,
@@ -325,7 +335,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Post-chemotherapy care",
         "cpoMinsCaptured": 140,
         "newDocs": 5,
-        "newCpoDocsCreated": 3
+        "newCpoDocsCreated": 3,
+        "address": "890 Magnolia Street, Phoenix, AZ 85001"
       },
       {
         "id": 12,
@@ -354,7 +365,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Speech therapy sessions required",
         "cpoMinsCaptured": 90,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "123 Elm Street, New York, NY 10001"
       },
       {
         "id": 13,
@@ -383,7 +395,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Postpartum care with newborn monitoring",
         "cpoMinsCaptured": 105,
         "newDocs": 4,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "456 Oak Avenue, Chicago, IL 60601"
       },
       {
         "id": 14,
@@ -412,7 +425,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Joint replacement rehabilitation",
         "cpoMinsCaptured": 125,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "789 Pine Street, Denver, CO 80202"
       },
       {
         "id": 15,
@@ -441,7 +455,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Wound care and nutritional support",
         "cpoMinsCaptured": 25,
         "newDocs": 2,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "1010 Elm Street, Philadelphia, PA 19103"
       },
       {
         "id": 16,
@@ -470,7 +485,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Multiple sclerosis management plan",
         "cpoMinsCaptured": 115,
         "newDocs": 4,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "222 Birch Street, Miami, FL 33101"
       },
       {
         "id": 17,
@@ -499,7 +515,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Cardiac rehabilitation program",
         "cpoMinsCaptured": 135,
         "newDocs": 3,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "567 Redwood Lane, San Francisco, CA 94102"
       },
       {
         "id": 18,
@@ -528,7 +545,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "COPD management with oxygen therapy",
         "cpoMinsCaptured": 95,
         "newDocs": 3,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "890 Magnolia Street, Phoenix, AZ 85001"
       },
       {
         "id": 19,
@@ -557,7 +575,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Fracture recovery with physical therapy",
         "cpoMinsCaptured": 30,
         "newDocs": 2,
-        "newCpoDocsCreated": 1
+        "newCpoDocsCreated": 1,
+        "address": "123 Elm Street, New York, NY 10001"
       },
       {
         "id": 20,
@@ -586,7 +605,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         "patientRemarks": "Parkinson's disease management",
         "cpoMinsCaptured": 120,
         "newDocs": 4,
-        "newCpoDocsCreated": 2
+        "newCpoDocsCreated": 2,
+        "address": "456 Oak Avenue, Chicago, IL 60601"
       }
     
     ,{
@@ -616,7 +636,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
       patientRemarks: 'Regular follow-up required',
       cpoMinsCaptured: 120,
       newDocs: 2,
-      newCpoDocsCreated: 1
+      newCpoDocsCreated: 1,
+      address: '123 Oak Street, Springfield, IL 62704'
     },
     {
       id: 22,
@@ -645,7 +666,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
       patientRemarks: 'Needs physical therapy',
       cpoMinsCaptured: 90,
       newDocs: 0,
-      newCpoDocsCreated: 3
+      newCpoDocsCreated: 3,
+      address: '456 Maple Avenue, Riverside, CA 92501'
     },
     {
       id: 23,
@@ -674,7 +696,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
       patientRemarks: 'High risk patient',
       cpoMinsCaptured: 60,
       newDocs: 1,
-      newCpoDocsCreated: 2
+      newCpoDocsCreated: 2,
+      address: '789 Pine Lane, Lakewood, WA 98499'
     }
   ]);
   const [searchTerm, setSearchTerm] = useState({
@@ -782,7 +805,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
     certStatus: '',
     recertStatus: '',
     f2fEligibility: '',
-    patientRemarks: ''
+    patientRemarks: '',
+    address: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -805,6 +829,62 @@ const PatientFormComponent = ({ onPatientClick }) => {
     if (date) {
       const formattedDate = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
       setFormData(prev => ({ ...prev, [field]: formattedDate }));
+      
+      // Auto-suggestions for related dates
+      if (field === 'patientSOC') {
+        // If SOC is set, suggest Episode From as 4 days later
+        const episodeFromDate = new Date(date);
+        episodeFromDate.setDate(date.getDate() + 4);
+        
+        // Only set if currently empty
+        if (!datePickerState.patientEpisodeFrom) {
+          setDatePickerState(prev => ({ 
+            ...prev, 
+            patientEpisodeFrom: episodeFromDate 
+          }));
+          
+          const formattedEpisodeFrom = `${String(episodeFromDate.getMonth() + 1).padStart(2, '0')}-${String(episodeFromDate.getDate()).padStart(2, '0')}-${episodeFromDate.getFullYear()}`;
+          setFormData(prev => ({ 
+            ...prev, 
+            patientEpisodeFrom: formattedEpisodeFrom 
+          }));
+        }
+      } else if (field === 'patientEpisodeFrom') {
+        // If Episode From is set, suggest SOC as 4 days earlier
+        const socDate = new Date(date);
+        socDate.setDate(date.getDate() - 4);
+        
+        // Only set if currently empty
+        if (!datePickerState.patientSOC) {
+          setDatePickerState(prev => ({ 
+            ...prev, 
+            patientSOC: socDate 
+          }));
+          
+          const formattedSOC = `${String(socDate.getMonth() + 1).padStart(2, '0')}-${String(socDate.getDate()).padStart(2, '0')}-${socDate.getFullYear()}`;
+          setFormData(prev => ({ 
+            ...prev, 
+            patientSOC: formattedSOC 
+          }));
+        }
+        
+        // Also suggest Episode To date as 60 days after Episode From
+        if (!datePickerState.patientEpisodeTo) {
+          const episodeToDate = new Date(date);
+          episodeToDate.setDate(date.getDate() + 60); // Typically 60 days
+          
+          setDatePickerState(prev => ({ 
+            ...prev, 
+            patientEpisodeTo: episodeToDate 
+          }));
+          
+          const formattedEpisodeTo = `${String(episodeToDate.getMonth() + 1).padStart(2, '0')}-${String(episodeToDate.getDate()).padStart(2, '0')}-${episodeToDate.getFullYear()}`;
+          setFormData(prev => ({ 
+            ...prev, 
+            patientEpisodeTo: formattedEpisodeTo 
+          }));
+        }
+      }
     } else {
       setFormData(prev => ({ ...prev, [field]: '' }));
     }
@@ -874,7 +954,6 @@ const PatientFormComponent = ({ onPatientClick }) => {
     if (!formData.physicianName.trim()) newErrors.physicianName = 'Required';
     if (!formData.pg.trim()) newErrors.pg = 'Required';
     if (!formData.hhah.trim()) newErrors.hhah = 'Required';
-    if (!formData.patientInsurance.trim()) newErrors.patientInsurance = 'Required';
     if (!formData.patientInEHR.trim()) newErrors.patientInEHR = 'Required';
     
     setErrors(newErrors);
@@ -914,7 +993,8 @@ const PatientFormComponent = ({ onPatientClick }) => {
         certStatus: '',
         recertStatus: '',
         f2fEligibility: '',
-        patientRemarks: ''
+        patientRemarks: '',
+        address: ''
       });
       setNewPrimaryCode('');
       setNewSecondaryCode('');
@@ -1007,6 +1087,105 @@ const PatientFormComponent = ({ onPatientClick }) => {
     XLSX.writeFile(wb, `patient_data_${selectedMonth}_${selectedYear}.xlsx`);
   };
 
+  // Filter the patients based on search query
+  const searchFilteredPatients = useMemo(() => {
+    if (!searchQuery || searchQuery.trim() === '') {
+      return patients;
+    }
+    
+    const query = searchQuery.toLowerCase().trim();
+    return patients.filter(patient => {
+      const fullName = `${patient.patientLastName} ${patient.patientFirstName} ${patient.patientMiddleName}`.toLowerCase();
+      const pgName = patient.pg.toLowerCase();
+      const hhahName = patient.hhah.toLowerCase();
+      
+      return fullName.includes(query) || 
+             pgName.includes(query) || 
+             hhahName.includes(query);
+    });
+  }, [patients, searchQuery]);
+
+  // Add sorting state
+  const [sortConfig, setSortConfig] = useState({
+    key: 'newCpoDocsCreated',
+    direction: 'asc',
+    secondaryKey: 'newDocs',
+    secondaryDirection: 'desc'
+  });
+  
+  // Function to handle column header clicks for sorting
+  const handleSort = (key) => {
+    let direction = 'asc';
+    let secondaryKey = sortConfig.secondaryKey;
+    let secondaryDirection = sortConfig.secondaryDirection;
+    
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    }
+    
+    // If sorting by newCpoDocsCreated, keep newDocs as secondary sort
+    if (key === 'newCpoDocsCreated') {
+      secondaryKey = 'newDocs';
+      secondaryDirection = 'desc';
+    } 
+    // If sorting by newDocs, keep newCpoDocsCreated as secondary sort
+    else if (key === 'newDocs') {
+      secondaryKey = 'newCpoDocsCreated';
+      secondaryDirection = 'asc';
+    } else {
+      // For other columns, no secondary sort
+      secondaryKey = null;
+      secondaryDirection = null;
+    }
+    
+    setSortConfig({ key, direction, secondaryKey, secondaryDirection });
+  };
+  
+  // Function to get sort indicator for column headers
+  const getSortIndicator = (columnKey) => {
+    if (sortConfig.key === columnKey) {
+      return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
+    }
+    if (sortConfig.secondaryKey === columnKey) {
+      return sortConfig.secondaryDirection === 'asc' ? ' ↑' : ' ↓';
+    }
+    return '';
+  };
+  
+  // Sort the patients based on the sort configuration
+  const sortedPatients = useMemo(() => {
+    let sortablePatients = [...searchFilteredPatients];
+    
+    sortablePatients.sort((a, b) => {
+      // Primary sort
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      
+      // Secondary sort if primary values are equal and there's a secondary key
+      if (sortConfig.secondaryKey) {
+        if (a[sortConfig.secondaryKey] < b[sortConfig.secondaryKey]) {
+          return sortConfig.secondaryDirection === 'asc' ? -1 : 1;
+        }
+        if (a[sortConfig.secondaryKey] > b[sortConfig.secondaryKey]) {
+          return sortConfig.secondaryDirection === 'asc' ? 1 : -1;
+        }
+      }
+      
+      return 0;
+    });
+    
+    return sortablePatients;
+  }, [searchFilteredPatients, sortConfig]);
+  
+  // Apply default sorting on component mount
+  useEffect(() => {
+    // Default sorting is already set in the state
+  }, []);
+
   return (
     <div className="patient-form-container">
       <div className="patient-form-header">
@@ -1051,7 +1230,7 @@ const PatientFormComponent = ({ onPatientClick }) => {
             <form onSubmit={editingPatient ? handleEditSubmit : handleSubmit}>
               <div className="form-grid">
                 <div className="form-column">
-                  {/* Mandatory Fields */}
+                  {/* Column 1 */}
                   <div className="form-group">
                     <label>Patient ID <span className="required">*</span></label>
                     <input
@@ -1111,6 +1290,115 @@ const PatientFormComponent = ({ onPatientClick }) => {
                     {errors.patientDOB && <span className="error-text">{errors.patientDOB}</span>}
                   </div>
 
+                  <div className="form-group">
+                    <label>Contact Number</label>
+                    <input
+                      type="text"
+                      name="contactNumber"
+                      value={editingPatient ? editingPatient.contactNumber : formData.contactNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-column">
+                  {/* Column 2 */}
+                  <div className="form-group">
+                    <label>Patient SOC</label>
+                    <DatePicker
+                      selected={datePickerState.patientSOC}
+                      onChange={(date) => handleDatePickerChange(date, 'patientSOC')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
+                    />
+                    <small className="date-hint">SOC date should be 3-5 days before Episode From date</small>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Patient Episode From</label>
+                    <DatePicker
+                      selected={datePickerState.patientEpisodeFrom}
+                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeFrom')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Patient Episode To</label>
+                    <DatePicker
+                      selected={datePickerState.patientEpisodeTo}
+                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeTo')}
+                      dateFormat="MM-dd-yyyy"
+                      placeholderText="MM-DD-YYYY"
+                      className="form-control"
+                      isClearable
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Rendering Practitioner</label>
+                    <div className="searchable-dropdown">
+                      <input
+                        type="text"
+                        value={editingPatient ? editingPatient.renderingPractitioner : formData.renderingPractitioner}
+                        onChange={(e) => handleSearchChange('renderingPractitioner', e.target.value)}
+                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, renderingPractitioner: e.target.value }))}
+                        placeholder="Search or type practitioner name..."
+                      />
+                      {searchTerm.renderingPractitioner && filteredPractitionerOptions.length > 0 && (
+                        <div className="dropdown-options">
+                          {filteredPractitionerOptions.map(option => (
+                            <div
+                              key={option}
+                              className="dropdown-option"
+                              onClick={() => handleSelectOption('renderingPractitioner', option)}
+                            >
+                              {option}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>485 Cert Status</label>
+                    <select
+                      name="certStatus"
+                      value={editingPatient ? editingPatient.certStatus : formData.certStatus}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Document not received">Document not received</option>
+                      <option value="Document Prepared">Document Prepared</option>
+                      <option value="Document Signed">Document Signed</option>
+                      <option value="Document Billed">Document Billed</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>485 Recert Status</label>
+                    <select
+                      name="recertStatus"
+                      value={editingPatient ? editingPatient.recertStatus : formData.recertStatus}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Document not received">Document not received</option>
+                      <option value="Document Prepared">Document Prepared</option>
+                      <option value="Document Signed">Document Signed</option>
+                      <option value="Document Billed">Document Billed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-column">
+                  {/* Column 3 */}
                   <div className="form-group">
                     <label>Physician Name <span className="required">*</span></label>
                     <div className="searchable-dropdown">
@@ -1196,7 +1484,7 @@ const PatientFormComponent = ({ onPatientClick }) => {
                   </div>
 
                   <div className="form-group">
-                    <label>Patient Insurance <span className="required">*</span></label>
+                    <label>Patient Insurance</label>
                     <input
                       type="text"
                       name="patientInsurance"
@@ -1221,203 +1509,6 @@ const PatientFormComponent = ({ onPatientClick }) => {
                     </select>
                     {errors.patientInEHR && <span className="error-text">{errors.patientInEHR}</span>}
                   </div>
-                </div>
-
-                <div className="form-column">
-                  {/* Optional Fields */}
-                  <div className="form-group">
-                    <label>Contact Number</label>
-                    <input
-                      type="text"
-                      name="contactNumber"
-                      value={editingPatient ? editingPatient.contactNumber : formData.contactNumber}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Patient SOC</label>
-                    <DatePicker
-                      selected={datePickerState.patientSOC}
-                      onChange={(date) => handleDatePickerChange(date, 'patientSOC')}
-                      dateFormat="MM-dd-yyyy"
-                      placeholderText="MM-DD-YYYY"
-                      className="form-control"
-                      isClearable
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Patient Episode From</label>
-                    <DatePicker
-                      selected={datePickerState.patientEpisodeFrom}
-                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeFrom')}
-                      dateFormat="MM-dd-yyyy"
-                      placeholderText="MM-DD-YYYY"
-                      className="form-control"
-                      isClearable
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Patient Episode To</label>
-                    <DatePicker
-                      selected={datePickerState.patientEpisodeTo}
-                      onChange={(date) => handleDatePickerChange(date, 'patientEpisodeTo')}
-                      dateFormat="MM-dd-yyyy"
-                      placeholderText="MM-DD-YYYY"
-                      className="form-control"
-                      isClearable
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Rendering Practitioner</label>
-                    <div className="searchable-dropdown">
-                      <input
-                        type="text"
-                        value={editingPatient ? editingPatient.renderingPractitioner : formData.renderingPractitioner}
-                        onChange={(e) => handleSearchChange('renderingPractitioner', e.target.value)}
-                        onFocus={(e) => setSearchTerm(prev => ({ ...prev, renderingPractitioner: e.target.value }))}
-                        placeholder="Search or type practitioner name..."
-                      />
-                      {searchTerm.renderingPractitioner && filteredPractitionerOptions.length > 0 && (
-                        <div className="dropdown-options">
-                          {filteredPractitionerOptions.map(option => (
-                            <div
-                              key={option}
-                              className="dropdown-option"
-                              onClick={() => handleSelectOption('renderingPractitioner', option)}
-                            >
-                              {option}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Primary Diagnosis Codes</label>
-                    <div className="code-input-container">
-                      <div className="code-input-row">
-                        <input
-                          type="text"
-                          value={newPrimaryCode}
-                          onChange={(e) => setNewPrimaryCode(e.target.value)}
-                          placeholder="Enter ICD code"
-                        />
-                        <button
-                          type="button"
-                          className="add-code-button"
-                          onClick={handleAddPrimaryCode}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="code-list">
-                        {editingPatient ? editingPatient.primaryDiagnosisCodes.map((code, index) => (
-                          <div key={index} className="code-item">
-                            <span>{code}</span>
-                            <button
-                              type="button"
-                              className="remove-code-button"
-                              onClick={() => handleRemovePrimaryCode(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        )) : formData.primaryDiagnosisCodes.map((code, index) => (
-                          <div key={index} className="code-item">
-                            <span>{code}</span>
-                            <button
-                              type="button"
-                              className="remove-code-button"
-                              onClick={() => handleRemovePrimaryCode(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Secondary Diagnosis Codes</label>
-                    <div className="code-input-container">
-                      <div className="code-input-row">
-                        <input
-                          type="text"
-                          value={newSecondaryCode}
-                          onChange={(e) => setNewSecondaryCode(e.target.value)}
-                          placeholder="Enter ICD code"
-                        />
-                        <button
-                          type="button"
-                          className="add-code-button"
-                          onClick={handleAddSecondaryCode}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="code-list">
-                        {editingPatient ? editingPatient.secondaryDiagnosisCodes.map((code, index) => (
-                          <div key={index} className="code-item">
-                            <span>{code}</span>
-                            <button
-                              type="button"
-                              className="remove-code-button"
-                              onClick={() => handleRemoveSecondaryCode(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        )) : formData.secondaryDiagnosisCodes.map((code, index) => (
-                          <div key={index} className="code-item">
-                            <span>{code}</span>
-                            <button
-                              type="button"
-                              className="remove-code-button"
-                              onClick={() => handleRemoveSecondaryCode(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>485 Cert Status</label>
-                    <select
-                      name="certStatus"
-                      value={editingPatient ? editingPatient.certStatus : formData.certStatus}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Document not received">Document not received</option>
-                      <option value="Document Prepared">Document Prepared</option>
-                      <option value="Document Signed">Document Signed</option>
-                      <option value="Document Billed">Document Billed</option>
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label>485 Recert Status</label>
-                    <select
-                      name="recertStatus"
-                      value={editingPatient ? editingPatient.recertStatus : formData.recertStatus}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Document not received">Document not received</option>
-                      <option value="Document Prepared">Document Prepared</option>
-                      <option value="Document Signed">Document Signed</option>
-                      <option value="Document Billed">Document Billed</option>
-                    </select>
-                  </div>
 
                   <div className="form-group">
                     <label>F2F Eligibility</label>
@@ -1434,19 +1525,113 @@ const PatientFormComponent = ({ onPatientClick }) => {
                 </div>
               </div>
 
+              <div className="form-grid">
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                  <label>Primary Diagnosis Codes</label>
+                  <div className="code-input-container">
+                    <div className="code-input-row">
+                      <input
+                        type="text"
+                        value={newPrimaryCode}
+                        onChange={(e) => setNewPrimaryCode(e.target.value)}
+                        placeholder="Enter ICD code"
+                      />
+                      <button
+                        type="button"
+                        className="add-code-button"
+                        onClick={handleAddPrimaryCode}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className="code-list">
+                      {editingPatient ? editingPatient.primaryDiagnosisCodes.map((code, index) => (
+                        <div key={index} className="code-item">
+                          <span>{code}</span>
+                          <button
+                            type="button"
+                            className="remove-code-button"
+                            onClick={() => handleRemovePrimaryCode(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )) : formData.primaryDiagnosisCodes.map((code, index) => (
+                        <div key={index} className="code-item">
+                          <span>{code}</span>
+                          <button
+                            type="button"
+                            className="remove-code-button"
+                            onClick={() => handleRemovePrimaryCode(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Secondary Diagnosis Codes</label>
+                  <div className="code-input-container">
+                    <div className="code-input-row">
+                      <input
+                        type="text"
+                        value={newSecondaryCode}
+                        onChange={(e) => setNewSecondaryCode(e.target.value)}
+                        placeholder="Enter ICD code"
+                      />
+                      <button
+                        type="button"
+                        className="add-code-button"
+                        onClick={handleAddSecondaryCode}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className="code-list">
+                      {editingPatient ? editingPatient.secondaryDiagnosisCodes.map((code, index) => (
+                        <div key={index} className="code-item">
+                          <span>{code}</span>
+                          <button
+                            type="button"
+                            className="remove-code-button"
+                            onClick={() => handleRemoveSecondaryCode(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )) : formData.secondaryDiagnosisCodes.map((code, index) => (
+                        <div key={index} className="code-item">
+                          <span>{code}</span>
+                          <button
+                            type="button"
+                            className="remove-code-button"
+                            onClick={() => handleRemoveSecondaryCode(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="form-group full-width">
                 <label>Patient Remarks</label>
                 <textarea
                   name="patientRemarks"
                   value={editingPatient ? editingPatient.patientRemarks : formData.patientRemarks}
                   onChange={handleChange}
-                  rows="3"
+                  rows="2"
                   style={{ backgroundColor: "#ffffff" }}
                 ></textarea>
               </div>
 
               {editingPatient && (
-                <>
+                <div className="form-grid">
                   <div className="form-group">
                     <label>CPO Mins Captured</label>
                     <input
@@ -1482,7 +1667,7 @@ const PatientFormComponent = ({ onPatientClick }) => {
                       })}
                     />
                   </div>
-                </>
+                </div>
               )}
 
               <div className="form-actions">
@@ -1563,19 +1748,33 @@ const PatientFormComponent = ({ onPatientClick }) => {
           <table className="patient-table">
             <thead>
               <tr>
-                <th>Patient Name</th>
-                <th>DOB</th>
-                <th>PG</th>
-                <th>HHAH</th>
-                <th>CPO Mins</th>
+                <th onClick={() => handleSort('patientLastName')} className="sortable-header">
+                  Patient Name{getSortIndicator('patientLastName')}
+                </th>
+                <th onClick={() => handleSort('patientDOB')} className="sortable-header">
+                  DOB{getSortIndicator('patientDOB')}
+                </th>
+                <th onClick={() => handleSort('pg')} className="sortable-header">
+                  PG{getSortIndicator('pg')}
+                </th>
+                <th onClick={() => handleSort('hhah')} className="sortable-header">
+                  HHAH{getSortIndicator('hhah')}
+                </th>
+                <th onClick={() => handleSort('cpoMinsCaptured')} className="sortable-header">
+                  CPO Mins{getSortIndicator('cpoMinsCaptured')}
+                </th>
                 <th>Remarks</th>
-                <th>New Docs</th>
-                <th>New CPO Docs</th>
+                <th onClick={() => handleSort('newDocs')} className="sortable-header">
+                  New Docs{getSortIndicator('newDocs')}
+                </th>
+                <th onClick={() => handleSort('newCpoDocsCreated')} className="sortable-header">
+                  New CPO Docs{getSortIndicator('newCpoDocsCreated')}
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {patients.map(patient => (
+              {sortedPatients.map(patient => (
                 <tr key={patient.id}>
                   <td 
                     className="patient-name-cell"

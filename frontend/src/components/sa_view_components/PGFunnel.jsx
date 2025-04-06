@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { FunnelChart, Funnel, Tooltip, LabelList } from "recharts";
+import { FunnelChart, Funnel, Tooltip, LabelList, Cell } from "recharts";
 import { FunnelDataContext } from './FunnelDataContext';
 import "../sa_view_css/PGFunnel.css"; // Importing CSS
 
@@ -10,11 +10,11 @@ const initialData = [
   { name: "Initial Contact", value: 600, fill: "#F39C12" },
   { name: "In Assessment", value: 400, fill: "#E67E22" },
   { name: "Ready for Service", value: 300, fill: "#E74C3C" },
-  { name: "Service Started", value: 200, fill: "#E57373" },
-  { name: "Active Treatment", value: 150, fill: "#4CAF50" },
-  { name: "Ready for Discharge", value: 100, fill: "#795548" },
-  { name: "Discharged", value: 50, fill: "#9C27B0" },
-  { name: "Post-Discharge", value: 25, fill: "#F48FB1" }
+  { name: "Service Started", value: 200, fill: "#27AE60" },
+  { name: "Active Treatment", value: 150, fill: "#16A085" },
+  { name: "Ready for Discharge", value: 100, fill: "#9B59B6" },
+  { name: "Discharged", value: 50, fill: "#8E44AD" },
+  { name: "Post-Discharge", value: 25, fill: "#2C3E50" }
 ];
 
 const pgNames = [
@@ -22,24 +22,6 @@ const pgNames = [
   "PG Zeta", "PG Eta", "PG Theta", "PG Iota", "PG Kappa",
   "PG Lambda", "PG Mu", "PG Nu", "PG Xi", "PG Omicron"
 ];
-
-// Custom shape renderer for the trapezoid
-const renderCustomizedShape = (props) => {
-  const { x, y, width, height, fill } = props;
-  
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill={fill}
-      rx={2}
-      ry={2}
-      className="custom-funnel-block"
-    />
-  );
-};
 
 const PGFunnel = () => {
   const { pgFunnelData, pgAssignments, movePgToStage } = useContext(FunnelDataContext) || {};
@@ -56,6 +38,9 @@ const PGFunnel = () => {
     ...stage,
     value: pgAssignments[stage.name]?.length || 0
   }));
+
+  // Sort funnel data from largest to smallest value for a proper pyramid/funnel shape
+  const sortedFunnelData = [...transformedFunnelData].sort((a, b) => b.value - a.value);
 
   const handleFunnelClick = (entry) => {
     if (entry.value === 0) return;
@@ -91,6 +76,7 @@ const PGFunnel = () => {
         <div className="custom-tooltip">
           <p className="tooltip-label">{stageName}</p>
           <p className="tooltip-value">PGs: {pgCount}</p>
+          <p className="tooltip-value">Value: {payload[0].payload.value}</p>
         </div>
       );
     }
@@ -135,25 +121,39 @@ const PGFunnel = () => {
         </div>
       ) : (
         <div className="funnel-chart-wrapper">
-          <FunnelChart width={600} height={500}>
+          <FunnelChart width={800} height={950} margin={{ top: 30, right: 30, bottom: 30, left: 30 }}>
             <Tooltip content={<CustomTooltip />} />
             <Funnel
               dataKey="value"
-              data={transformedFunnelData}
-              isAnimationActive={false}
+              data={pgFunnelData}
+              isAnimationActive={true}
               onClick={handleFunnelClick}
-              width={520}
-              shape={renderCustomizedShape}
-              trapezoidHeight={45}
-              trapezoidsSpace={15}
+              width={500}
+              nameKey="name"
+              dynamicHeight={true}
+              paddingAngle={4}
+              outGapRatio={0.05}
+              lengthRatio={0.85}
             >
+              {pgFunnelData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.fill}
+                  className="funnel-cell"
+                  strokeWidth={2}
+                />
+              ))}
               <LabelList 
                 dataKey="value" 
                 position="center" 
                 fill="#fff" 
                 stroke="none" 
-                fontSize={20} 
+                fontSize={32} 
                 fontWeight="bold"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.6)",
+                  fontFamily: "'Roboto', sans-serif"
+                }}
               />
             </Funnel>
           </FunnelChart>

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { FunnelChart, Funnel, Tooltip, LabelList } from "recharts";
+import { FunnelChart, Funnel, Tooltip, LabelList, Cell } from "recharts";
 import { FunnelDataContext } from './FunnelDataContext';
 import "../sa_view_css/HHAHFunnel.css"; // Import the CSS file
 
@@ -20,24 +20,6 @@ const hhahNames = [
   "HHAH Lambda", "HHAH Mu", "HHAH Nu", "HHAH Xi", "HHAH Omicron"
 ];
 
-// Custom shape renderer for the trapezoid
-const renderCustomizedShape = (props) => {
-  const { x, y, width, height, fill } = props;
-  
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill={fill}
-      rx={2}
-      ry={2}
-      className="custom-funnel-block"
-    />
-  );
-};
-
 const HHAHFunnel = () => {
   const { hhahFunnelData, hhahAssignments, moveHhahToStage } = useContext(FunnelDataContext) || {};
   const [expandedStage, setExpandedStage] = useState(null);
@@ -53,6 +35,9 @@ const HHAHFunnel = () => {
     ...stage,
     value: hhahAssignments[stage.name]?.length || 0
   }));
+
+  // Sort funnel data from largest to smallest value for a proper pyramid/funnel shape
+  const sortedFunnelData = [...transformedFunnelData].sort((a, b) => b.value - a.value);
 
   const handleFunnelClick = (entry) => {
     if (entry.value === 0) return;
@@ -88,6 +73,7 @@ const HHAHFunnel = () => {
         <div className="custom-tooltip">
           <p className="tooltip-label">{stageName}</p>
           <p className="tooltip-value">HHAHs: {hhahCount}</p>
+          <p className="tooltip-value">Value: {payload[0].payload.value}</p>
         </div>
       );
     }
@@ -132,25 +118,39 @@ const HHAHFunnel = () => {
         </div>
       ) : (
         <div className="funnel-chart-wrapper">
-          <FunnelChart width={600} height={500}>
+          <FunnelChart width={800} height={950} margin={{ top: 30, right: 30, bottom: 30, left: 30 }}>
             <Tooltip content={<CustomTooltip />} />
             <Funnel
               dataKey="value"
-              data={transformedFunnelData}
-              isAnimationActive={false}
+              data={hhahFunnelData}
+              isAnimationActive={true}
               onClick={handleFunnelClick}
-              width={520}
-              shape={renderCustomizedShape}
-              trapezoidHeight={45}
-              trapezoidsSpace={15}
+              width={500}
+              nameKey="name"
+              dynamicHeight={true}
+              paddingAngle={4}
+              outGapRatio={0.05}
+              lengthRatio={0.85}
             >
+              {hhahFunnelData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.fill}
+                  className="funnel-cell"
+                  strokeWidth={2}
+                />
+              ))}
               <LabelList 
                 dataKey="value" 
                 position="center" 
                 fill="#fff" 
                 stroke="none" 
-                fontSize={20} 
+                fontSize={32} 
                 fontWeight="bold"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.6)",
+                  fontFamily: "'Roboto', sans-serif"
+                }}
               />
             </Funnel>
           </FunnelChart>

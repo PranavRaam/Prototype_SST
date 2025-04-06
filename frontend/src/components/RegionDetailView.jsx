@@ -11,10 +11,18 @@ import './RegionDetailView.css';
 const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, onSelectStatisticalArea }) => {
   const [activeTab, setActiveTab] = useState('table');
   const [selectedMetric, setSelectedMetric] = useState('patients');
+  const [searchText, setSearchText] = useState('');
   const printRef = useRef(null);
   
   // Use the statisticalAreas prop directly
   const allStatisticalAreas = statisticalAreas;
+  
+  // Filter statistical areas based on search text
+  const filteredStatisticalAreas = searchText.trim() !== '' 
+    ? allStatisticalAreas.filter(area => 
+        area.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : allStatisticalAreas;
   
   // Format number with commas
   const formatNumber = (num) => {
@@ -57,7 +65,7 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
     patients: 'Patients',
     physicianGroups: 'Physician Groups',
     agencies: 'Agencies',
-    activeOutcomes: 'Active Outcomes'
+    activeOutcomes: 'Active Reactive Outcomes'
   };
   
   // Handle printing the data
@@ -102,7 +110,7 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
                 <th>Patients</th>
                 <th>Physician Groups</th>
                 <th>Agencies</th>
-                <th>Active Outcomes</th>
+                <th>Active Reactive Outcomes</th>
               </tr>
             </thead>
             <tbody>
@@ -145,7 +153,7 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
   // Handle downloading as CSV
   const handleDownloadCSV = () => {
     // Create CSV content
-    let csvContent = "Statistical Area,Patients,Physician Groups,Agencies,Active Outcomes\n";
+    let csvContent = "Statistical Area,Patients,Physician Groups,Agencies,Active Reactive Outcomes\n";
     
     // Add data for each statistical area
     allStatisticalAreas.forEach(area => {
@@ -238,9 +246,15 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
         {/* Statistical Areas Table view */}
         {activeTab === 'table' && (
           <div className="region-stats-container animate-fade-in">
-            <div className="click-instruction">
-              <i className="instruction-icon">ℹ️</i>
-              <span>Click on any statistical area to view detailed information</span>
+            <div className="search-container">
+              <input 
+                type="text" 
+                className="search-input" 
+                placeholder="Search statistical areas..." 
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              <span className="search-icon">🔍</span>
             </div>
             <table className="region-stats-table">
               <thead>
@@ -249,11 +263,11 @@ const RegionDetailView = ({ divisionalGroup, regions, statisticalAreas, onBack, 
                   <th>No. of Patients</th>
                   <th>No. of Physician Groups</th>
                   <th>No. of Agencies</th>
-                  <th>No. of Active Outcomes</th>
+                  <th>No. of Active Reactive Outcomes</th>
                 </tr>
               </thead>
               <tbody>
-                {allStatisticalAreas.map(area => (
+                {filteredStatisticalAreas.map(area => (
                   <tr key={area} onClick={() => handleStatisticalAreaClick(area)} className="clickable-row">
                     <td className="area-name">{area}</td>
                     <td>{formatNumber(statisticalAreaStatistics[area]?.patients || 0)}</td>

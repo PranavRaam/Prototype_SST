@@ -176,7 +176,7 @@ const StatisticalAreaDetailView = ({ statisticalArea, divisionalGroup, onBack })
     patients: 'Patients',
     physicianGroups: 'Physician Groups',
     agencies: 'Agencies',
-    activeOutcomes: 'Active Outcomes'
+    activeOutcomes: 'Active Reactive Outcomes'
   };
 
   if (error) {

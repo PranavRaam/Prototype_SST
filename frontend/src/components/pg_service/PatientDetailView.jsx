@@ -65,7 +65,13 @@ import {
   FaFileSignature,
   FaCheck,
   FaArrowCircleRight,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaRegClock,
+  FaNotesMedical,
+  FaFileInvoiceDollar,
+  FaFilePrescription,
+  FaFileContract,
+  FaHourglassHalf
 } from 'react-icons/fa';
 
 // Helper functions
@@ -399,7 +405,7 @@ const generateEpisodeData = () => {
     {
       id: 1,
       startDate: '2023-04-01',
-      socDate: '2023-04-03',
+      socDate: '2023-03-28', // Updated to be 4 days before startDate
       endDate: '2023-06-30',
       status: 'complete',
       diagnosis: 'Hypertension',
@@ -410,7 +416,7 @@ const generateEpisodeData = () => {
     {
       id: 2,
       startDate: '2023-07-01',
-      socDate: '2023-07-05',
+      socDate: '2023-06-27', // Updated to be 4 days before startDate
       endDate: '2023-09-30',
       status: 'active',
       diagnosis: 'Type 2 Diabetes',
@@ -440,6 +446,7 @@ const PatientDetailView = ({ patient, onBack }) => {
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   
   // Create refs
   const fileInputRef = useRef(null);
@@ -1477,7 +1484,19 @@ Total documents: ${documents.length}
 
   // New state for episodes, cpo data and document handling
   const [episodes, setEpisodes] = useState(generateEpisodeData());
-  const [monthlyCPOData, setMonthlyCPOData] = useState(generateMonthlyCPOData());
+  const [monthlyCPOData, setMonthlyCPOData] = useState(() => {
+    // Generate last 6 months of CPO data
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      months.push({
+        month: date.toLocaleString('default', { month: 'short' }),
+        minutes: Math.floor(Math.random() * 200) + 50 // Random minutes between 50-250
+      });
+    }
+    return months;
+  });
   const [activeEpisode, setActiveEpisode] = useState(null);
   const [episodeFilterDates, setEpisodeFilterDates] = useState({ start: '', end: '' });
   const [filteredEpisodes, setFilteredEpisodes] = useState([]);
@@ -1551,6 +1570,15 @@ Total documents: ${documents.length}
   
   // Add function to save a new episode
   const handleSaveEpisode = () => {
+    // Validate that SOC date is before start date
+    const socDate = new Date(newEpisodeData.socDate);
+    const startDate = new Date(newEpisodeData.startDate);
+    
+    if (socDate >= startDate) {
+      showNotification('warning', 'Date Error', 'SOC date must be before the episode start date.');
+      return;
+    }
+    
     if (editingEpisode) {
       // Update existing episode
       setEpisodes(episodes.map(ep => 
@@ -1592,10 +1620,27 @@ Total documents: ${documents.length}
   
   // Add function to handle input changes for episode form
   const handleEpisodeInputChange = (field, value) => {
-    setNewEpisodeData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setNewEpisodeData(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // If changing startDate, suggest a SOC date 3-5 days before if SOC is empty or after startDate
+      if (field === 'startDate' && value) {
+        const startDate = new Date(value);
+        const currentSocDate = prev.socDate ? new Date(prev.socDate) : null;
+        
+        // If SOC is empty or SOC is after or same as start date, suggest a new SOC date
+        if (!currentSocDate || currentSocDate >= startDate) {
+          // Set SOC to 4 days before start date
+          const suggestedSocDate = new Date(startDate);
+          suggestedSocDate.setDate(startDate.getDate() - 4);
+          
+          // Format as YYYY-MM-DD for input[type="date"]
+          updated.socDate = suggestedSocDate.toISOString().split('T')[0];
+        }
+      }
+      
+      return updated;
+    });
   };
   
   // Add function to view episode documents
@@ -1959,6 +2004,56 @@ Total documents: ${documents.length}
     return pdf;
   };
 
+  const getDocumentCategoryIcon = (category) => {
+    switch (category.toLowerCase()) {
+      case 'clinical notes':
+        return <FaNotesMedical />;
+      case 'assessments':
+        return <FaClipboardList />;
+      case 'prescriptions':
+        return <FaFilePrescription />;
+      case 'billing':
+        return <FaFileInvoiceDollar />;
+      case 'consent forms':
+        return <FaFileContract />;
+      case 'orders':
+        return <FaFileSignature />;
+      default:
+        return <FaFileAlt />;
+    }
+  };
+
+  const getDocumentStatusIcon = (status) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return <FaCheckCircle />;
+      case 'in-progress':
+        return <FaHourglassHalf />;
+      case 'pending':
+        return <FaExclamationCircle />;
+      default:
+        return <FaFileAlt />;
+    }
+  };
+
+  const [maxCPOMinutes, setMaxCPOMinutes] = useState(300); // Default max value
+
+  // Update maxCPOMinutes whenever monthlyCPOData changes
+  useEffect(() => {
+    const max = Math.max(...monthlyCPOData.map(data => data.minutes));
+    setMaxCPOMinutes(Math.max(300, Math.ceil(max / 50) * 50)); // Round up to nearest 50, minimum 300
+  }, [monthlyCPOData]);
+
+  const handleCPOMinutesChange = (index, value) => {
+    const newMinutes = Math.max(0, Math.min(999, parseInt(value) || 0));
+    const updatedData = [...monthlyCPOData];
+    updatedData[index] = {
+      ...updatedData[index],
+      minutes: newMinutes
+    };
+    setMonthlyCPOData(updatedData);
+  };
+
   return (
     <div className="patient-detail-view">
       <div className="detail-header">
@@ -2294,6 +2389,42 @@ Total documents: ${documents.length}
                 
                 <div className="info-item">
                   <label>
+                    <FaUserMd className="field-icon" />
+                    Physician Name:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      value={patientInfo.primaryPhysician} 
+                      onChange={(e) => handleInfoChange('primaryPhysician', e.target.value)}
+                      className="info-input"
+                      placeholder="Enter physician name"
+                    />
+                  ) : (
+                    <span>{patientInfo.primaryPhysician}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
+                    <FaHospital className="field-icon hhah" />
+                    HHAH Name:
+                  </label>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      value={patientInfo.hhah} 
+                      onChange={(e) => handleInfoChange('hhah', e.target.value)}
+                      className="info-input"
+                      placeholder="Enter HHAH name"
+                    />
+                  ) : (
+                    <span>{patientInfo.hhah}</span>
+                  )}
+                </div>
+                
+                <div className="info-item">
+                  <label>
                     <FaClock className="field-icon" />
                     CPO Minutes:
                   </label>
@@ -2441,25 +2572,26 @@ Total documents: ${documents.length}
                     </div>
                     
                       <div className="episode-date">
-                        <div className="episode-marker start">
-                          <FaCircle className="marker-icon" />
-                          <div className="marker-label">Start</div>
-                      </div>
-                        <div className="episode-line"></div>
                         <div className="episode-marker soc">
                           <FaCircle className="marker-icon soc" />
                           <div className="marker-label">SOC</div>
                         </div>
                         <div className="episode-line"></div>
+                        <div className="episode-marker start">
+                          <FaCircle className="marker-icon" />
+                          <div className="marker-label">Start</div>
+                        </div>
+                        <div className="episode-line"></div>
                         <div className="episode-marker end">
                           <FaCircle className="marker-icon" />
                           <div className="marker-label">End</div>
+                        </div>
+                        <div className="episode-relationship-soc-start">SOC precedes episode start</div>
                       </div>
-                    </div>
                     
                       <div className="episode-details">
-                        <div className="episode-date-label">{formatDate(episode.startDate)}</div>
                         <div className="episode-date-label">{formatDate(episode.socDate)}</div>
+                        <div className="episode-date-label">{formatDate(episode.startDate)}</div>
                         <div className="episode-date-label">{formatDate(episode.endDate)}</div>
                     </div>
                     
@@ -2548,68 +2680,64 @@ Total documents: ${documents.length}
             <div className="timeline-section">
               <div className="section-header">
                 <h4 className="timeline-section-title">
-                  <FaFileMedical className="section-icon" />
+                  <FaUserMd className="section-icon" />
                   PG Services
                 </h4>
                 <div className="cpo-total">
-                  <span>Total CPO: {formatCPOMinutes(patientInfo.cpoMinsCaptured)}</span>
-                            </div>
-                          </div>
+                  <FaChartLine className="cpo-icon" />
+                  <span>Total CPO: {formatCPOMinutes(monthlyCPOData.reduce((sum, data) => sum + data.minutes, 0))}</span>
+                </div>
+              </div>
               
-              <div className="pg-services-timeline">
-                <div className="monthly-cpo-container">
-                  {monthlyCPOData.map((month, index) => (
-                    <div key={index} className="monthly-cpo-item">
-                      <div className="month-label">{month.month}</div>
-                      <div className="cpo-minutes-bar" onClick={() => setCpoMinutesEditing(index)}>
-                        <div 
-                          className="cpo-minutes-fill" 
-                          style={{width: `${Math.min(100, (month.minutes / 150) * 100)}%`}}
-                        ></div>
-                        </div>
-
-                      {cpoMinutesEditing === index ? (
-                        <div className="cpo-minutes-edit">
-                          <input 
-                            type="number" 
-                            value={month.minutes}
-                            onChange={(e) => handleUpdateCPOMinutes(index, parseInt(e.target.value) || 0)}
-                            className="cpo-minutes-input"
-                            min="0"
-                            max="300"
-                            autoFocus
-                            onBlur={() => setCpoMinutesEditing(null)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                handleUpdateCPOMinutes(index, parseInt(e.target.value) || 0);
-                              } else if (e.key === 'Escape') {
-                                setCpoMinutesEditing(null);
-                              }
-                            }}
-                          />
-                          <span className="cpo-minutes-label">min</span>
-                          </div>
-                      ) : (
-                        <div className="cpo-minutes-value" onClick={() => setCpoMinutesEditing(index)}>
-                          {month.minutes} min
-                          <FaEdit className="edit-icon" />
-                            </div>
-                      )}
-                              </div>
-                  ))}
-                              </div>
-                            </div>
-                          </div>
+              <div className="monthly-cpo-container">
+                {monthlyCPOData.map((month, index) => (
+                  <div key={index} className="monthly-cpo-item">
+                    <div className="month-label">
+                      <FaCalendarAlt className="month-icon" />
+                      {month.month}
+                    </div>
+                    <div className="cpo-minutes-bar">
+                      <div 
+                        className="cpo-minutes-fill" 
+                        style={{ width: `${(month.minutes / maxCPOMinutes) * 100}%` }}
+                      />
+                    </div>
+                    {cpoMinutesEditing === index ? (
+                      <div className="cpo-minutes-edit">
+                        <input
+                          type="number"
+                          value={month.minutes}
+                          onChange={(e) => handleCPOMinutesChange(index, e.target.value)}
+                          onBlur={() => setCpoMinutesEditing(null)}
+                          min="0"
+                          max="999"
+                          autoFocus
+                          className="cpo-minutes-input"
+                        />
+                        <span className="minutes-label">min</span>
+                      </div>
+                    ) : (
+                      <div className="cpo-minutes-value" onClick={() => setCpoMinutesEditing(index)}>
+                        <FaClock className="minutes-icon" />
+                        {month.minutes} min
+                        <FaEdit className="edit-icon" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
             
             {/* HHAH Services Timeline Section with document management */}
             <div className="timeline-section">
               <div className="section-header">
                 <h4 className="timeline-section-title">
-                  <FaFileAlt className="section-icon" />
+                  <FaHospital className="section-icon" />
                   HHAH Services
                 </h4>
                 <div className="document-actions">
                   <div className="document-filter">
+                    <FaFilter className="filter-icon" />
                     <select 
                       className="document-type-filter"
                       onChange={(e) => handleFilterDocumentsByType(e.target.value)}
@@ -2619,137 +2747,160 @@ Total documents: ${documents.length}
                         <option key={index} value={category}>{category}</option>
                       ))}
                     </select>
-                        </div>
+                  </div>
                   <button 
                     className="action-button secondary small"
                     onClick={() => {
-                      // Show dropdown of document categories
-                      const category = prompt('Select document category:', documentCategories.join(', '));
-                      if (category && documentCategories.includes(category)) {
-                        handleAddDocument(category);
-                      }
+                      setShowCategoryDropdown(!showCategoryDropdown);
                     }}
                   >
                     <FaPlus className="action-icon" />
                     Add Document
                   </button>
-                      </div>
+                  {showCategoryDropdown && (
+                    <div className="category-dropdown">
+                      {documentCategories.map((category, index) => (
+                        <div 
+                          key={index} 
+                          className="category-option"
+                          onClick={() => {
+                            handleAddDocument(category);
+                            setShowCategoryDropdown(false);
+                          }}
+                        >
+                          <FaFileAlt className="category-icon" />
+                          {category}
+                        </div>
+                      ))}
                     </div>
-                    
+                  )}
+                </div>
+              </div>
+              
               <div className="hhah-services-timeline">
                 <div className="hhah-documents">
                   <div className="document-status-container">
-                    <h5>Signed Documents</h5>
-                    {signedDocs.length > 0 ? (
-                      signedDocs.map((doc, index) => (
-                        <div key={index} className="document-status-item signed">
-                          <div className="document-status-icon">
-                            <FaCheckCircle className="status-icon signed" />
-                          </div>
-                          <div className="document-info">
-                            <div className="document-name">
-                              {doc.type || 'Unspecified Document'}
-                              <div className="document-actions">
-                                <button 
-                                  className="document-action-button"
-                                  title="View Document"
-                                  onClick={() => openDocumentViewer(doc)}
-                                >
-                                <FaEye className="action-icon" />
-                                </button>
-                                <button 
-                                  className="document-action-button"
-                                  title="Download Document"
-                                  onClick={() => handleDownloadDocument(doc)}
-                                >
-                                  <FaDownload className="action-icon" />
-                              </button>
+                    <h5>
+                      Signed Documents
+                      <span className="document-count">{signedDocs.length}</span>
+                    </h5>
+                    <div className="document-status-items">
+                      {signedDocs.length > 0 ? (
+                        signedDocs.map((doc, index) => (
+                          <div key={index} className="document-status-item signed">
+                            <div className="document-status-icon">
+                              <FaCheckCircle className="status-icon signed" />
                             </div>
-                          </div>
-                            <div className="document-date">Signed on: {formatDate(doc.signedDate)}</div>
-                            <div className="document-meta">
-                              <span className="document-id">{doc.id}</span>
-                              <span className="document-size">{doc.size}</span>
-                        </div>
-                          </div>
-                            </div>
-                      ))
-                    ) : (
-                      <div className="no-documents">
-                        <p>No signed documents available.</p>
+                            <div className="document-info">
+                              <div className="document-name">
+                                <span>{doc.type || 'Unspecified Document'}</span>
+                                <div className="document-actions">
+                                  <button 
+                                    className="document-action-button"
+                                    title="View Document"
+                                    onClick={() => openDocumentViewer(doc)}
+                                  >
+                                    <FaEye className="action-icon" />
+                                  </button>
+                                  <button 
+                                    className="document-action-button"
+                                    title="Download Document"
+                                    onClick={() => handleDownloadDocument(doc)}
+                                  >
+                                    <FaDownload className="action-icon" />
+                                  </button>
+                                </div>
                               </div>
-                    )}
-                </div>
+                              <div className="document-date">Signed on: {formatDate(doc.signedDate)}</div>
+                              <div className="document-meta">
+                                <span className="document-id">{doc.id}</span>
+                                <span className="document-size">{doc.size}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="no-documents">
+                          <p>No signed documents available.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 
                   <div className="document-status-container">
-                    <h5>New & Prepared Documents</h5>
-                    {newPreparedDocs.length > 0 ? (
-                      newPreparedDocs.map((doc, index) => (
-                        <div key={index} className="document-status-item unsigned">
-                          <div className="document-status-icon">
-                            <FaTimesCircle className="status-icon unsigned" />
-                          </div>
-                          <div className="document-info">
-                            <div className="document-name">
-                              <select 
-                                value={doc.type || ''}
-                                onChange={(e) => handleUpdateDocumentType(doc.id, true, e.target.value)}
-                                className="document-type-select"
-                              >
-                                <option value="">Select Document Type</option>
-                                {documentCategories.map((category, idx) => (
-                                  <option key={idx} value={category}>{category}</option>
-                                ))}
-                              </select>
-                              <div className="document-actions">
-                                <button 
-                                  className="document-action-button"
-                                  title="View Document"
-                                  onClick={() => openDocumentViewer(doc)}
+                    <h5>
+                      New & Prepared Documents
+                      <span className="document-count">{newPreparedDocs.length}</span>
+                    </h5>
+                    <div className="document-status-items">
+                      {newPreparedDocs.length > 0 ? (
+                        newPreparedDocs.map((doc, index) => (
+                          <div key={index} className="document-status-item unsigned">
+                            <div className="document-status-icon">
+                              <FaTimesCircle className="status-icon unsigned" />
+                            </div>
+                            <div className="document-info">
+                              <div className="document-name">
+                                <select 
+                                  value={doc.type || ''}
+                                  onChange={(e) => handleUpdateDocumentType(doc.id, true, e.target.value)}
+                                  className="document-type-select"
                                 >
-                                <FaEye className="action-icon" />
-                                </button>
-                                <button 
-                                  className="document-action-button"
-                                  title="Download Document"
-                                  onClick={() => handleDownloadDocument(doc)}
-                                >
-                                  <FaDownload className="action-icon" />
-                                </button>
-                                <button 
-                                  className="document-action-button"
-                                  title="Sign Document"
-                                  onClick={() => handleSignDocument(doc.id)}
-                                >
-                                  <FaSignature className="action-icon" />
-                                </button>
-                                <button 
-                                  className="document-action-button"
-                                  title="Delete Document"
-                                  onClick={() => {
-                                    if (window.confirm('Are you sure you want to delete this document?')) {
-                                      setNewPreparedDocs(prev => prev.filter(d => d.id !== doc.id));
-                                    }
-                                  }}
-                                >
-                                  <FaTrash className="action-icon" />
-                              </button>
+                                  <option value="">Select Document Type</option>
+                                  {documentCategories.map((category, idx) => (
+                                    <option key={idx} value={category}>{category}</option>
+                                  ))}
+                                </select>
+                                <div className="document-actions">
+                                  <button 
+                                    className="document-action-button"
+                                    title="View Document"
+                                    onClick={() => openDocumentViewer(doc)}
+                                  >
+                                    <FaEye className="action-icon" />
+                                  </button>
+                                  <button 
+                                    className="document-action-button"
+                                    title="Download Document"
+                                    onClick={() => handleDownloadDocument(doc)}
+                                  >
+                                    <FaDownload className="action-icon" />
+                                  </button>
+                                  <button 
+                                    className="document-action-button"
+                                    title="Sign Document"
+                                    onClick={() => handleSignDocument(doc.id)}
+                                  >
+                                    <FaSignature className="action-icon" />
+                                  </button>
+                                  <button 
+                                    className="document-action-button"
+                                    title="Delete Document"
+                                    onClick={() => {
+                                      if (window.confirm('Are you sure you want to delete this document?')) {
+                                        setNewPreparedDocs(prev => prev.filter(d => d.id !== doc.id));
+                                      }
+                                    }}
+                                  >
+                                    <FaTrash className="action-icon" />
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="document-date">Received on: {formatDate(doc.receivedDate)}</div>
+                              <div className="document-meta">
+                                <span className="document-status">{doc.status}</span>
+                                <span className="document-id">{doc.id}</span>
+                                <span className="document-size">{doc.size}</span>
+                              </div>
                             </div>
                           </div>
-                            <div className="document-date">Received on: {formatDate(doc.receivedDate)}</div>
-                            <div className="document-meta">
-                              <span className="document-status">{doc.status}</span>
-                              <span className="document-id">{doc.id}</span>
-                              <span className="document-size">{doc.size}</span>
+                        ))
+                      ) : (
+                        <div className="no-documents">
+                          <p>No new or prepared documents available.</p>
                         </div>
-                      </div>
+                      )}
                     </div>
-                      ))
-                    ) : (
-                      <div className="no-documents">
-                        <p>No new or prepared documents available.</p>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -3683,6 +3834,7 @@ Total documents: ${documents.length}
                     onChange={(e) => handleEpisodeInputChange('socDate', e.target.value)}
                     required
                   />
+                  <small className="form-hint">SOC date is typically 3-5 days before the episode start date</small>
                 </div>
                 <div className="form-group">
                   <label>End Date</label>
@@ -3868,31 +4020,6 @@ function calculateDuration(startDate, endDate) {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
   return diffDays;
-}
-
-function generateMonthlyCPOData() {
-  // Generate sample data for monthly CPO minutes
-  // In a real implementation, this would pull from actual patient data
-  const currentDate = new Date();
-  const months = [];
-  
-  // Generate 6 months of data, with the current month as the last entry
-  for (let i = 5; i >= 0; i--) {
-    const monthDate = new Date(currentDate);
-    monthDate.setMonth(currentDate.getMonth() - i);
-    
-    const monthName = monthDate.toLocaleString('default', { month: 'short', year: '2-digit' });
-    
-    // Random minutes between 30 and 150
-    const minutes = i === 0 ? 120 : Math.floor(Math.random() * 120) + 30;
-    
-    months.push({
-      month: monthName,
-      minutes: minutes
-    });
-  }
-  
-  return months;
 }
 
 export default React.memo(PatientDetailView); 

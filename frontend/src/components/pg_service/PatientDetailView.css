@@ -2029,8 +2029,9 @@
 .document-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: #94a3b8;
 }
 
 .document-meta-item {
@@ -2359,8 +2360,80 @@
 .document-actions {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.document-action-button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.document-action-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.document-action-button .action-icon {
+  font-size: 0.8rem;
+  color: #6366f1;
+}
+
+.document-action-button:hover .action-icon {
+  color: #4f46e5;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.document-filter {
+  position: relative;
+  margin-right: 10px;
+}
+
+.document-action-button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  border-radius: 6px;
+  margin-left: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.document-action-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.document-action-button .action-icon {
+  font-size: 0.9rem;
+  color: #6366f1;
+}
+
+.document-action-button:hover .action-icon {
+  color: #4f46e5;
 }
 
 .upload-button {
@@ -3579,6 +3652,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  height: 100%;
 }
 
 .timeline-section-title {
@@ -3682,6 +3756,57 @@
   color: #666;
 }
 
+/* Highlight for SOC date - episode start relationship */
+.episode-date {
+  position: relative;
+}
+
+.episode-relationship-soc-start {
+  position: absolute;
+  bottom: -20px;
+  left: 16.5%; /* Position between SOC and Start */
+  font-size: 0.75rem;
+  color: #28a745;
+  width: 150px;
+  text-align: center;
+}
+
+.episode-relationship-soc-start:before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom: 1px dashed #28a745;
+  width: 100%;
+  height: 1px;
+}
+
+.episode-marker.soc {
+  order: 1; /* Reordering to place SOC first */
+}
+
+.episode-marker.start {
+  order: 2;
+}
+
+.episode-marker.end {
+  order: 3;
+}
+
+/* Order the date labels to match */
+.episode-details .episode-date-label:nth-child(1) {
+  order: 1;
+}
+
+.episode-details .episode-date-label:nth-child(2) {
+  order: 2;
+}
+
+.episode-details .episode-date-label:nth-child(3) {
+  order: 3;
+}
+
 /* PG Services Timeline */
 .pg-services-timeline {
   padding: 10px 0;
@@ -3733,336 +3858,239 @@
 
 /* HHAH Services Timeline */
 .hhah-services-timeline {
-  padding: 10px 0;
+  padding: 15px 0;
+  height: calc(100% - 60px);
+  overflow: auto;
 }
 
 .hhah-documents {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  height: 100%;
 }
 
 .document-status-container {
-  flex: 1;
-  min-width: 300px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  height: fit-content;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .document-status-container h5 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 1rem;
-}
-
-.document-status-item {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-}
-
-.document-status-icon {
-  margin-right: 12px;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
 }
 
-.status-icon.signed {
-  color: #28a745;
-  font-size: 1.2rem;
+.document-count {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
 }
 
-.status-icon.unsigned {
-  color: #dc3545;
-  font-size: 1.2rem;
-}
-
-.document-info {
+.document-status-items {
+  overflow-y: auto;
+  max-height: 350px;
   flex: 1;
 }
 
+.document-status-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
 .document-name {
-  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 5px;
-  color: #333;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.document-type-select {
+  max-width: 180px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  color: #4b5563;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document-type-filter:hover, .document-type-filter:focus {
+  border-color: #cbd5e1;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.document-type-select {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  color: #4b5563;
+  font-size: 0.85rem;
+  min-width: 200px;
+  transition: all 0.2s ease;
+}
+
+.document-status-container h5::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+}
+
+@media (max-width: 1200px) {
+  .hhah-documents {
+    grid-template-columns: 1fr;
+  }
+  
+  .document-type-select {
+    max-width: 160px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .document-status-items {
+    max-height: 450px;
+  }
 }
 
 .document-date {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 5px;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 2px;
 }
 
 .document-status {
-  font-size: 0.85rem;
-  color: #555;
   font-style: italic;
+  background-color: rgba(245, 158, 11, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #f59e0b;
+  white-space: nowrap;
 }
 
-.status-badge.signed {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #28a745;
-  border: 1px solid rgba(40, 167, 69, 0.2);
-}
-
-.status-badge.unsigned {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.2);
-}
-
-/* CPO Minutes Display in Patient Info */
-.cpo-minutes-display {
+/* PG Services Timeline Section */
+.cpo-total {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.cpo-progress-bar {
-  height: 8px;
-  background-color: #e9ecef;
-  border-radius: 4px;
-  margin: 8px 0;
-  overflow: hidden;
-}
-
-.cpo-progress-fill {
-  height: 100%;
-  background-color: #4a6fa5;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.cpo-target {
-  font-size: 0.8rem;
-  color: #666;
-  align-self: flex-end;
-}
-
-/* Episode Filtering Controls */
-.timeline-filters {
-  display: flex;
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-}
-
-.date-filter {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.date-filter label {
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 500;
-  color: #555;
-  font-size: 0.9rem;
+  color: #4B5563;
 }
 
-.filter-inputs {
+.cpo-icon {
+  color: #6366F1;
+  font-size: 1.1rem;
+}
+
+.monthly-cpo-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.date-input {
-  padding: 6px 10px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.date-separator {
-  color: #666;
-}
-
-.filter-reset-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #666;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.filter-reset-button:hover {
-  background-color: #f0f0f0;
-}
-
-.reset-icon {
-  font-size: 0.8rem;
-}
-
-/* Section Header with Actions */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.action-button.small {
-  padding: 5px 10px;
-  font-size: 0.85rem;
-}
-
-/* Enhanced Episode Timeline */
-.timeline-episode {
-  border: 1px solid #eaeaea;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.timeline-episode.active {
-  border-color: #4a6fa5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.timeline-episode.expanded {
+  padding: 0.75rem;
   background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.episode-header {
+.monthly-cpo-item:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.month-label {
+  width: 120px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eaeaea;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #4B5563;
 }
 
-.episode-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.episode-title h5 {
-  margin: 0;
-  color: #333;
+.month-icon {
+  color: #6366F1;
   font-size: 1rem;
 }
 
-.episode-status {
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  text-transform: capitalize;
-}
-
-.episode-status.active {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #28a745;
-}
-
-.episode-status.complete {
-  background-color: rgba(23, 162, 184, 0.1);
-  color: #17a2b8;
-}
-
-.episode-expand-icon {
-  color: #aaa;
-  transition: transform 0.3s ease;
-}
-
-.timeline-episode.expanded .episode-expand-icon {
-  transform: rotate(180deg);
-}
-
-.episode-expanded-info {
-  padding: 15px;
-  border-top: 1px solid #eaeaea;
-  background-color: #fff;
-}
-
-.episode-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.episode-info-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.episode-info-item label {
-  font-size: 0.8rem;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.episode-info-item span {
-  font-size: 0.95rem;
-  color: #333;
-}
-
-.episode-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.episode-action-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-  background-color: white;
-  color: #555;
+.cpo-minutes-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #e5e7eb;
+  border-radius: 6px;
+  margin: 0 1rem;
+  overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
-.episode-action-button:hover {
-  background-color: #f8f9fa;
-}
-
-.episode-action-button.edit {
-  color: #4a6fa5;
-  border-color: #4a6fa5;
-}
-
-.episode-action-button.edit:hover {
-  background-color: rgba(74, 111, 165, 0.1);
-}
-
-.no-episodes {
-  text-align: center;
-  padding: 30px;
-  color: #666;
-}
-
-/* Enhanced CPO Minutes Editing */
-.monthly-cpo-item {
-  position: relative;
+.cpo-minutes-fill {
+  height: 100%;
+  background-color: #6366F1;
+  border-radius: 6px;
+  transition: width 0.3s ease;
 }
 
 .cpo-minutes-value {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.5rem;
+  min-width: 100px;
+  font-weight: 500;
+  color: #4B5563;
   cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
 }
 
-.cpo-minutes-value .edit-icon {
-  opacity: 0;
-  font-size: 0.8rem;
-  color: #4a6fa5;
-  transition: opacity 0.2s;
+.cpo-minutes-value:hover {
+  background-color: #e5e7eb;
+}
+
+.minutes-icon {
+  color: #6366F1;
+  font-size: 0.9rem;
+}
+
+.edit-icon {
+  color: #6B7280;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
 }
 
 .cpo-minutes-value:hover .edit-icon {
@@ -4072,466 +4100,212 @@
 .cpo-minutes-edit {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.5rem;
 }
 
 .cpo-minutes-input {
-  width: 50px;
-  padding: 3px 6px;
-  border: 1px solid #4a6fa5;
-  border-radius: 3px;
+  width: 60px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
   font-size: 0.9rem;
-  text-align: right;
+  color: #4B5563;
 }
 
-.cpo-minutes-label {
+.minutes-label {
+  color: #6B7280;
   font-size: 0.9rem;
-  color: #666;
 }
 
-.cpo-total {
-  padding: 5px 10px;
-  background-color: #f0f2f5;
-  border-radius: 4px;
-  font-weight: 500;
-}
-
-/* Document Management */
+/* HHAH Services Timeline Section */
 .document-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 1rem;
 }
 
 .document-filter {
-  min-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.filter-icon {
+  color: #6366F1;
+  font-size: 0.9rem;
 }
 
 .document-type-filter {
-  width: 100%;
-  padding: 6px 10px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.document-name {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.document-type-select {
-  padding: 4px 8px;
-  border: 1px solid #ced4da;
-  border-radius: 3px;
-  font-size: 0.9rem;
-  color: #333;
-  max-width: 200px;
-}
-
-.document-actions {
-  display: flex;
-  gap: 5px;
-}
-
-.document-action-button {
-  background: none;
   border: none;
+  outline: none;
+  color: #4B5563;
+  font-size: 0.9rem;
+  background: transparent;
   cursor: pointer;
-  color: #666;
-  padding: 3px;
-  border-radius: 3px;
-  transition: background-color 0.2s, color 0.2s;
 }
 
-.document-action-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.document-meta {
-  display: flex;
-  gap: 15px;
-  font-size: 0.8rem;
-  color: #666;
-  margin-top: 5px;
-}
-
-.document-id {
-  font-family: monospace;
-}
-
-.document-size {
-  color: #888;
-}
-
-.no-documents {
-  padding: 20px;
-  text-align: center;
-  color: #888;
-  font-style: italic;
-}
-
-/* Modal Styling for Episode and Documents */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+.category-dropdown {
+  position: absolute;
+  top: 100%;
   right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 200px;
+}
+
+.category-option {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.modal-content {
+.category-option:hover {
+  background-color: #f3f4f6;
+}
+
+.category-icon {
+  color: #6366F1;
+  font-size: 1rem;
+}
+
+.document-status-container {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  animation: scaleIn 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 
-.modal-header {
-  padding: 15px 20px;
-  border-bottom: 1px solid #eaeaea;
+.document-status-container h5 {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.modal-header h3 {
+  gap: 0.75rem;
   margin: 0;
-  color: #333;
-  font-size: 1.25rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1rem;
+  color: #374151;
 }
 
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: #666;
-  cursor: pointer;
+.document-count {
+  margin-left: auto;
+  background-color: #eef2ff;
+  color: #6366F1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.document-status-items {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.document-status-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.document-status-item:hover {
+  background-color: #f9fafb;
+}
+
+.document-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  transition: background-color 0.2s;
+  background-color: #f3f4f6;
+  color: #6366F1;
 }
 
-.modal-close:hover {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
+.document-info {
   flex: 1;
 }
 
-.modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eaeaea;
+.document-name {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* Episode Form Styling */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group label {
-  font-size: 0.9rem;
-  color: #555;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #374151;
 }
 
-.form-group .required {
-  color: #dc3545;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  color: #333;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #4a6fa5;
-  box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.25);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Documents Table Styling */
-.documents-modal .modal-content {
-  max-width: 800px;
-}
-
-.documents-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.documents-table th,
-.documents-table td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.documents-table th {
-  background-color: #f8f9fa;
-  font-weight: 500;
-  color: #555;
-  font-size: 0.9rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.documents-table tr:hover td {
-  background-color: #f8f9fa;
-}
-
-.documents-table .actions-cell {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-start;
-}
-
-.action-icon-button {
-  background: none;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.action-icon-button:hover {
-  background-color: #f0f0f0;
-}
-
-.action-icon-button.view:hover {
-  color: #4a6fa5;
-}
-
-.action-icon-button.download:hover {
-  color: #28a745;
-}
-
-.action-icon-button.sign:hover {
-  color: #fd7e14;
-}
-
-.document-action-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-  background-color: white;
-  color: #555;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.document-action-button:hover {
-  background-color: #f8f9fa;
-}
-
-/* Enhanced style for episode actions */
-.episode-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.episode-action-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-  background-color: white;
-  color: #555;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 0.9rem;
-}
-
-.episode-action-button:hover {
-  background-color: #f8f9fa;
-}
-
-.episode-action-button.edit {
-  color: #4a6fa5;
-  border-color: #4a6fa5;
-}
-
-.episode-action-button.edit:hover {
-  background-color: rgba(74, 111, 165, 0.1);
-}
-
-/* Styles for signed document upload section */
-.signed-document-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.75rem 1rem;
-  background-color: #f7f9fc;
-  border-radius: 4px;
-  margin-bottom: 0.75rem;
-}
-
-.signed-document-actions .action-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  background-color: #fff;
-  border: 1px solid #d0d5dd;
-  color: #344054;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.signed-document-actions .action-button:hover {
-  background-color: #f0f5ff;
-  border-color: #a4bcfd;
-  color: #4a63c7;
-}
-
-.signed-document-actions .action-icon {
-  font-size: 0.9rem;
-  color: #667085;
-}
-
-.signed-document-actions .action-button:hover .action-icon {
-  color: #4a63c7;
-}
-
-.hidden-file-input {
-  display: none;
-}
-
-/* Document tabs styling */
-.document-tabs {
-  display: flex;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.document-tab {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background-color: #f5f5f5;
-  border: 1px solid #e0e0e0;
-  border-bottom: none;
-  border-radius: 4px 4px 0 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #666;
-  margin-right: 4px;
-  position: relative;
-}
-
-.document-tab:hover {
-  background-color: #f0f0f0;
-  color: #444;
-}
-
-.document-tab.active {
-  background-color: #fff;
-  color: #4a63c7;
-  border-bottom: 1px solid #fff;
-  margin-bottom: -1px;
-}
-
-.document-tab .tab-icon {
-  font-size: 0.9rem;
-  color: #777;
-}
-
-.document-tab.active .tab-icon {
-  color: #4a63c7;
-}
-
-.document-tab .tab-label {
-  font-weight: 500;
-}
-
-.document-tab .tab-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
-  padding: 0 0.4rem;
-  background-color: #e0e0e0;
-  color: #555;
+.document-status {
   font-size: 0.75rem;
-  border-radius: 0.75rem;
-  margin-left: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
 }
 
-.document-tab.active .tab-count {
-  background-color: #4a63c7;
-  color: #fff;
+.document-status.pending {
+  background-color: #fef3c7;
+  color: #d97706;
 }
 
-/* You can remove or update the old doc-tab-button styles if they're no longer needed */
+.document-status.completed {
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.document-status.in-progress {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.document-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+.document-date,
+.document-assigned {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.meta-icon {
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+/* Scrollbar Styling */
+.document-status-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.document-status-items::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.document-status-items::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.document-status-items::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

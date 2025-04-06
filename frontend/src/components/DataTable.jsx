@@ -17,7 +17,7 @@ const DataTable = ({ data, onRowClick }) => {
             <th>No. of Patients</th>
             <th>No. of Physician Groups</th>
             <th>No. of Agencies</th>
-            <th>No. of Active/Reactive Outcomes</th>
+            <th>No. of Active Reactive Outcomes</th>
           </tr>
         </thead>
         <tbody>
